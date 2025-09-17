@@ -18,7 +18,7 @@ class ShardeFansList extends StatefulWidget {
   String localimg = ""; //本地图片路径带有http
   String sharedtype = ""; //分享类型 0 活动 1商品 2拼玩
 
-  ShardeFansList({this.arguments}) {
+  ShardeFansList({super.key, this.arguments}) {
     content = (arguments as Map)["content"];
     contentid = (arguments as Map)["contentid"];
     image = (arguments as Map)["image"];
@@ -34,7 +34,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
   List<int> selectItem = [];
   List<String> selectItemName = [];
   List<User> users = [];
-  UserService userService = new UserService();
+  UserService userService = UserService();
   double fontsize = 15;
   double contentfontsize = 14;
   String clubicon = "";
@@ -46,7 +46,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
   bool _isButtonEnable = true;
   double pageheight = 0.0;
   bool _ismore = true;
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
   ImHelper imHelper = ImHelper();
@@ -65,36 +65,32 @@ class _ShardeFansListState extends State<ShardeFansList> {
       users.length,
     );
 
-    if (moredata.length > 0) users = users + moredata;
+    if (moredata.isNotEmpty) users = users + moredata;
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
 
-    if (users != null) {
-      users = await getFollowInfo(users);
-    }
+    users = await getFollowInfo(users);
 
     if (mounted) setState(() {});
   }
 
   Future<List<User>> getFollowInfo(List<User> members) async {
     List<User> userlist = [];
-    if (members != null) {
-      for (int i = 0; i < members.length; i++) {
-        bool ret = await isFollow(members[i].uid, Global.profile.user!.uid);
-        if (ret) {
-          members[i].isFollow = true;
-        }
-
-        userlist.add(members[i]);
+    for (int i = 0; i < members.length; i++) {
+      bool ret = await isFollow(members[i].uid, Global.profile.user!.uid);
+      if (ret) {
+        members[i].isFollow = true;
       }
 
-      return userlist;
+      userlist.add(members[i]);
     }
+
+    return userlist;
 
     return userlist;
   }
@@ -102,7 +98,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
   Future<bool> isFollow(int followed, int uid) async {
     bool isfollowed = false;
     List<int> list = await imHelper.selFollowState(followed, uid);
-    if (list != null && list.length > 0) isfollowed = true;
+    if (list.isNotEmpty) isfollowed = true;
 
     return isfollowed;
   }
@@ -173,14 +169,14 @@ class _ShardeFansListState extends State<ShardeFansList> {
               );
             }
             print(mode);
-            return Container(height: 55.0, child: Center(child: body));
+            return SizedBox(height: 55.0, child: Center(child: body));
           },
         ),
         controller: _refreshController,
         onLoading: _onLoading,
         child:
             _refreshController.headerStatus == RefreshStatus.completed &&
-                users.length == 0
+                users.isEmpty
             ? Center(
                 child: Text(
                   'Emm...就是没有粉丝吖',
@@ -217,14 +213,14 @@ class _ShardeFansListState extends State<ShardeFansList> {
                 onPressed: () async {
                   try {
                     if (_isButtonEnable) {
-                      if (selectItem.length <= 0) {
+                      if (selectItem.isEmpty) {
                         ShowMessage.showToast("请选择要分享的粉丝");
                         return;
                       }
                       String touids = "";
-                      selectItem.forEach((element) {
-                        touids += element.toString() + ",";
-                      });
+                      for (var element in selectItem) {
+                        touids += "$element,";
+                      }
                       touids = touids.substring(0, touids.length - 1);
 
                       _isButtonEnable = false;
@@ -237,8 +233,9 @@ class _ShardeFansListState extends State<ShardeFansList> {
                         touids,
                         int.parse(widget.sharedtype),
                         () {
-                          if (int.parse(widget.sharedtype) == 0)
+                          if (int.parse(widget.sharedtype) == 0) {
                             ShowMessage.showToast("分享活动失败");
+                          }
                         },
                       );
 
@@ -264,45 +261,43 @@ class _ShardeFansListState extends State<ShardeFansList> {
 
   List<Widget> buildMyFriend() {
     List<Widget> contents = [];
-    if (users != null) {
-      for (User user in users) {
-        contents.add(
-          Column(
-            children: [
-              ListTile(
-                title: Row(
-                  children: [
-                    RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
-                    SizedBox(width: 10),
-                    NoCacheClipRRectOhterHeadImage(
-                      imageUrl: user.profilepicture!,
-                      width: 30,
-                      uid: user.uid,
-                      cir: 50,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      user.username,
-                      style: TextStyle(color: Colors.black87, fontSize: 14),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  if (!(selectItem.indexOf(user.uid) >= 0)) {
-                    selectItem.add(user.uid);
-                    selectItemName.add(user.username);
-                  } else {
-                    selectItem.remove(user.uid);
-                    selectItemName.remove(user.username);
-                  }
-                  setState(() {});
-                },
+    for (User user in users) {
+      contents.add(
+        Column(
+          children: [
+            ListTile(
+              title: Row(
+                children: [
+                  RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+                  SizedBox(width: 10),
+                  NoCacheClipRRectOhterHeadImage(
+                    imageUrl: user.profilepicture!,
+                    width: 30,
+                    uid: user.uid,
+                    cir: 50,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    user.username,
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                  ),
+                ],
               ),
-              MyDivider(),
-            ],
-          ),
-        );
-      }
+              onTap: () {
+                if (!(selectItem.indexOf(user.uid) >= 0)) {
+                  selectItem.add(user.uid);
+                  selectItemName.add(user.username);
+                } else {
+                  selectItem.remove(user.uid);
+                  selectItemName.remove(user.username);
+                }
+                setState(() {});
+              },
+            ),
+            MyDivider(),
+          ],
+        ),
+      );
     }
 
     return contents;
@@ -314,7 +309,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
 }
 
 class RoundCheckBox extends StatefulWidget {
-  RoundCheckBox({Key? key, required this.value}) : super(key: key);
+  const RoundCheckBox({super.key, required this.value});
 
   final bool value;
   @override
@@ -324,6 +319,7 @@ class RoundCheckBox extends StatefulWidget {
 }
 
 class RoundCheckBoxWidgetBuilder extends State<RoundCheckBox> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 24,

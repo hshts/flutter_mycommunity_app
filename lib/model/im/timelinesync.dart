@@ -32,65 +32,61 @@ class TimeLineSync {
   String? source_id = ""; //来源ID
 
   Map<String, dynamic> toMap() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
-    data['timeline_id'] = this.timeline_id;
-    data['sequence_id'] = this.sequence_id;
-    data['conversation'] = this.conversation;
-    data['send_time'] = this.send_time;
-    data['serdername'] = this.senderUser == null
-        ? this.serdername
-        : this.senderUser!.username;
-    data['serderpicture'] = this.senderUser == null
-        ? this.serderpicture
-        : this.senderUser!.profilepicture;
-    data['content'] = this.content;
-    data['contenttype'] = this.contenttype;
+    data['timeline_id'] = timeline_id;
+    data['sequence_id'] = sequence_id;
+    data['conversation'] = conversation;
+    data['send_time'] = send_time;
+    data['serdername'] = senderUser == null ? serdername : senderUser!.username;
+    data['serderpicture'] = senderUser == null
+        ? serderpicture
+        : senderUser!.profilepicture;
+    data['content'] = content;
+    data['contenttype'] = contenttype;
     if (sender != null && sender == 0) {
-      data['sender'] = this.sender;
+      data['sender'] = sender;
     } else {
-      data['sender'] = this.senderUser == null
-          ? this.sender
-          : this.senderUser!.uid;
+      data['sender'] = senderUser == null ? sender : senderUser!.uid;
     }
     data['uid'] = Global.profile.user!.uid;
-    data['localpath'] = this.localpath;
-    data['isopen'] = this.isopen;
-    data['source_id'] = this.source_id;
+    data['localpath'] = localpath;
+    data['isopen'] = isopen;
+    data['source_id'] = source_id;
     return data;
   }
 
   TimeLineSync.fromMap(Map<String, dynamic> data) {
     //    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
-    this.timeline_id = data['timeline_id'];
-    this.sequence_id = data['sequence_id'];
-    this.conversation = data['conversation'];
-    this.send_time = data['send_time'];
-    this.sender = data['sender'];
-    this.serdername = data['serdername'];
-    this.serderpicture = data['serderpicture'];
-    this.content = data['content'];
-    this.contenttype = data['contenttype'];
-    this.localpath = data['localpath'];
-    this.isopen = data['isopen'];
-    this.source_id = data['source_id'];
+    timeline_id = data['timeline_id'];
+    sequence_id = data['sequence_id'];
+    conversation = data['conversation'];
+    send_time = data['send_time'];
+    sender = data['sender'];
+    serdername = data['serdername'];
+    serderpicture = data['serderpicture'];
+    content = data['content'];
+    contenttype = data['contenttype'];
+    localpath = data['localpath'];
+    isopen = data['isopen'];
+    source_id = data['source_id'];
   }
 
   TimeLineSync.fromMapByServer(Map<String, dynamic> data) {
     //    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
-    this.timeline_id = data['timeline_id'];
-    this.sequence_id = data['sequence_id'];
-    this.conversation = data['conversation'];
-    this.send_time = data['send_time'];
-    this.senderUser = (data['sender'] == null
+    timeline_id = data['timeline_id'];
+    sequence_id = data['sequence_id'];
+    conversation = data['conversation'];
+    send_time = data['send_time'];
+    senderUser = (data['sender'] == null
         ? null
         : User.fromJson(data['sender'] as Map<String, dynamic>));
-    this.serdername = this.senderUser!.username;
-    this.serderpicture = this.senderUser!.profilepicture;
-    this.content = data['content'];
-    this.contenttype = data['contenttype'];
-    this.localpath = '';
-    this.source_id = data['source_id'];
+    serdername = senderUser!.username;
+    serderpicture = senderUser!.profilepicture;
+    content = data['content'];
+    contenttype = data['contenttype'];
+    localpath = '';
+    source_id = data['source_id'];
   }
 
   TimeLineSync(
@@ -106,13 +102,13 @@ class TimeLineSync {
   ) {
     if (conversation == 0) {
       //拉黑取消拉黑举报等本地提示
-      this.sender = 0;
-      this.serdername = "system";
-      this.serderpicture = "";
+      sender = 0;
+      serdername = "system";
+      serderpicture = "";
     } else {
-      this.sender = senderUser!.uid;
-      this.serdername = senderUser!.username;
-      this.serderpicture = senderUser!.profilepicture;
+      sender = senderUser!.uid;
+      serdername = senderUser!.username;
+      serderpicture = senderUser!.profilepicture;
     }
   }
 

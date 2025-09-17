@@ -23,54 +23,60 @@ import '../../util/showmessage_util.dart';
 import 'soundcircleprocess.dart';
 
 class PlayRecorder extends StatefulWidget {
+  const PlayRecorder({super.key});
+
   @override
   _PlayRecorderState createState() => _PlayRecorderState();
 }
 
 class _PlayRecorderState extends State<PlayRecorder> {
-  bool _recordercomplete = false;//是否录制完成，//是否在录音中，注意：不要用recorderModule中的isrecordering等判断状态，因为所有event都在一个按钮上无法判断实时状态
-  FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  FlutterSoundPlayer _player = FlutterSoundPlayer();
+  bool _recordercomplete =
+      false; //是否录制完成，//是否在录音中，注意：不要用recorderModule中的isrecordering等判断状态，因为所有event都在一个按钮上无法判断实时状态
+  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
+  final FlutterSoundPlayer _player = FlutterSoundPlayer();
   StreamSubscription? _playerSubscription;
 
   late AudioSession _audioSession;
   String _recordFilepath = "";
   Timer? _recordtimer;
   double _isPercent = 0;
-  int _tem = 0;//播放的临时变量
-  int _soundTime = 60;//录音时长60秒；
-  int _showTime =0 ;//显示录音时间
-  int _currentTime = 0;//已录音时间；
+  final int _tem = 0; //播放的临时变量
+  final int _soundTime = 60; //录音时长60秒；
+  int _showTime = 0; //显示录音时间
+  int _currentTime = 0; //已录音时间；
   Directory? tempDir;
-
 
   Future<void> startRecorder() async {
     try {
       _audioSession.setActive(true);
       String uuid = Uuid().v1().toString().replaceAll('-', '');
-      _recordFilepath = '${tempDir!.path}/${uuid}.mp4';
+      _recordFilepath = '${tempDir!.path}/$uuid.mp4';
 
-      _recorder.startRecorder(toFile: _recordFilepath, codec: Codec.aacMP4, audioSource: AudioSource.microphone,).then((value) {
-        setState(() {});
-      });
+      _recorder
+          .startRecorder(
+            toFile: _recordFilepath,
+            codec: Codec.aacMP4,
+            audioSource: AudioSource.microphone,
+          )
+          .then((value) {
+            setState(() {});
+          });
 
       setState(() {
         _isPercent = 1;
       });
-      const tick = const Duration(milliseconds: 1000);
-      _recordtimer = new Timer.periodic(tick, (Timer t) async {
+      const tick = Duration(milliseconds: 1000);
+      _recordtimer = Timer.periodic(tick, (Timer t) async {
         if (_recorder.isStopped) {
           t.cancel();
         }
-        if(_currentTime == _soundTime){
+        if (_currentTime == _soundTime) {
           t.cancel();
           stopRecorder();
         }
         _currentTime++;
         _showTime = _currentTime;
-        setState(() {
-
-        });
+        setState(() {});
       });
     } catch (err) {
       print('startRecorder error: $err');
@@ -89,31 +95,39 @@ class _PlayRecorderState extends State<PlayRecorder> {
         });
       });
       _audioSession.setActive(false);
-      if(_recordtimer != null)
+      if (_recordtimer != null) {
         _recordtimer!.cancel();
+      }
 
       setState(() {
         _isPercent = 0;
       });
 
-      if(Global.isInDebugMode)
+      if (Global.isInDebugMode) {
         print(_recordFilepath);
+      }
     } catch (err) {
       print('stopRecorder error: $err');
     }
   }
 
-  Future<void> startPlayer(String filepath, {TimeLineSync? timeLineSync}) async {
+  Future<void> startPlayer(
+    String filepath, {
+    TimeLineSync? timeLineSync,
+  }) async {
     try {
-      if(_player.isStopped && _recorder.isStopped){
-        _player.startPlayer(fromURI: filepath, whenFinished: (){
-          setState(() {
-            if(timeLineSync != null) {
-              timeLineSync.isplay = false;
-            }
-            _showTime = _currentTime;
-          });
-        });
+      if (_player.isStopped && _recorder.isStopped) {
+        _player.startPlayer(
+          fromURI: filepath,
+          whenFinished: () {
+            setState(() {
+              if (timeLineSync != null) {
+                timeLineSync.isplay = false;
+              }
+              _showTime = _currentTime;
+            });
+          },
+        );
       }
       // await flutterSoundModule.setVolume(1.0);
     } catch (err) {
@@ -136,28 +150,30 @@ class _PlayRecorderState extends State<PlayRecorder> {
   Future<void> init() async {
     final Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
-      Permission.storage
+      Permission.storage,
     ].request();
 
-
-    if (statuses[Permission.microphone] != PermissionStatus.granted || statuses[Permission.storage] != PermissionStatus.granted) {
+    if (statuses[Permission.microphone] != PermissionStatus.granted ||
+        statuses[Permission.storage] != PermissionStatus.granted) {
       ShowMessage.showToast("需要麦克风语音存储权限");
       await openAppSettings();
       Navigator.pop(context);
     }
 
-    if (statuses[Permission.microphone]  == PermissionStatus.granted) {
+    if (statuses[Permission.microphone] == PermissionStatus.granted) {
       AudioSession.instance.then((audioSession) async {
-        await audioSession.configure(AudioSessionConfiguration(
-          avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
-          avAudioSessionMode: AVAudioSessionMode.defaultMode,
-          androidAudioAttributes: const AndroidAudioAttributes(
-            contentType: AndroidAudioContentType.speech,
-            usage: AndroidAudioUsage.media,
+        await audioSession.configure(
+          AudioSessionConfiguration(
+            avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+            avAudioSessionMode: AVAudioSessionMode.defaultMode,
+            androidAudioAttributes: const AndroidAudioAttributes(
+              contentType: AndroidAudioContentType.speech,
+              usage: AndroidAudioUsage.media,
+            ),
+            androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransient,
+            androidWillPauseWhenDucked: true,
           ),
-          androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransient,
-          androidWillPauseWhenDucked: true,
-        ));
+        );
         _audioSession = audioSession;
       });
       await _initializeRecorderExample();
@@ -173,8 +189,7 @@ class _PlayRecorderState extends State<PlayRecorder> {
   Future<void> _initializePlayExample() async {
     //录音按钮播放倒计时
     await _player.openPlayer().then((value) {
-      setState(() {
-      });
+      setState(() {});
     });
     await _player.setSubscriptionDuration(Duration(seconds: 1));
 
@@ -182,11 +197,9 @@ class _PlayRecorderState extends State<PlayRecorder> {
       setState(() {
         if (_showTime - 1 <= 0) {
           _showTime = 0;
-        }
-        else if (e.position.inSeconds > 1) {
+        } else if (e.position.inSeconds > 1) {
           _showTime = _showTime - 1;
-        }
-        else
+        } else
           _showTime = _showTime - e.position.inSeconds;
       });
     });
@@ -203,7 +216,6 @@ class _PlayRecorderState extends State<PlayRecorder> {
     _recorder.closeRecorder();
     _player.closePlayer();
 
-
     if (_playerSubscription != null) {
       _playerSubscription!.cancel();
       _playerSubscription = null;
@@ -216,29 +228,29 @@ class _PlayRecorderState extends State<PlayRecorder> {
     return buildSayGrid();
   }
 
-  Widget buildSayGrid(){
-    return Container(
+  Widget buildSayGrid() {
+    return SizedBox(
       height: 260,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _recordercomplete ? InkWell(
-            child: Container(
-              height: 35,
-              width: 40,
-              child: Icon(Icons.delete, color: Colors.white),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-            ),
-            onTap: () async {
-              await recoderDel();
-            },
-          ):SizedBox.shrink(),
-          Padding(
-            padding: EdgeInsets.only(left: 20),
-          ),
+          _recordercomplete
+              ? InkWell(
+                  child: Container(
+                    height: 35,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child: Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onTap: () async {
+                    await recoderDel();
+                  },
+                )
+              : SizedBox.shrink(),
+          Padding(padding: EdgeInsets.only(left: 20)),
           CircularPercentIndicator(
             radius: 80.0,
             lineWidth: 10.0,
@@ -246,62 +258,86 @@ class _PlayRecorderState extends State<PlayRecorder> {
             circularStrokeCap: CircularStrokeCap.round,
             animationDuration: 60000,
             percent: _isPercent,
-            header: Text('${_showTime}S', style: TextStyle(color: Colors.black, fontSize: 18),),
-            footer: Text(_recorder.isRecording ? "录音中" : (_recordercomplete ? "点击播放" : "点击录音") , style: TextStyle(color: Colors.black),),
+            header: Text(
+              '${_showTime}S',
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
+            footer: Text(
+              _recorder.isRecording
+                  ? "录音中"
+                  : (_recordercomplete ? "点击播放" : "点击录音"),
+              style: TextStyle(color: Colors.black),
+            ),
             center: InkWell(
-                highlightColor: Colors.transparent,
-                child: Container(
-                    child: _recordercomplete ? (_player.isPlaying ? SpinKitWave(color: Colors.cyan, type: SpinKitWaveType.center, size: 30,): Container(
-                        margin: EdgeInsets.only(left: 5, bottom: 3),
-                        alignment: Alignment.center,
-                        child: Icon(
-                          IconFont.icon_bofang,
-                          size: 30,
-                          color: Colors.cyan,
-                        ))): ( _recorder.isRecording ? SoundCircleProcess() : Container(width: 55, height: 50, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.cyan),)
-                        //SpreadWidget(radius: 50,maxRadius: 100,child: Icon(IconFont.icon_luyin))
-                    )
-                ),
-                onTap: ()  async {
-                  //停止录音
-                  if (_recorder.isRecording) {
-                    stopRecorder();
-                  }
-                  else if (_player.isPlaying) {
-                    await stopPlayer();
-                  }
-                  else if (!_recordercomplete) {
-                    startRecorder();
-                  }
-                  else{
-                    await startPlayer(_recordFilepath);
-                  }
+              highlightColor: Colors.transparent,
+              child: Container(
+                child: _recordercomplete
+                    ? (_player.isPlaying
+                          ? SpinKitWave(
+                              color: Colors.cyan,
+                              type: SpinKitWaveType.center,
+                              size: 30,
+                            )
+                          : Container(
+                              margin: EdgeInsets.only(left: 5, bottom: 3),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                IconFont.icon_bofang,
+                                size: 30,
+                                color: Colors.cyan,
+                              ),
+                            ))
+                    : (_recorder.isRecording
+                          ? SoundCircleProcess()
+                          : Container(
+                              width: 55,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.cyan,
+                              ),
+                            )
+                      //SpreadWidget(radius: 50,maxRadius: 100,child: Icon(IconFont.icon_luyin))
+                      ),
+              ),
+              onTap: () async {
+                //停止录音
+                if (_recorder.isRecording) {
+                  stopRecorder();
+                } else if (_player.isPlaying) {
+                  await stopPlayer();
+                } else if (!_recordercomplete) {
+                  startRecorder();
+                } else {
+                  await startPlayer(_recordFilepath);
                 }
+              },
             ),
             backgroundColor: Colors.cyan.shade100,
             progressColor: Colors.cyan,
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 20),
-          ),
-          _recordercomplete ? InkWell(
-            child: Container(
-              height: 35,
-              width: 40,
-              child: Icon(Icons.check, color: Colors.white),
-              decoration: BoxDecoration(
-                color: Colors.cyan,
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-            ),
-            onTap: ()  async {
-              String ret = await updateSend();
-              if(ret != "") {
-                if(mounted)
-                  Navigator.pop(context, ret);
-              }
-            },
-          ):SizedBox.shrink()
+          Padding(padding: EdgeInsets.only(left: 20)),
+          _recordercomplete
+              ? InkWell(
+                  child: Container(
+                    height: 35,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.cyan,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child: Icon(Icons.check, color: Colors.white),
+                  ),
+                  onTap: () async {
+                    String ret = await updateSend();
+                    if (ret != "") {
+                      if (mounted) {
+                        Navigator.pop(context, ret);
+                      }
+                    }
+                  },
+                )
+              : SizedBox.shrink(),
         ],
       ),
     );
@@ -318,17 +354,20 @@ class _PlayRecorderState extends State<PlayRecorder> {
 
   Future<String> updateSend() async {
     String ret = "";
-    AliyunService _aliyunService = new AliyunService();
-    SecurityToken? securityToken = await _aliyunService.getSoundSecurityToken(Global.profile.user!.token!, Global.profile.user!.uid);
+    AliyunService aliyunService = AliyunService();
+    SecurityToken? securityToken = await aliyunService.getSoundSecurityToken(
+      Global.profile.user!.token!,
+      Global.profile.user!.uid,
+    );
     if (securityToken != null) {
       //这边把类型加入
-      String soundUrl = await _aliyunService.uploadSound(
-          securityToken, _recordFilepath,
-          md5.convert(_recordFilepath.codeUnits).toString() + ".mp4",
-          Global.profile.user!.uid);
-      if (soundUrl != null) {
-        return soundUrl + "," + _currentTime.toString();
-      }
+      String soundUrl = await aliyunService.uploadSound(
+        securityToken,
+        _recordFilepath,
+        "${md5.convert(_recordFilepath.codeUnits)}.mp4",
+        Global.profile.user!.uid,
+      );
+      return soundUrl + "," + _currentTime.toString();
     }
 
     return ret;

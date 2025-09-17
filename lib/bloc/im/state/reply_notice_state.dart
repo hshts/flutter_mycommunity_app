@@ -32,7 +32,7 @@ class ReplyPostSuccess extends ReplyNoticeState {
 
   @override
   String toString() =>
-      'PostSuccess { posts: ${commentReplys}, hasReachedMax: $hasReachedMax }';
+      'PostSuccess { posts: $commentReplys, hasReachedMax: $hasReachedMax }';
 }
 
 //获取消息失败
@@ -48,7 +48,7 @@ class newReplyCount extends ReplyNoticeState {
   final int? followcount;
   final int? newlithumbupCount;
 
-  newReplyCount({this.count, this.followcount, this.newlithumbupCount});
+  const newReplyCount({this.count, this.followcount, this.newlithumbupCount});
 
   @override
   List<Object> get props => [count ?? 0];
@@ -56,7 +56,7 @@ class newReplyCount extends ReplyNoticeState {
 
 class myNoticeCount extends ReplyNoticeState {
   final int? count;
-  myNoticeCount({this.count});
+  const myNoticeCount({this.count});
 
   @override
   List<Object> get props => [count ?? 0];
@@ -65,7 +65,7 @@ class myNoticeCount extends ReplyNoticeState {
 //有新好友分享
 class newSharedCount extends ReplyNoticeState {
   final int? count;
-  newSharedCount({this.count});
+  const newSharedCount({this.count});
 
   @override
   List<Object> get props => [count ?? 0];
@@ -74,7 +74,7 @@ class newSharedCount extends ReplyNoticeState {
 //有新的待评论活动
 class newUnActivityEvaluteCount extends ReplyNoticeState {
   final int? count;
-  newUnActivityEvaluteCount({this.count});
+  const newUnActivityEvaluteCount({this.count});
 
   @override
   List<Object> get props => [count ?? 0];
@@ -83,7 +83,7 @@ class newUnActivityEvaluteCount extends ReplyNoticeState {
 //有新的订单
 class newOrderCount extends ReplyNoticeState {
   final int? count;
-  newOrderCount({this.count});
+  const newOrderCount({this.count});
 
   @override
   List<Object> get props => [count ?? 0];

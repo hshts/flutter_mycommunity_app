@@ -22,6 +22,8 @@ import '../../util/networkmanager_util.dart';
 import '../../global.dart';
 
 class MyUserId extends StatefulWidget {
+  const MyUserId({super.key});
+
   @override
   _MyUserIdEditState createState() => _MyUserIdEditState();
 }
@@ -30,9 +32,9 @@ class _MyUserIdEditState extends State<MyUserId> {
   User? user;
   double fontsize = 15;
   double contentfontsize = 14;
-  ImHelper _imhelper = new ImHelper();
-  CommonJSONService _commonJSONService = new CommonJSONService();
-  UserService _userService = new UserService();
+  final ImHelper _imhelper = ImHelper();
+  final CommonJSONService _commonJSONService = CommonJSONService();
+  final UserService _userService = UserService();
   StreamSubscription? _streamDemoSubscription;
 
   @override
@@ -62,8 +64,9 @@ class _MyUserIdEditState extends State<MyUserId> {
         buildWhen: (previousState, state) {
           if (state is AuthenticationAuthenticated) {
             return true;
-          } else
+          } else {
             return false;
+          }
         },
         builder: (context, state) {
           user = Global.profile.user!;
@@ -111,7 +114,7 @@ class _MyUserIdEditState extends State<MyUserId> {
                                 Text(
                                   Global.profile.user!.mobile == ""
                                       ? "未绑定"
-                                      : "+" + Global.profile.user!.mobile,
+                                      : "+${Global.profile.user!.mobile}",
                                   style: TextStyle(
                                     color: Global.profile.user!.mobile != ""
                                         ? Colors.black
@@ -237,64 +240,56 @@ class _MyUserIdEditState extends State<MyUserId> {
                             ? ListTile(
                                 onTap: () async {
                                   if (Global.profile.user!.wxuserid == "") {
-                                    if (_streamDemoSubscription == null) {
-                                      _streamDemoSubscription =
-                                          weChatResponseEventHandler.listen((
-                                            res,
-                                          ) async {
-                                            if (res is WeChatAuthResponse) {
-                                              if (res.code != null) {
-                                                User? user = await _userService
-                                                    .updateWeixin(
-                                                      Global.profile.user!.uid,
-                                                      Global
-                                                          .profile
-                                                          .user!
-                                                          .token!,
-                                                      res.code!,
-                                                      false,
-                                                      errorCallBack,
-                                                    );
+                                    _streamDemoSubscription ??=
+                                        weChatResponseEventHandler.listen((
+                                          res,
+                                        ) async {
+                                          if (res is WeChatAuthResponse) {
+                                            if (res.code != null) {
+                                              User? user = await _userService
+                                                  .updateWeixin(
+                                                    Global.profile.user!.uid,
+                                                    Global.profile.user!.token!,
+                                                    res.code!,
+                                                    false,
+                                                    errorCallBack,
+                                                  );
 
-                                                if (user != null) {
-                                                  if (user.uid ==
-                                                      Global
+                                              if (user != null) {
+                                                if (user.uid ==
+                                                    Global.profile.user!.uid) {
+                                                  Global
                                                           .profile
                                                           .user!
-                                                          .uid) {
-                                                    Global
-                                                            .profile
-                                                            .user!
-                                                            .wxuserid =
-                                                        user.wxuserid;
-                                                    Global.saveProfile();
+                                                          .wxuserid =
+                                                      user.wxuserid;
+                                                  Global.saveProfile();
+                                                  if (mounted) {
+                                                    setState(() {});
+                                                  }
+                                                } else {
+                                                  //已经注册成新用户需要换绑定
+                                                  _streamDemoSubscription!
+                                                      .cancel();
+                                                  _streamDemoSubscription =
+                                                      null;
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    '/BindUser',
+                                                    arguments: {
+                                                      "sourceuser": user,
+                                                      "bindtype": "微信",
+                                                    },
+                                                  ).then((value) {
                                                     if (mounted) {
                                                       setState(() {});
                                                     }
-                                                  } else {
-                                                    //已经注册成新用户需要换绑定
-                                                    _streamDemoSubscription!
-                                                        .cancel();
-                                                    _streamDemoSubscription =
-                                                        null;
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      '/BindUser',
-                                                      arguments: {
-                                                        "sourceuser": user,
-                                                        "bindtype": "微信",
-                                                      },
-                                                    ).then((value) {
-                                                      if (mounted) {
-                                                        setState(() {});
-                                                      }
-                                                    });
-                                                  }
+                                                  });
                                                 }
                                               }
                                             }
-                                          });
-                                    }
+                                          }
+                                        });
                                     await sendWeChatAuth(
                                       scope: "snsapi_userinfo",
                                       state: "wechat_sdk_demo_test",
@@ -349,8 +344,7 @@ class _MyUserIdEditState extends State<MyUserId> {
                                             AppleIDAuthorizationScopes.fullName,
                                           ],
                                         );
-                                    if (credential != null &&
-                                        credential.identityToken != null) {
+                                    if (credential.identityToken != null) {
                                       User? user = await _userService.updateIos(
                                         Global.profile.user!.uid,
                                         Global.profile.user!.token!,
@@ -561,7 +555,7 @@ class _MyUserIdEditState extends State<MyUserId> {
   }
 
   Future<void> _telCustomerCare(String vcode) async {
-    String timeline_id = "";
+    String timelineId = "";
     //获取客服
     int customuid = 0;
     int uid = Global.profile.user!.uid;
@@ -576,17 +570,17 @@ class _MyUserIdEditState extends State<MyUserId> {
     }
 
     if (uid > customuid) {
-      timeline_id = customuid.toString() + uid.toString();
+      timelineId = customuid.toString() + uid.toString();
     } else {
-      timeline_id = uid.toString() + customuid.toString();
+      timelineId = uid.toString() + customuid.toString();
     }
     GroupRelation? groupRelation = await _imhelper.getGroupRelationByGroupid(
       uid,
-      timeline_id,
+      timelineId,
     );
     if (groupRelation == null) {
       groupRelation = await _userService.joinSingleCustomer(
-        timeline_id,
+        timelineId,
         uid,
         customuid,
         Global.profile.user!.token!,
@@ -613,7 +607,7 @@ class _MyUserIdEditState extends State<MyUserId> {
       }
       if (ret > 0) {
         Navigator.pushNamed(
-          this.context,
+          context,
           '/MyMessage',
           arguments: {"GroupRelation": groupRelation},
         );
@@ -622,7 +616,7 @@ class _MyUserIdEditState extends State<MyUserId> {
   }
 
   //滑动拼图
-  loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
+  void loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
     showDialog<Null>(
       context: this.context,
       barrierDismissible: barrierDismissible,
@@ -637,7 +631,7 @@ class _MyUserIdEditState extends State<MyUserId> {
     );
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }
@@ -646,13 +640,13 @@ class PassWordSetDialog extends Dialog {
   String _password1 = "";
   String _password2 = "";
 
-  PassWordSetDialog({Key? key}) : super(key: key);
+  PassWordSetDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: new Material(
+      child: Material(
         type: MaterialType.transparency,
         child: Center(
           child: Container(

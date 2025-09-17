@@ -2,6 +2,8 @@
 /// [Author] Alex (https://github.com/AlexV525)
 /// [Date] 2020/8/19 10:36
 ///
+library;
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,14 +12,14 @@ import 'package:flutter/material.dart';
 /// Progress Indicator. Used in loading data.
 class PlatformProgressIndicator extends StatelessWidget {
   const PlatformProgressIndicator({
-    Key? key,
+    super.key,
     this.strokeWidth = 4.0,
     this.radius = 10.0,
     this.size = 48.0,
     this.color,
     this.value,
     this.brightness,
-  }) : super(key: key);
+  });
 
   final double strokeWidth;
   final double radius;
@@ -41,8 +43,9 @@ class PlatformProgressIndicator extends StatelessWidget {
             )
           : CircularProgressIndicator(
               strokeWidth: strokeWidth,
-              valueColor:
-                  color != null ? AlwaysStoppedAnimation<Color>(color!) : null,
+              valueColor: color != null
+                  ? AlwaysStoppedAnimation<Color>(color!)
+                  : null,
               value: value,
             ),
     );

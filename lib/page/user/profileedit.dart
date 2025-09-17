@@ -23,14 +23,15 @@ import '../../widget/interest.dart';
 import '../../widget/photo/playrecorder.dart';
 import '../../global.dart';
 
-
 class MyProfileEdit extends StatefulWidget {
+  const MyProfileEdit({super.key});
+
   @override
   _MyProfileEditState createState() => _MyProfileEditState();
 }
 
 class _MyProfileEditState extends State<MyProfileEdit> {
-  AliyunService _aliyunService = new AliyunService();
+  final AliyunService _aliyunService = AliyunService();
   late User user;
   late AuthenticationBloc _bloc;
   double fontsize = 15;
@@ -55,283 +56,378 @@ class _MyProfileEditState extends State<MyProfileEdit> {
         }
       },
       child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-          buildWhen: (previousState, state) {
-            if(state is AuthenticationAuthenticated) {
-              return true;
-            }
-            else
-              return false;
-          },
-          builder: (context, state) {
-            interest = [];
-            user = Global.profile.user!;
-            if(user.interest != null && user.interest != ""){
-              user.interest!.split(',').forEach((element) {
-                interest.add(element);
-              });
-            }
-            return Scaffold(
-              appBar: AppBar(
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
-                  onPressed: (){
-                    Navigator.pop(context);
-                  },
-                ),
-                title: Text('资料编辑', style: TextStyle(color: Colors.black, fontSize: 16)),
-                centerTitle: true,
+        buildWhen: (previousState, state) {
+          if (state is AuthenticationAuthenticated) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        builder: (context, state) {
+          interest = [];
+          user = Global.profile.user!;
+          if (user.interest != null && user.interest != "") {
+            user.interest!.split(',').forEach((element) {
+              interest.add(element);
+            });
+          }
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              body: Container(
-                margin: EdgeInsets.only(top: 10, bottom: 20),
-                color: Colors.white,
-                child: ListView(
-                  children: <Widget>[
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          showDemoActionSheet(
-                            context: context,
-                            child: CupertinoActionSheet(
-                              //message: const Text('Please select the best mode from the options below.'),
-                              actions: <Widget>[
-                                CupertinoActionSheetAction(
-                                  child: const Text('拍照', style: TextStyle(color: Colors.grey),),
-                                  onPressed: () {
-                                    Navigator.pop(context, 'Camera');
-                                  },
+              title: Text(
+                '资料编辑',
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
+              centerTitle: true,
+            ),
+            body: Container(
+              margin: EdgeInsets.only(top: 10, bottom: 20),
+              color: Colors.white,
+              child: ListView(
+                children: <Widget>[
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        showDemoActionSheet(
+                          context: context,
+                          child: CupertinoActionSheet(
+                            //message: const Text('Please select the best mode from the options below.'),
+                            actions: <Widget>[
+                              CupertinoActionSheetAction(
+                                child: const Text(
+                                  '拍照',
+                                  style: TextStyle(color: Colors.grey),
                                 ),
-                                CupertinoActionSheetAction(
-                                  child: const Text('相册', style: TextStyle(color: Colors.grey)),
-                                  onPressed: () {
-                                    Navigator.pop(context, 'Gallery');
-                                  },
-                                ),
-                              ],
-                              cancelButton: CupertinoActionSheetAction(
-                                child: const Text('取消', style: TextStyle(color: Colors.grey)),
-                                isDefaultAction: true,
                                 onPressed: () {
-                                  Navigator.pop(context, 'Cancel');
+                                  Navigator.pop(context, 'Camera');
                                 },
                               ),
+                              CupertinoActionSheetAction(
+                                child: const Text(
+                                  '相册',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context, 'Gallery');
+                                },
+                              ),
+                            ],
+                            cancelButton: CupertinoActionSheetAction(
+                              isDefaultAction: true,
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },
+                              child: const Text(
+                                '取消',
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
-                          );
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("头像", style: TextStyle(fontSize: fontsize)),
-                              NoCacheClipRRectOhterHeadImage(imageUrl: user.profilepicture!, cir: 8, uid: user.uid,),
-                            ],
                           ),
+                        );
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("头像", style: TextStyle(fontSize: fontsize)),
+                            NoCacheClipRRectOhterHeadImage(
+                              imageUrl: user.profilepicture!,
+                              cir: 8,
+                              uid: user.uid,
+                            ),
+                          ],
                         ),
+                      ),
 
-                        trailing: Icon(Icons.keyboard_arrow_right),
-                      ),
-                    ),//头像
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          //类型等于1是修改昵称
-                          Navigator.pushNamed(context, '/NameAndSignature', arguments: {"type": "1","content": user.username}).then((onValue){
-                            if(onValue!=null && onValue != ""){
-                              user.username = onValue.toString();
-                              setState(() {
-
-                              });
-                            }
-                          });
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("昵称", style: TextStyle(fontSize: fontsize),),
-                              Text(user.username, style: TextStyle(color: Colors.black45, fontSize: contentfontsize),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //头像
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        //类型等于1是修改昵称
+                        Navigator.pushNamed(
+                          context,
+                          '/NameAndSignature',
+                          arguments: {"type": "1", "content": user.username},
+                        ).then((onValue) {
+                          if (onValue != null && onValue != "") {
+                            user.username = onValue.toString();
+                            setState(() {});
+                          }
+                        });
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("昵称", style: TextStyle(fontSize: fontsize)),
+                            Text(
+                              user.username,
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: contentfontsize,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//昵称
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.pushNamed(context, '/ListViewProvince', arguments:{"isPermanent":true}).then((dynamic value) async {
-                            if(value != null){
-                              String citycode = value["code"].toString();
-                              String provinceCode = value["provinceCode"].toString();
-                              _bloc.add(UpdateUserLocationPressed(user: user, province: provinceCode, city: citycode));
-                              setState(() {
-
-                              });
-                            }
-                          });
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("常住", style: TextStyle(fontSize: fontsize)),
-                              Text(user.city!=null && user.city!.isNotEmpty?CommonUtil.getCityName(user.province, user.city):'选择位置',
-                                style: TextStyle(color: Colors.black45, fontSize: contentfontsize),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //昵称
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/ListViewProvince',
+                          arguments: {"isPermanent": true},
+                        ).then((dynamic value) async {
+                          if (value != null) {
+                            String citycode = value["code"].toString();
+                            String provinceCode = value["provinceCode"]
+                                .toString();
+                            _bloc.add(
+                              UpdateUserLocationPressed(
+                                user: user,
+                                province: provinceCode,
+                                city: citycode,
+                              ),
+                            );
+                            setState(() {});
+                          }
+                        });
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("常住", style: TextStyle(fontSize: fontsize)),
+                            Text(
+                              user.city != null && user.city!.isNotEmpty
+                                  ? CommonUtil.getCityName(
+                                      user.province,
+                                      user.city,
+                                    )
+                                  : '选择位置',
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: contentfontsize,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//位置
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context){
-                                return GenderChooseDialog();
-                              }
-                          ).then((onValue) async {
-                            if(Global.profile.user!.sex != onValue && onValue != null){
-                              _bloc.add(UpdateUserSexPressed(user: Global.profile.user!, sex: onValue));
-                            }
-                          });
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("性别", style: TextStyle(fontSize: fontsize)),
-                              Text(user.sex == '1'?'男':(user.sex == '0' ? '女' : '保密'), style: TextStyle(color: Colors.black45, fontSize: contentfontsize),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //位置
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return GenderChooseDialog();
+                          },
+                        ).then((onValue) async {
+                          if (Global.profile.user!.sex != onValue &&
+                              onValue != null) {
+                            _bloc.add(
+                              UpdateUserSexPressed(
+                                user: Global.profile.user!,
+                                sex: onValue,
+                              ),
+                            );
+                          }
+                        });
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("性别", style: TextStyle(fontSize: fontsize)),
+                            Text(
+                              user.sex == '1'
+                                  ? '男'
+                                  : (user.sex == '0' ? '女' : '保密'),
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: contentfontsize,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//设置性别
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          showDefaultYearPicker(context);
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("生日", style: TextStyle(fontSize: fontsize)),
-                              Text(user.birthday !=null ? user.birthday! :"",
-                                style: TextStyle(color: Colors.black45, fontSize: contentfontsize),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //设置性别
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        showDefaultYearPicker(context);
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("生日", style: TextStyle(fontSize: fontsize)),
+                            Text(
+                              user.birthday != null ? user.birthday! : "",
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: contentfontsize,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//设置生日
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          //类型等于1是修改昵称,0修改个人简介
-                          Navigator.pushNamed(context, '/NameAndSignature', arguments: {"type": "0","content": user.signature}).then((onValue){
-                            if(onValue!=null && onValue != ""){
-                              user.signature = onValue.toString();
-                              setState(() {
-
-                              });
-                            }
-                          });
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("简介", style: TextStyle(fontSize: fontsize), ),
-                              Padding(padding: EdgeInsets.only(left: 30),),
-                              Expanded(child: Text(user.signature!=null?user.signature:"",
-                                  style: TextStyle(color: Colors.black45, fontSize: contentfontsize), textDirection: TextDirection.rtl,
-                                  overflow: TextOverflow.ellipsis),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //设置生日
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        //类型等于1是修改昵称,0修改个人简介
+                        Navigator.pushNamed(
+                          context,
+                          '/NameAndSignature',
+                          arguments: {"type": "0", "content": user.signature},
+                        ).then((onValue) {
+                          if (onValue != null && onValue != "") {
+                            user.signature = onValue.toString();
+                            setState(() {});
+                          }
+                        });
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("简介", style: TextStyle(fontSize: fontsize)),
+                            Padding(padding: EdgeInsets.only(left: 30)),
+                            Expanded(
+                              child: Text(
+                                user.signature ?? "",
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: contentfontsize,
+                                ),
+                                textDirection: TextDirection.rtl,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//设置个人简介//设置个人简介
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          showInterestSel();
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("喜欢", style: TextStyle(fontSize: fontsize)),
-                              Expanded(child: Text(user.interest!=null && user.interest!="" ? "  " +
-                                  CommonUtil.getInterest(user.interest!):"  ",
-                                style: TextStyle(color: Colors.black45, fontSize: contentfontsize),
-                                overflow: TextOverflow.ellipsis, textDirection: TextDirection.rtl,))
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //设置个人简介//设置个人简介
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        showInterestSel();
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("喜欢", style: TextStyle(fontSize: fontsize)),
+                            Expanded(
+                              child: Text(
+                                user.interest != null && user.interest != ""
+                                    ? "  ${CommonUtil.getInterest(user.interest!)}"
+                                    : "  ",
+                                style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: contentfontsize,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                textDirection: TextDirection.rtl,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//喜欢什么
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        onTap: (){
-                          showPlayRecorderView();
-                        },
-                        title: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("语音", style: TextStyle(fontSize: fontsize)),
-                              Text(user.voice!=null && user.voice != "" ? "已录音":"未录音", style: TextStyle(color: Colors.black45, fontSize: contentfontsize),)
-                            ],
-                          ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //喜欢什么
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () {
+                        showPlayRecorderView();
+                      },
+                      title: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("语音", style: TextStyle(fontSize: fontsize)),
+                            Text(
+                              user.voice != null && user.voice != ""
+                                  ? "已录音"
+                                  : "未录音",
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: contentfontsize,
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right),
                       ),
-                    ),//录音
-
-                  ],
-                ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                  ), //录音
+                ],
               ),
-            );
-          }
-    ),);
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void showDefaultYearPicker(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
-    if(user.birthday!= null && user.birthday!.isNotEmpty){
+    if (user.birthday != null && user.birthday!.isNotEmpty) {
       selectedDate = DateTime.parse(user.birthday!);
     }
-    DateTime? date = await showDatePicker(
-      context: context,
-      initialDate: selectedDate, // 初始日期
-      firstDate: DateTime(1900), //
-      lastDate: DateTime(2100),
-      locale: Locale('zh'),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
-      }
-    ).then((DateTime? val){
-      if(Global.profile.user!.birthday!=val.toString().substring(0, 10)){
-        _bloc.add(UpdateUserBirthdayPressed(user: user, birthday: val.toString().substring(0, 10)));
-      }
-    }).catchError((err) {
-      //print(err);
-    });
+    DateTime? date =
+        await showDatePicker(
+              context: context,
+              initialDate: selectedDate, // 初始日期
+              firstDate: DateTime(1900), //
+              lastDate: DateTime(2100),
+              locale: Locale('zh'),
+              builder: (BuildContext context, Widget? child) {
+                return Theme(data: ThemeData.dark(), child: child!);
+              },
+            )
+            .then((DateTime? val) {
+              if (Global.profile.user!.birthday !=
+                  val.toString().substring(0, 10)) {
+                _bloc.add(
+                  UpdateUserBirthdayPressed(
+                    user: user,
+                    birthday: val.toString().substring(0, 10),
+                  ),
+                );
+              }
+            })
+            .catchError((err) {
+              //print(err);
+            });
 
     if (date == null) {
       return;
@@ -342,7 +438,10 @@ class _MyProfileEditState extends State<MyProfileEdit> {
     });
   }
 
-  void showDemoActionSheet({required BuildContext context, required Widget child}) {
+  void showDemoActionSheet({
+    required BuildContext context,
+    required Widget child,
+  }) {
     File? imageFile;
     File? croppedFile;
     showCupertinoModalPopup<String>(
@@ -350,78 +449,87 @@ class _MyProfileEditState extends State<MyProfileEdit> {
       builder: (BuildContext context) => child,
     ).then((value) async {
       if (value != null) {
-        if(value == "Camera"){
+        if (value == "Camera") {
           XFile? image = await _picker.pickImage(source: ImageSource.camera);
           imageFile = File(image!.path);
-        }else if(value == "Gallery"){
+        } else if (value == "Gallery") {
           XFile? image;
-          if(Platform.isIOS ) {
+          if (Platform.isIOS) {
             image = await _picker.pickImage(source: ImageSource.gallery);
-            if(image != null) {
+            if (image != null) {
               imageFile = File(image.path);
             }
           }
 
-          if(Platform.isAndroid){
+          if (Platform.isAndroid) {
             List<AssetEntity>? resultList = await AssetPicker.pickAssets(
               context,
               maxAssets: 1,
               requestType: RequestType.image,
             );
 
-            if(resultList != null && resultList.length > 0){
-              imageFile = await (await resultList[0].file)!;
+            if (resultList != null && resultList.isNotEmpty) {
+              imageFile = (await resultList[0].file)!;
             }
           }
-        }
-        else{
+        } else {
           return;
         }
       }
-      if(imageFile != null){
+      if (imageFile != null) {
         croppedFile = await ImageCropper().cropImage(
-            maxWidth: 750,
-            maxHeight: 750,
-            compressQuality: 19,
-            sourcePath: imageFile!.path,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
-            androidUiSettings: AndroidUiSettings(
-                toolbarTitle: '裁剪',
-                toolbarColor: Colors.deepOrange,
-                toolbarWidgetColor: Colors.white,
-                initAspectRatio: CropAspectRatioPreset.original,
-                lockAspectRatio: true),
-            iosUiSettings: IOSUiSettings(
-                title: '裁剪',
-                minimumAspectRatio: 1.0,
-                aspectRatioLockEnabled: true
-            )
+          maxWidth: 750,
+          maxHeight: 750,
+          compressQuality: 19,
+          sourcePath: imageFile!.path,
+          aspectRatioPresets: [CropAspectRatioPreset.square],
+          androidUiSettings: AndroidUiSettings(
+            toolbarTitle: '裁剪',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: true,
+          ),
+          iosUiSettings: IOSUiSettings(
+            title: '裁剪',
+            minimumAspectRatio: 1.0,
+            aspectRatioLockEnabled: true,
+          ),
         );
-        if (croppedFile !=null) {
+        if (croppedFile != null) {
           String ossimagpath = "";
           String serverossimg = "";
           //转成png格式
-          final Directory _directory = await getTemporaryDirectory();
-          final Directory _imageDirectory =
-              await new Directory('${_directory.path}/profilepicture/images/')
-              .create(recursive: true);
-          String _path = _imageDirectory.path;
+          final Directory directory = await getTemporaryDirectory();
+          final Directory imageDirectory = await Directory(
+            '${directory.path}/profilepicture/images/',
+          ).create(recursive: true);
+          String path = imageDirectory.path;
           Uint8List imageData = await croppedFile!.readAsBytes();
           String md5name = user.uid.toString();
-          File imageFile = new File('${_path}originalImage_$md5name.png')
+          File imageFile = File('${path}originalImage_$md5name.png')
             ..writeAsBytesSync(imageData);
 
           //上传图片到oss
-          SecurityToken? securityToken = await _aliyunService.getUserProfileSecurityToken(user.token!,  user.uid);
-          if(securityToken != null) {
+          SecurityToken? securityToken = await _aliyunService
+              .getUserProfileSecurityToken(user.token!, user.uid);
+          if (securityToken != null) {
             serverossimg = await _aliyunService.uploadImage(
-                securityToken, imageFile.path, '${md5name}.png', user.uid);
-            ossimagpath = securityToken.host + '/' + serverossimg;
+              securityToken,
+              imageFile.path,
+              '$md5name.png',
+              user.uid,
+            );
+            ossimagpath = '${securityToken.host}/$serverossimg';
           }
-          if(ossimagpath.isNotEmpty){
-            _bloc.add(UpdateImagePressed(user: user, imgpath: ossimagpath, serverimgpath: serverossimg));
+          if (ossimagpath.isNotEmpty) {
+            _bloc.add(
+              UpdateImagePressed(
+                user: user,
+                imgpath: ossimagpath,
+                serverimgpath: serverossimg,
+              ),
+            );
           }
         }
       }
@@ -431,165 +539,194 @@ class _MyProfileEditState extends State<MyProfileEdit> {
   Future<void> showInterestSel() async {
     interest = [];
     user = Global.profile.user!;
-    if(user.interest != null && user.interest != ""){
+    if (user.interest != null && user.interest != "") {
       user.interest!.split(',').forEach((element) {
         interest.add(element);
       });
     }
     showModalBottomSheet<String>(
-        context: context,
-        builder: (BuildContext context) =>
-            StatefulBuilder( // 嵌套一个StatefulBuilder 部件
-                builder: (context, setState) => InterestSel(this.interest)
-            )).then((value)  {
-              if(value != null ){
-                setState(() {
-                  user.interest = value;
-                });
-              }
+      context: context,
+      builder: (BuildContext context) => StatefulBuilder(
+        // 嵌套一个StatefulBuilder 部件
+        builder: (context, setState) => InterestSel(interest),
+      ),
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          user.interest = value;
+        });
+      }
     });
   }
 
   Future<void> showPlayRecorderView() async {
     showModalBottomSheet<String>(
-        context: context,
-        builder: (BuildContext context) =>
-            StatefulBuilder( // 嵌套一个StatefulBuilder 部件
-                builder: (context, setState) => PlayRecorder()
-            )).then((value)  async {
-      if(value != null && value != ""){
-        UserService userService = new UserService();
-        bool ret = await userService.updateVoice(Global.profile.user!.token!, Global.profile.user!.uid
-            , value, (String statusCode, String msg){
-              ShowMessage.showToast(msg);
-            });
-        if(ret) {
+      context: context,
+      builder: (BuildContext context) => StatefulBuilder(
+        // 嵌套一个StatefulBuilder 部件
+        builder: (context, setState) => PlayRecorder(),
+      ),
+    ).then((value) async {
+      if (value != null && value != "") {
+        UserService userService = UserService();
+        bool ret = await userService.updateVoice(
+          Global.profile.user!.token!,
+          Global.profile.user!.uid,
+          value,
+          (String statusCode, String msg) {
+            ShowMessage.showToast(msg);
+          },
+        );
+        if (ret) {
           Global.profile.user!.voice = value;
           Global.saveProfile();
         }
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
 }
 
-
 //性别选择
 class GenderChooseDialog extends Dialog {
-  GenderChooseDialog({
-    Key? key,
-  }) : super(key: key);
+  const GenderChooseDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: new Material(
-            type: MaterialType.transparency,
-            child: new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              decoration: ShapeDecoration(
+                color: Color(0xFFFFFFFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+              ),
+              margin: const EdgeInsets.all(12.0),
+              child: Column(
                 children: <Widget>[
-                  new Container(
-                      decoration: ShapeDecoration(
-                          color: Color(0xFFFFFFFF),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ))),
-                      margin: const EdgeInsets.all(12.0),
-                      child: new Column(children: <Widget>[
-                        new Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                10.0, 10.0, 10.0, 10.0),
-                            child: Center(
-                                child: new Text('性别选择',
-                                    style: new TextStyle(
-                                      fontSize: 20.0, color: Colors.black
-                                    )))),
-                        MyDivider(),
-                        new Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              _genderChooseItemMan(context),
-                              _genderChooseItemGirl(context),
-                            ]),
-                        MyDivider(),
-                        new Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                5.0, 5.0, 5.0, 10.0),
-                            child: Center(
-                                child: new Text('',
-                                    style: new TextStyle(
-                                        fontSize: 20.0, color: Colors.black
-                                    )))),
-
-                      ]))
-                ])));
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                    child: Center(
+                      child: Text(
+                        '性别选择',
+                        style: TextStyle(fontSize: 20.0, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                  MyDivider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _genderChooseItemMan(context),
+                      _genderChooseItemGirl(context),
+                    ],
+                  ),
+                  MyDivider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 10.0),
+                    child: Center(
+                      child: Text(
+                        '',
+                        style: TextStyle(fontSize: 20.0, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _genderChooseItemMan(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          Navigator.of(context).pop('1');
-        },
-        child: Column(children: <Widget>[
-          Container(
+      onTap: () {
+        Navigator.of(context).pop('1');
+      },
+      child: Column(
+        children: <Widget>[
+          SizedBox(
             width: 70,
             height: 70,
             child: Center(
-              child: Icon(IconFont.icon_nan,size: 50, color:  Colors.blue,) )
+              child: Icon(IconFont.icon_nan, size: 50, color: Colors.blue),
+            ),
           ),
           Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text('男',style: TextStyle(
-                  color:  Colors.blue,
-                  fontSize: 20.0))),
-        ]));
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+            child: Text(
+              '男',
+              style: TextStyle(color: Colors.blue, fontSize: 20.0),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _genderChooseItemGirl(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          Navigator.of(context).pop('0');
-        },
-        child: Column(children: <Widget>[
-          Container(
+      onTap: () {
+        Navigator.of(context).pop('0');
+      },
+      child: Column(
+        children: <Widget>[
+          SizedBox(
             width: 70,
             height: 70,
             child: Center(
-              child: Icon(IconFont.icon_nv, size: 50,
-                color:  Colors.pinkAccent,),)
-              ,),
+              child: Icon(IconFont.icon_nv, size: 50, color: Colors.pinkAccent),
+            ),
+          ),
           Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text('女',style: TextStyle(
-                  color:  Colors.pinkAccent,
-                  fontSize: 20.0))),
-        ]));
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+            child: Text(
+              '女',
+              style: TextStyle(color: Colors.pinkAccent, fontSize: 20.0),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _genderChooseItemWeiZhi(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          Navigator.of(context).pop('2');
-        },
-        child: Column(children: <Widget>[
-          Container(
+      onTap: () {
+        Navigator.of(context).pop('2');
+      },
+      child: Column(
+        children: <Widget>[
+          SizedBox(
             width: 70,
             height: 70,
             child: Center(
-              child: Icon(IconFont.icon_tianqi_weizhi, size: 50,
-                color:  Colors.grey,),),),
+              child: Icon(
+                IconFont.icon_tianqi_weizhi,
+                size: 50,
+                color: Colors.grey,
+              ),
+            ),
+          ),
           Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text('保密',style: TextStyle(
-                  color:  Colors.grey,
-                  fontSize: 20.0))),
-        ]));
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+            child: Text(
+              '保密',
+              style: TextStyle(color: Colors.grey, fontSize: 20.0),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
-

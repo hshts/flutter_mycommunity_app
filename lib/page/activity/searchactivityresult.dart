@@ -15,7 +15,7 @@ import '../../service/activity.dart';
 class SearchActivityResultPage extends StatefulWidget {
   Object? arguments;
   String content = "";
-  SearchActivityResultPage({this.arguments}) {
+  SearchActivityResultPage({super.key, this.arguments}) {
     if (arguments != null) {
       content = (arguments as Map)["content"];
     }
@@ -27,23 +27,23 @@ class SearchActivityResultPage extends StatefulWidget {
 }
 
 class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
-  final ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
   late TextEditingController _textEditingController;
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
-  final ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   SearchBarStyle searchBarStyle = const SearchBarStyle();
   Icon icon = const Icon(Icons.search, size: 20, color: Colors.black87);
   String ordertype = "time";
   String citycode = Global.profile.locationCode;
   bool isAllCity = false;
   bool _ismore = true;
-  var _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   double _activityContentHeight = 1.0; //瀑布组件高度
   double _leftHeight = 0; //左边列的高度
   double _rigthHeight = 0; //右边列的高度
-  double _contentText = 99; //图片下面的文字描述与间距
+  final double _contentText = 99; //图片下面的文字描述与间距
   double _pageWidth = 0;
   List<Activity> activitys = [];
 
@@ -70,7 +70,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
         ),
       ),
     );
-    if (citycode == null || citycode.isEmpty) citycode = "allCode";
+    if (citycode.isEmpty) citycode = "allCode";
     _imHelper.saveSearchHistory(0, widget.content);
   }
 
@@ -111,11 +111,11 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
       errorCallBack,
     );
 
-    if (moredata.length > 0) activitys = activitys + moredata;
+    if (moredata.isNotEmpty) activitys = activitys + moredata;
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -137,7 +137,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
         leadingWidth: 0,
         title: Padding(
           padding: EdgeInsets.only(right: 10, top: 10),
-          child: Container(
+          child: SizedBox(
             height: 46,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -238,13 +238,13 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
               );
             }
             print(mode);
-            return Container(height: 55.0, child: Center(child: body));
+            return SizedBox(height: 55.0, child: Center(child: body));
           },
         ),
         controller: _refreshController,
         onLoading: _onLoading,
         child:
-            activitys.length == 0 &&
+            activitys.isEmpty &&
                 _refreshController.headerStatus == RefreshStatus.completed
             ? widgetMessage
             : ListView(addAutomaticKeepAlives: true, children: buildContent()),
@@ -256,7 +256,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
   List<Widget> buildContent() {
     List<Widget> contents = [];
 
-    if (activitys != null && activitys.length != 0) {
+    if (activitys.isNotEmpty) {
       contents.add(indexPageView(activitys));
     }
     return contents;
@@ -264,7 +264,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
 
   Widget indexPageView(List<Activity> activitys) {
     _getContentHeight(activitys);
-    return Container(
+    return SizedBox(
       height: _activityContentHeight,
       child: activityContent(activitys),
     );
@@ -296,8 +296,9 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
       double ratio = width / height; //宽高比
       retheight = (_pageWidth) / ratio;
       if (retheight > 200) retheight = 200;
-    } else
+    } else {
       retheight = 0;
+    }
     return retheight; //图片缩放高度
   }
 
@@ -363,16 +364,15 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
             Global.profile.user!.uid,
           );
           List<Activity> emptyList = [];
-          temActivitys.forEach((e) {
+          for (var e in temActivitys) {
             emptyList.add(e);
-          });
+          }
 
-          emptyList.forEach((e) {
-            if (notinteresteduids != null &&
-                notinteresteduids.contains(e.user!.uid)) {
+          for (var e in emptyList) {
+            if (notinteresteduids.contains(e.user!.uid)) {
               temActivitys.remove(e);
             }
-          });
+          }
 
           setState(() {});
         }
@@ -398,6 +398,13 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
             Container(
               width: _pageWidth,
               height: getImageWH(activity),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5),
+                  topRight: Radius.circular(5),
+                ),
+              ),
               child: activity.coverimg == ""
                   ? SizedBox.shrink()
                   : ClipRRect(
@@ -411,13 +418,6 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
-              ),
             ),
             Container(
               height: 42,
@@ -500,7 +500,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
     );
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }

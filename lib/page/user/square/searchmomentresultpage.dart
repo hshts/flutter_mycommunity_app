@@ -13,7 +13,7 @@ import 'momentwidget.dart';
 class SearchMomentResultPage extends StatefulWidget {
   Object? arguments;
   String content = "";
-  SearchMomentResultPage({this.arguments}) {
+  SearchMomentResultPage({super.key, this.arguments}) {
     content = (arguments as Map)["content"];
   }
 
@@ -23,10 +23,10 @@ class SearchMomentResultPage extends StatefulWidget {
 
 class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
   SearchBarStyle searchBarStyle = const SearchBarStyle();
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
-  ImService _imService = ImService();
+  final ImService _imService = ImService();
   Icon icon = const Icon(Icons.search, size: 20, color: Colors.grey);
   List<String> keys = [];
   int sortIndex = 0; //如果等于1 则进行点赞排序
@@ -34,13 +34,13 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
   String citycode = Global.profile.locationGoodPriceCode;
   bool isAllCity = false;
   double cityDropHeight = 0.0;
-  ScrollController _scrollControllerContent = new ScrollController(
+  final ScrollController _scrollControllerContent = ScrollController(
     initialScrollOffset: 0,
   );
   late TextEditingController _textEditingController;
   int selected = -1;
   bool isgotogoodprice = false;
-  final ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   List<Moment> moments = [];
   bool _ismore = true;
   Widget widgetMessage = Center(
@@ -75,7 +75,7 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
         Global.profile.user!.uid,
         2,
         (List<String> actid) {
-          if (actid.length > 0) moments[i].islike = true;
+          if (actid.isNotEmpty) moments[i].islike = true;
         },
       );
     }
@@ -90,12 +90,12 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
       errorCallBack,
     );
 
-    if (moredata.length > 0) {
+    if (moredata.isNotEmpty) {
       moments = moments + moredata;
     }
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -103,7 +103,7 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
     if (mounted) setState(() {});
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 
@@ -122,10 +122,10 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
         ),
       ),
     );
-    if (citycode == null || citycode.isEmpty) citycode = "allCode";
+    if (citycode.isEmpty) citycode = "allCode";
 
-    ImHelper _imHelper = ImHelper();
-    _imHelper.saveSearchHistory(0, widget.content);
+    ImHelper imHelper = ImHelper();
+    imHelper.saveSearchHistory(0, widget.content);
   }
 
   @override
@@ -148,7 +148,7 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
         leadingWidth: 0,
         title: Padding(
           padding: EdgeInsets.only(right: 10, top: 10),
-          child: Container(
+          child: SizedBox(
             height: 46,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -249,13 +249,13 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
               );
             }
             print(mode);
-            return Container(height: 55.0, child: Center(child: body));
+            return SizedBox(height: 55.0, child: Center(child: body));
           },
         ),
         controller: _refreshController,
         onLoading: _onLoading,
         child:
-            moments.length == 0 &&
+            moments.isEmpty &&
                 _refreshController.headerStatus == RefreshStatus.completed
             ? widgetMessage
             : ListView(
@@ -269,8 +269,8 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
 
   List<Widget> buildProductContent() {
     List<Widget> lists = [];
-    moments.forEach((element) {
-      if (_notinteresteduids != null && _notinteresteduids.length > 0) {
+    for (var element in moments) {
+      if (_notinteresteduids.isNotEmpty) {
         if (!_notinteresteduids.contains(element.user!.uid)) {
           lists.add(
             Padding(
@@ -287,7 +287,7 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
           ),
         );
       }
-    });
+    }
 
     return lists;
   }
@@ -295,11 +295,12 @@ class _SearchMomentResultPageState extends State<SearchMomentResultPage> {
 
 class InputSelect1 extends StatelessWidget {
   const InputSelect1({
+    super.key,
     required this.index,
     required this.widget,
     required this.parent,
     required this.choice,
-  }) : super();
+  });
 
   @override
   Widget build(BuildContext context) {

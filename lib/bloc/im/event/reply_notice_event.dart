@@ -17,30 +17,29 @@ abstract class ReplyNoticeEvent extends Equatable {
 class getUserCommentReplyNotice extends ReplyNoticeEvent {
   int id;
   UserNotice? userNotice;
-  getUserCommentReplyNotice(User user, this.id, {this.userNotice})
-    : super(user);
+  getUserCommentReplyNotice(super.user, this.id, {this.userNotice});
 }
 
 class OrderExpiration extends ReplyNoticeEvent {
-  OrderExpiration(User user) : super(user);
+  const OrderExpiration(super.user);
 }
 
 //获取本地用户回复列表
 class getlocalNotice extends ReplyNoticeEvent {
-  getlocalNotice(User user) : super(user);
+  const getlocalNotice(super.user);
 }
 
 //获取本地系统通知列表
 class getlocalSysNotice extends ReplyNoticeEvent {
-  getlocalSysNotice(User user) : super(user);
+  const getlocalSysNotice(super.user);
 }
 
 //初始化状态
 class initStateNoticeAndReply extends ReplyNoticeEvent {
-  initStateNoticeAndReply(User user) : super(user);
+  const initStateNoticeAndReply(super.user);
 }
 
 class readed extends ReplyNoticeEvent {
   final ReplyMsgType? replyMsgType;
-  readed(User user, {this.replyMsgType}) : super(user);
+  const readed(super.user, {this.replyMsgType});
 }

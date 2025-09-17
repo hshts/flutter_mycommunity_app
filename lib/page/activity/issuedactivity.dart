@@ -37,7 +37,7 @@ class IssuedActivity extends StatefulWidget {
   String goodpriceid = "";
   Object? arguments;
 
-  IssuedActivity({required this.arguments}) {
+  IssuedActivity({super.key, required this.arguments}) {
     if (arguments != null) {
       mincost = (arguments as Map)["mincost"];
       maxcost = (arguments as Map)["maxcost"];
@@ -59,14 +59,14 @@ class IssuedActivity extends StatefulWidget {
 }
 
 class _IssuedActivityState extends State<IssuedActivity> {
-  TextEditingController _textContentController = new TextEditingController();
+  final TextEditingController _textContentController = TextEditingController();
 
   late User _user;
-  AliyunService _aliyunService = new AliyunService();
+  final AliyunService _aliyunService = AliyunService();
 
   bool _isButtonEnable = true;
   List<AssetEntity> _images = [];
-  int _imageMax = 4; //最多上传4张图
+  final int _imageMax = 4; //最多上传4张图
   String _provinceCode = "allCode"; //默认是全国的拼玩活动
   String _city = "allCode";
   int _startyear = 0;
@@ -79,15 +79,15 @@ class _IssuedActivityState extends State<IssuedActivity> {
   double _lat = 0; //活动位置
   double _lng = 0; //活动位置
   int oldImageCount = 0; //旧的图片数量
-  ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
   SecurityToken? _securityToken;
-  List<String> _imagesUrl = [];
-  List<String> _imagesWH = []; //图片的分辨率
-  FocusNode _contentfocusNode = FocusNode();
-  List<String> _oldImagesUrl = [];
-  int _paytype = 0;
+  final List<String> _imagesUrl = [];
+  final List<String> _imagesWH = []; //图片的分辨率
+  final FocusNode _contentfocusNode = FocusNode();
+  final List<String> _oldImagesUrl = [];
+  final int _paytype = 0;
   StreamSubscription<Map<String, Object>>? _locationListener;
-  AMapFlutterLocation _locationPlugin = new AMapFlutterLocation();
+  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
   late Map<String, Object> _locationResult;
 
   @override
@@ -101,9 +101,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
     }
 
     ///销毁定位
-    if (null != _locationPlugin) {
-      _locationPlugin.destroy();
-    }
+    _locationPlugin.destroy();
     super.dispose();
   }
 
@@ -126,7 +124,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
     }
   }
 
-  requestPermission() async {
+  Future<void> requestPermission() async {
     // 申请权限
     bool hasLocationPermission = await requestLocationPermission();
     if (hasLocationPermission) {
@@ -141,35 +139,23 @@ class _IssuedActivityState extends State<IssuedActivity> {
     _user = Global.profile.user!;
     super.initState();
 
-    if (widget.provinceCode != null) {
-      _provinceCode = widget.provinceCode;
-    }
-    if (widget.city != null) {
-      _city = widget.city;
-    }
-    if (widget.address != null) {
-      _address = widget.address;
-    }
-    if (widget.addresstitle != null) {
-      _addresstitle = widget.addresstitle;
-    }
-    if (widget.lat != null) {
-      _lat = widget.lat;
-    }
-    if (widget.lng != null) {
-      _lng = widget.lng;
-    }
+    _provinceCode = widget.provinceCode;
+    _city = widget.city;
+    _address = widget.address;
+    _addresstitle = widget.addresstitle;
+    _lat = widget.lat;
+    _lng = widget.lng;
 
-    if (widget.actimagespath != null && widget.actimagespath.isNotEmpty) {
+    if (widget.actimagespath.isNotEmpty) {
       List<String> oldImages = widget.actimagespath.split(',');
       oldImageCount = oldImages.length;
-      oldImages.forEach((element) {
+      for (var element in oldImages) {
         Uri u = Uri.parse(element);
         String tem = u.path.substring(1, u.path.length);
         _imagesUrl.add(tem);
         _imagesWH.add("300, 300"); //优惠拼玩没有大小
         _oldImagesUrl.add(element);
-      });
+      }
     }
   }
 
@@ -198,9 +184,10 @@ class _IssuedActivityState extends State<IssuedActivity> {
         ),
         centerTitle: true,
       ),
-      body: new MyLoadingProgress(
+      body: MyLoadingProgress(
         loading: _loading,
         isNetError: false,
+        msg: '发布中',
         child: Container(
           decoration: BoxDecoration(color: Colors.white),
           child: ListView(
@@ -216,7 +203,6 @@ class _IssuedActivityState extends State<IssuedActivity> {
             ],
           ),
         ),
-        msg: '发布中',
       ),
       bottomNavigationBar: buildIssuedButton(context),
     );
@@ -242,57 +228,54 @@ class _IssuedActivityState extends State<IssuedActivity> {
               ) {
                 setState(() {
                   _locationResult = result;
-                  if (_locationResult != null) {
-                    if (result["longitude"] != "" && result["adCode"] != "") {
-                      Global.profile.lat = double.parse(
-                        result["latitude"].toString(),
-                      );
-                      Global.profile.lng = double.parse(
-                        result["longitude"].toString(),
-                      );
+                  if (result["longitude"] != "" && result["adCode"] != "") {
+                    Global.profile.lat = double.parse(
+                      result["latitude"].toString(),
+                    );
+                    Global.profile.lng = double.parse(
+                      result["longitude"].toString(),
+                    );
 
-                      Global.profile.locationCode =
+                    Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(
+                      result["adCode"].toString(),
+                    );
+                    Global.profile.locationName = result["city"].toString();
+
+                    if (Global.profile.locationGoodPriceCode == null ||
+                        Global.profile.locationGoodPriceCode == "") {
+                      Global.profile.locationGoodPriceCode =
                           CommonUtil.getCityNameByGaoDe(
                             result["adCode"].toString(),
                           );
-                      Global.profile.locationName = result["city"].toString();
-
-                      if (Global.profile.locationGoodPriceCode == null ||
-                          Global.profile.locationGoodPriceCode == "") {
-                        Global.profile.locationGoodPriceCode =
-                            CommonUtil.getCityNameByGaoDe(
-                              result["adCode"].toString(),
-                            );
-                        Global.profile.locationGoodPriceName = result["city"]
-                            .toString();
-                      }
-
-                      Global.saveProfile();
-
-                      Navigator.pushNamed(
-                        context,
-                        '/MapLocationPicker',
-                        arguments: {
-                          "lat": Global.profile.lat,
-                          "lng": Global.profile.lng,
-                          "citycode": Global.profile.locationCode,
-                          "isMapImage": false,
-                        },
-                      ).then((dynamic value) {
-                        if (value != null) {
-                          setState(() {
-                            _addresstitle = value["title"];
-                            _address = value["address"];
-                            _city = CommonUtil.getCityNameByGaoDe(
-                              value["adCode"],
-                            );
-                            _provinceCode = value["provinceCode"];
-                            _lat = value["latitude"];
-                            _lng = value["longitude"];
-                          });
-                        }
-                      });
+                      Global.profile.locationGoodPriceName = result["city"]
+                          .toString();
                     }
+
+                    Global.saveProfile();
+
+                    Navigator.pushNamed(
+                      context,
+                      '/MapLocationPicker',
+                      arguments: {
+                        "lat": Global.profile.lat,
+                        "lng": Global.profile.lng,
+                        "citycode": Global.profile.locationCode,
+                        "isMapImage": false,
+                      },
+                    ).then((dynamic value) {
+                      if (value != null) {
+                        setState(() {
+                          _addresstitle = value["title"];
+                          _address = value["address"];
+                          _city = CommonUtil.getCityNameByGaoDe(
+                            value["adCode"],
+                          );
+                          _provinceCode = value["provinceCode"];
+                          _lat = value["latitude"];
+                          _lng = value["longitude"];
+                        });
+                      }
+                    });
                   }
                 });
               });
@@ -309,9 +292,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
               SizedBox(width: 15),
               Expanded(
                 child: Text(
-                  (_addresstitle != null && _addresstitle.isNotEmpty)
-                      ? _addresstitle
-                      : '默认商家所在位置',
+                  (_addresstitle.isNotEmpty) ? _addresstitle : '默认商家所在位置',
                   style: TextStyle(color: Colors.black45, fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                   textDirection: TextDirection.rtl,
@@ -326,60 +307,56 @@ class _IssuedActivityState extends State<IssuedActivity> {
   }
 
   void _setLocationOption() {
-    if (null != _locationPlugin) {
-      AMapLocationOption locationOption = new AMapLocationOption();
+    AMapLocationOption locationOption = new AMapLocationOption();
 
-      ///是否单次定位
-      locationOption.onceLocation = true;
+    ///是否单次定位
+    locationOption.onceLocation = true;
 
-      ///是否需要返回逆地理信息
-      locationOption.needAddress = true;
+    ///是否需要返回逆地理信息
+    locationOption.needAddress = true;
 
-      ///逆地理信息的语言类型
-      locationOption.geoLanguage = GeoLanguage.DEFAULT;
+    ///逆地理信息的语言类型
+    locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-      locationOption.desiredLocationAccuracyAuthorizationMode =
-          AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+    locationOption.desiredLocationAccuracyAuthorizationMode =
+        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-      locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-      ///设置Android端连续定位的定位间隔
-      locationOption.locationInterval = 2000;
+    ///设置Android端连续定位的定位间隔
+    locationOption.locationInterval = 2000;
 
-      ///设置Android端的定位模式<br>
-      ///可选值：<br>
-      ///<li>[AMapLocationMode.Battery_Saving]</li>
-      ///<li>[AMapLocationMode.Device_Sensors]</li>
-      ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-      locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+    ///设置Android端的定位模式<br>
+    ///可选值：<br>
+    ///<li>[AMapLocationMode.Battery_Saving]</li>
+    ///<li>[AMapLocationMode.Device_Sensors]</li>
+    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-      ///设置iOS端的定位最小更新距离<br>
-      locationOption.distanceFilter = -1;
+    ///设置iOS端的定位最小更新距离<br>
+    locationOption.distanceFilter = -1;
 
-      ///设置iOS端期望的定位精度
-      /// 可选值：<br>
-      /// <li>[DesiredAccuracy.Best] 最高精度</li>
-      /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-      /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-      /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-      /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-      locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+    ///设置iOS端期望的定位精度
+    /// 可选值：<br>
+    /// <li>[DesiredAccuracy.Best] 最高精度</li>
+    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-      ///设置iOS端是否允许系统暂停定位
-      locationOption.pausesLocationUpdatesAutomatically = false;
+    ///设置iOS端是否允许系统暂停定位
+    locationOption.pausesLocationUpdatesAutomatically = false;
 
-      ///将定位参数设置给定位插件
-      _locationPlugin.setLocationOption(locationOption);
-    }
+    ///将定位参数设置给定位插件
+    _locationPlugin.setLocationOption(locationOption);
   }
 
   ///开始定位
   void _startLocation() {
-    if (null != _locationPlugin) {
-      ///开始定位之前设置定位参数
-      _setLocationOption();
-      _locationPlugin.startLocation();
-    }
+    ///开始定位之前设置定位参数
+    _setLocationOption();
+    _locationPlugin.startLocation();
   }
 
   ListTile buildAge() {
@@ -447,20 +424,20 @@ class _IssuedActivityState extends State<IssuedActivity> {
           Checkbox(
             checkColor: Global.profile.backColor,
             activeColor: Global.profile.backColor,
-            fillColor: MaterialStateProperty.resolveWith((
-              Set<MaterialState> states,
+            fillColor: WidgetStateProperty.resolveWith((
+              Set<WidgetState> states,
             ) {
               // 最终返回
               return Colors.white;
             }),
-            value: this._ispublic,
+            value: _ispublic,
             onChanged: null,
           ),
         ],
       ),
       onTap: () {
         setState(() {
-          this._ispublic = !this._ispublic;
+          _ispublic = !_ispublic;
         });
       },
     );
@@ -499,6 +476,10 @@ class _IssuedActivityState extends State<IssuedActivity> {
       (index) {
         if (index == (_images.length + oldImageCount) && index < _imageMax) {
           return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            ),
             child: Center(
               child: IconButton(
                 alignment: Alignment.center,
@@ -513,10 +494,6 @@ class _IssuedActivityState extends State<IssuedActivity> {
                 },
               ),
             ),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.all(new Radius.circular(5.0)),
-            ),
           );
         } else if (index == _imageMax) {
           return Container();
@@ -530,13 +507,13 @@ class _IssuedActivityState extends State<IssuedActivity> {
             );
           } else {
             tem = ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
               child: ExtendedImage(
                 image: AssetEntityImageProvider(_images[index - oldImageCount]),
                 width: 300,
                 height: 300,
                 fit: BoxFit.fill,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(5)),
             );
           }
           return Stack(
@@ -545,7 +522,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
               Positioned(
                 right: 0.08,
                 top: 0.08,
-                child: new GestureDetector(
+                child: GestureDetector(
                   onTap: () {
                     if (index >= oldImageCount) {
                       _images.removeAt(index - oldImageCount);
@@ -559,16 +536,12 @@ class _IssuedActivityState extends State<IssuedActivity> {
                     if (index == _coverimgIndex) _coverimgIndex = 0;
                     setState(() {});
                   },
-                  child: new Container(
-                    decoration: new BoxDecoration(
+                  child: Container(
+                    decoration: BoxDecoration(
                       color: Colors.black45,
                       shape: BoxShape.circle,
                     ),
-                    child: new Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 20.0,
-                    ),
+                    child: Icon(Icons.close, color: Colors.white, size: 20.0),
                   ),
                 ),
               ),
@@ -633,8 +606,8 @@ class _IssuedActivityState extends State<IssuedActivity> {
                 _user.uid,
                 _textContentController.text,
                 _imagesUrl,
-                _imagesUrl.length == 0 ? "" : _imagesUrl[_coverimgIndex],
-                _imagesUrl.length == 0 ? "" : _imagesWH[_coverimgIndex],
+                _imagesUrl.isEmpty ? "" : _imagesUrl[_coverimgIndex],
+                _imagesUrl.isEmpty ? "" : _imagesWH[_coverimgIndex],
                 _startyear,
                 _endyear,
                 _ispublic,
@@ -682,14 +655,16 @@ class _IssuedActivityState extends State<IssuedActivity> {
     try {
       resultList = await AssetPicker.pickAssets(
         context,
-        maxAssets: _imageMax - oldImageCount,
-        selectedAssets: _images,
-        requestType: RequestType.image,
+        pickerConfig: AssetPickerConfig(
+          maxAssets: _imageMax - oldImageCount,
+          selectedAssets: _images,
+          requestType: RequestType.image,
+        ),
       );
     } on Exception catch (e) {
       print(e.toString());
     }
-    if (resultList != null && resultList.length != 0) {
+    if (resultList != null && resultList.isNotEmpty) {
       //添加图片并上传oss 1.申请oss临时token，1000s后过期
       _securityToken = await _aliyunService.getActivitySecurityToken(
         _user.token!,
@@ -706,18 +681,18 @@ class _IssuedActivityState extends State<IssuedActivity> {
           );
           if (!_imagesUrl.contains(url)) {
             _imagesUrl.add(url);
-            _imagesWH.add("${width},${height}");
+            _imagesWH.add("$width,$height");
           }
         }
         if (!mounted) return;
         setState(() {
-          if (resultList!.length != 0) _images = resultList;
+          if (resultList!.isNotEmpty) _images = resultList;
         });
       }
     }
   }
 
-  loadingBlockPuzzle(
+  void loadingBlockPuzzle(
     BuildContext context, {
     barrierDismissible = true,
     int? commentid,
@@ -737,8 +712,8 @@ class _IssuedActivityState extends State<IssuedActivity> {
               _user.uid,
               _textContentController.text,
               _imagesUrl,
-              _imagesUrl.length == 0 ? "" : _imagesUrl[_coverimgIndex],
-              _imagesUrl.length == 0 ? "" : _imagesWH[_coverimgIndex],
+              _imagesUrl.isEmpty ? "" : _imagesUrl[_coverimgIndex],
+              _imagesUrl.isEmpty ? "" : _imagesWH[_coverimgIndex],
               _startyear,
               _endyear,
               _ispublic,

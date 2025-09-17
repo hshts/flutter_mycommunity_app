@@ -11,7 +11,7 @@ class ReportImageActivity extends StatefulWidget {
   Object? arguments;
   int touid = 0;
 
-  ReportImageActivity({this.arguments}) {
+  ReportImageActivity({super.key, this.arguments}) {
     if (arguments != null) {
       actid = (arguments as Map)["actid"];
       sourcetype = (arguments as Map)["sourcetype"];
@@ -24,8 +24,8 @@ class ReportImageActivity extends StatefulWidget {
 }
 
 class _ReportImageActivityState extends State<ReportImageActivity> {
-  List<String> _radioList = [];
-  ActivityService _activityService = new ActivityService();
+  final List<String> _radioList = [];
+  final ActivityService _activityService = ActivityService();
   int selectindex = 0;
   String _radioCheck = '低俗图片';
 
@@ -48,8 +48,10 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
             Navigator.pop(context);
           },
         ),
-        title:
-            Text('违规图片', style: TextStyle(color: Colors.black, fontSize: 16)),
+        title: Text(
+          '违规图片',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -59,10 +61,8 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
             padding: EdgeInsets.all(10),
             child: Text('请先选择违规类型'),
           ),
-          SizedBox(
-            height: 3,
-          ),
-          buildContent()
+          SizedBox(height: 3),
+          buildContent(),
         ],
       ),
       bottomNavigationBar: buildReportBtn(),
@@ -73,38 +73,36 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
     return Container(
       color: Colors.white,
       child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: _radioList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(
-                _radioList[index],
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                ),
-              ),
-              leading: Radio(
-                focusColor: Colors.green,
-                hoverColor: Colors.green,
-                activeColor: Colors.green,
-                value: _radioList[index],
-                visualDensity: VisualDensity.compact,
-                groupValue: _radioCheck,
-                onChanged: (String? value) {
-                  setState(() {
-                    if (value != null) _radioCheck = value;
-                  });
-                },
-              ),
-              onTap: () {
+        shrinkWrap: true,
+        itemCount: _radioList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(
+              _radioList[index],
+              style: TextStyle(color: Colors.black87, fontSize: 14),
+            ),
+            leading: Radio(
+              focusColor: Colors.green,
+              hoverColor: Colors.green,
+              activeColor: Colors.green,
+              value: _radioList[index],
+              visualDensity: VisualDensity.compact,
+              groupValue: _radioCheck,
+              onChanged: (String? value) {
                 setState(() {
-                  _radioCheck = _radioList[index];
-                  selectindex = index;
+                  if (value != null) _radioCheck = value;
                 });
               },
-            );
-          }),
+            ),
+            onTap: () {
+              setState(() {
+                _radioCheck = _radioList[index];
+                selectindex = index;
+              });
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -114,13 +112,8 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
       padding: EdgeInsets.all(10),
       height: 60,
       child: TextButton(
-        style: TextButton.styleFrom(
-          backgroundColor: Colors.green,
-        ),
-        child: Text(
-          '举报',
-          style: TextStyle(color: Colors.white),
-        ),
+        style: TextButton.styleFrom(backgroundColor: Colors.green),
+        child: Text('举报', style: TextStyle(color: Colors.white)),
         onPressed: () async {
           if (Global.profile.user != null) {
             if (selectindex == -1) {
@@ -128,28 +121,33 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
               return;
             }
             String reportid = await _activityService.reportActivity(
-                Global.profile.user!.uid,
-                widget.touid,
-                Global.profile.user!.token!,
-                widget.actid,
-                1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
-                "",
-                "",
-                selectindex,
-                widget.sourcetype,
-                "", (code, error) {
-              if (code == "-1008") {
-                loadingBlockPuzzle(context);
-              } else {
-                ShowMessage.showToast(error);
-              }
-            });
-            if (reportid != null && reportid != "") {
-              Navigator.pushReplacementNamed(context, '/MyReportInfo',
-                  arguments: {
-                    "reportid": reportid,
-                    "sourcetype": widget.sourcetype
-                  });
+              Global.profile.user!.uid,
+              widget.touid,
+              Global.profile.user!.token!,
+              widget.actid,
+              1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
+              "",
+              "",
+              selectindex,
+              widget.sourcetype,
+              "",
+              (code, error) {
+                if (code == "-1008") {
+                  loadingBlockPuzzle(context);
+                } else {
+                  ShowMessage.showToast(error);
+                }
+              },
+            );
+            if (reportid != "") {
+              Navigator.pushReplacementNamed(
+                context,
+                '/MyReportInfo',
+                arguments: {
+                  "reportid": reportid,
+                  "sourcetype": widget.sourcetype,
+                },
+              );
             }
           } else {
             Navigator.pushNamed(context, '/Login');
@@ -159,7 +157,7 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
     );
   }
 
-  loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
+  void loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
     showDialog<Null>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -167,23 +165,27 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
         return BlockPuzzleCaptchaPage(
           onSuccess: (v) async {
             String reportid = await _activityService.reportActivity(
-                Global.profile.user!.uid,
-                widget.touid,
-                Global.profile.user!.token!,
-                widget.actid,
-                1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
-                "",
-                "",
-                selectindex,
-                widget.sourcetype,
-                v,
-                (code, error) {});
-            if (reportid != null && reportid != "") {
-              Navigator.pushReplacementNamed(context, '/MyReportInfo',
-                  arguments: {
-                    "reportid": reportid,
-                    "sourcetype": widget.sourcetype
-                  });
+              Global.profile.user!.uid,
+              widget.touid,
+              Global.profile.user!.token!,
+              widget.actid,
+              1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
+              "",
+              "",
+              selectindex,
+              widget.sourcetype,
+              v,
+              (code, error) {},
+            );
+            if (reportid != "") {
+              Navigator.pushReplacementNamed(
+                context,
+                '/MyReportInfo',
+                arguments: {
+                  "reportid": reportid,
+                  "sourcetype": widget.sourcetype,
+                },
+              );
             }
           },
           onFail: () {},

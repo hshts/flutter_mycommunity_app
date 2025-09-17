@@ -11,6 +11,8 @@ import '../util/appupdate_util.dart';
 import '../util/showmessage_util.dart';
 
 class About extends StatefulWidget {
+  const About({super.key});
+
   @override
   _AboutState createState() => _AboutState();
 }
@@ -18,7 +20,7 @@ class About extends StatefulWidget {
 class _AboutState extends State<About> {
   String version = "";
   AppInfo? _appInfo;
-  CommonJSONService _commonJSONService = new CommonJSONService();
+  final CommonJSONService _commonJSONService = CommonJSONService();
 
   @override
   void initState() {
@@ -32,7 +34,7 @@ class _AboutState extends State<About> {
     super.dispose();
   }
 
-  _getVersion() async {
+  Future<void> _getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
     setState(() {});
@@ -85,7 +87,7 @@ class _AboutState extends State<About> {
                 Container(
                   alignment: Alignment.center,
                   child: Text(
-                    "当前版本: ${version}",
+                    "当前版本: $version",
                     style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ),
@@ -207,7 +209,7 @@ class _AboutState extends State<About> {
     }
   }
 
-  _isshowUpdate(String appurl) {
+  void _isshowUpdate(String appurl) {
     double pagewidth = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
@@ -219,6 +221,10 @@ class _AboutState extends State<About> {
             padding: EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
             width: pagewidth * 0.9,
             alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(6.0)),
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,10 +287,6 @@ class _AboutState extends State<About> {
                   ],
                 ),
               ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
             ),
           ),
         );

@@ -9,6 +9,8 @@ import '../../util//common_util.dart';
 import '../../global.dart';
 
 class MyCollectionActivity extends StatefulWidget {
+  const MyCollectionActivity({super.key});
+
   @override
   _MyCollectionActivityState createState() => _MyCollectionActivityState();
 }
@@ -16,15 +18,15 @@ class MyCollectionActivity extends StatefulWidget {
 class _MyCollectionActivityState extends State<MyCollectionActivity> {
   late User user;
   List<Activity> _activitys = [];
-  ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   bool _isPageLoad = false;
   double _activityContentHeight = 1.0; //瀑布组件高度
   double _pageWidth = 0;
   double _leftHeight = 0; //左边列的高度
   double _rigthHeight = 0; //右边列的高度
-  double _contentText = 83; //图片下面的文字描述与间距
+  final double _contentText = 83; //图片下面的文字描述与间距
 
-  getMyCollection() async {
+  Future<void> getMyCollection() async {
     _activitys = await _imHelper.selActivityCollectionByUid(
       Global.profile.user!.uid,
     );
@@ -67,7 +69,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
         centerTitle: true,
       ),
       body: _isPageLoad
-          ? ((_activitys.length == 0)
+          ? ((_activitys.isEmpty)
                 ? Center(
                     child: Text(
                       '还没有收藏的活动',
@@ -86,7 +88,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
   List<Widget> buildContent(List<Activity> acivitys) {
     List<Widget> contents = [];
 
-    if (acivitys.length != 0) {
+    if (acivitys.isNotEmpty) {
       contents.add(indexPageView(acivitys));
     }
 
@@ -95,7 +97,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
 
   Widget indexPageView(List<Activity> acivitys) {
     _getContentHeight(acivitys);
-    return Container(
+    return SizedBox(
       height: _activityContentHeight,
       child: activityContent(acivitys),
     );
@@ -119,7 +121,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
   }
 
   Widget activityContent(List<Activity> activitys) {
-    if (activitys.length == 0) {
+    if (activitys.isEmpty) {
       //return Center(child: Image.asset('images/26074001_bzCh.gif'),);
       return Center(
         child: Text(
@@ -185,6 +187,13 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
                 ? Container(
                     width: _pageWidth,
                     height: temheight,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(5),
+                        topRight: Radius.circular(5),
+                      ),
+                    ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(5),
@@ -194,13 +203,6 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
                         imageUrl:
                             '${activity.coverimg}?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80', //缩放压缩
                         fit: BoxFit.cover,
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        topRight: Radius.circular(5),
                       ),
                     ),
                   )
@@ -291,8 +293,9 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
     double retheight = 200;
     if (activity.coverimg != "") {
       return retheight;
-    } else
+    } else {
       retheight = 0;
+    }
     return retheight; //图片缩放高度
   }
 }

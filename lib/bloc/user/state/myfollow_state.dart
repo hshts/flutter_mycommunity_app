@@ -21,7 +21,7 @@ class PostSuccess extends MyFollowState {
   final bool hasReachedUserMax;
   final String? time;
 
-  PostSuccess({
+  const PostSuccess({
     required this.users,
     required this.activitys,
     this.hasReachedActivityMax = false,

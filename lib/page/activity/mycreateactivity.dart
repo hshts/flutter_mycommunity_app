@@ -7,15 +7,17 @@ import '../../global.dart';
 import '../../widget/circle_headimage.dart';
 
 class MyCreateActivity extends StatefulWidget {
+  const MyCreateActivity({super.key});
+
   @override
   _MyCreateActivityState createState() => _MyCreateActivityState();
 }
 
 class _MyCreateActivityState extends State<MyCreateActivity>
     with AutomaticKeepAliveClientMixin {
-  ActivityService _activityService = ActivityService();
+  final ActivityService _activityService = ActivityService();
   List<Activity> _activityMyList = [];
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
   bool _ismore = true;
@@ -31,7 +33,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
     _getMyActivity();
   }
 
-  _getMyActivity() async {
+  Future<void> _getMyActivity() async {
     _activityMyList = await _activityService.getAllActivityListByUserCount5(
       0,
       Global.profile.user!.uid,
@@ -49,7 +51,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
     }
   }
 
-  _onLoading() async {
+  Future<void> _onLoading() async {
     if (!_ismore) return;
 
     final moredata = await _activityService.getAllActivityListByUserCount5(
@@ -58,11 +60,11 @@ class _MyCreateActivityState extends State<MyCreateActivity>
       Global.profile.user!.token!,
     );
 
-    if (moredata.length > 0) _activityMyList = _activityMyList + moredata;
+    if (moredata.isNotEmpty) _activityMyList = _activityMyList + moredata;
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -127,14 +129,14 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                   style: TextStyle(color: Colors.black45, fontSize: 13),
                 );
               }
-              return Container(height: 55.0, child: Center(child: body));
+              return SizedBox(height: 55.0, child: Center(child: body));
             },
           ),
           controller: _refreshController,
           onLoading: _onLoading,
           child:
               _refreshController.headerStatus == RefreshStatus.completed &&
-                  _activityMyList.length == 0
+                  _activityMyList.isEmpty
               ? Center(
                   child: Text(
                     '你还没发布过活动',
@@ -152,11 +154,17 @@ class _MyCreateActivityState extends State<MyCreateActivity>
     Widget ret = SizedBox.shrink();
     List<Widget> lists = [];
 
-    if (_activityMyList.length > 0) {
-      _activityMyList.forEach((e) {
+    if (_activityMyList.isNotEmpty) {
+      for (var e in _activityMyList) {
         lists.add(
           Container(
             padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            decoration: BoxDecoration(
+              //背景
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              //设置四周边框
+            ),
             child: Column(
               children: [
                 InkWell(
@@ -281,16 +289,10 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                 ),
               ],
             ),
-            decoration: new BoxDecoration(
-              //背景
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
-            ),
           ),
         );
         lists.add(Container(height: 9, color: Colors.grey.shade200));
-      });
+      }
 
       ret = ListView(children: lists);
     } else {

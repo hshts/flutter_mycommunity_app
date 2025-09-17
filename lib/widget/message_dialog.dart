@@ -1,81 +1,69 @@
 import 'package:flutter/material.dart';
 
 class MessageDialog extends Dialog {
-  Widget? title;
-  Widget? message;
-  String? negativeText;
-  String? positiveText;
-  void Function()? onCloseEvent;
-  void Function()? onPositivePressEvent;
-  double? containerHeight;
+  final Widget? title;
+  final Widget? message;
+  final String? negativeText;
+  final String? positiveText;
+  final void Function()? onCloseEvent;
+  final void Function()? onPositivePressEvent;
+  final double? containerHeight;
 
-  MessageDialog(
-      {Key? key,
-      @required this.title,
-      @required this.message,
-      this.negativeText,
-      this.positiveText,
-      this.onPositivePressEvent,
-      @required this.onCloseEvent,
-      @required this.containerHeight})
-      : super(key: key);
+  const MessageDialog({
+    super.key,
+    @required this.title,
+    @required this.message,
+    this.negativeText,
+    this.positiveText,
+    this.onPositivePressEvent,
+    @required this.onCloseEvent,
+    @required this.containerHeight,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(15.0),
-      child: new Material(
+      child: Material(
         type: MaterialType.transparency,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Container(
+            Container(
               decoration: ShapeDecoration(
                 color: Color(0xffffffff),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(8.0),
-                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
               ),
               margin: const EdgeInsets.all(12.0),
-              child: new Column(
+              child: Column(
                 children: <Widget>[
-                  new Padding(
+                  Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: new Stack(
+                    child: Stack(
                       alignment: AlignmentDirectional.centerEnd,
                       children: <Widget>[
-                        new Center(
-                          child: this.title,
-                        ),
-                        new GestureDetector(
-                          onTap: this.onCloseEvent,
-                          child: new Padding(
+                        Center(child: title),
+                        GestureDetector(
+                          onTap: onCloseEvent,
+                          child: Padding(
                             padding: const EdgeInsets.all(5.0),
-                            child: new Icon(
-                              Icons.close,
-                              color: Color(0xffe0e0e0),
-                            ),
+                            child: Icon(Icons.close, color: Color(0xffe0e0e0)),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  new Container(
-                    color: Color(0xffe0e0e0),
-                    height: 1.0,
-                  ),
-                  new Container(
+                  Container(color: Color(0xffe0e0e0), height: 1.0),
+                  Container(
                     constraints: BoxConstraints(minHeight: containerHeight!),
-                    child: new Padding(
+                    child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: new IntrinsicHeight(
-                        child: message,
-                      ),
+                      child: IntrinsicHeight(child: message),
                     ),
                   ),
-                  this._buildBottomButtonGroup(),
+                  _buildBottomButtonGroup(),
                 ],
               ),
             ),
@@ -87,22 +75,21 @@ class MessageDialog extends Dialog {
 
   Widget _buildBottomButtonGroup() {
     var widgets = <Widget>[];
-    if (negativeText != null && negativeText!.isNotEmpty)
+    if (negativeText != null && negativeText!.isNotEmpty) {
       widgets.add(_buildBottomCancelButton());
-    if (positiveText != null && positiveText!.isNotEmpty)
+    }
+    if (positiveText != null && positiveText!.isNotEmpty) {
       widgets.add(_buildBottomPositiveButton());
-    return new Flex(
-      direction: Axis.horizontal,
-      children: widgets,
-    );
+    }
+    return Flex(direction: Axis.horizontal, children: widgets);
   }
 
   Widget _buildBottomCancelButton() {
-    return new Flexible(
+    return Flexible(
       fit: FlexFit.tight,
-      child: new TextButton(
+      child: TextButton(
         onPressed: onCloseEvent,
-        child: new Text(
+        child: Text(
           negativeText!,
           style: TextStyle(fontSize: 16.0, color: Colors.black),
         ),
@@ -111,16 +98,13 @@ class MessageDialog extends Dialog {
   }
 
   Widget _buildBottomPositiveButton() {
-    return new Flexible(
+    return Flexible(
       fit: FlexFit.tight,
-      child: new TextButton(
+      child: TextButton(
         onPressed: onPositivePressEvent,
-        child: new Text(
+        child: Text(
           positiveText!,
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 16.0,
-          ),
+          style: TextStyle(color: Colors.red, fontSize: 16.0),
         ),
       ),
     );

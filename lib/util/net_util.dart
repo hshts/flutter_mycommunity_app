@@ -1,19 +1,21 @@
-
 import 'package:dio/dio.dart';
 import 'showmessage_util.dart';
 import '../global.dart';
 
-
 class NetUtil {
   Dio? _dio;
-  static NetUtil _instance = NetUtil._internal();
+  static final NetUtil _instance = NetUtil._internal();
   factory NetUtil() => _instance;
+
   ///通用全局单例，第一次使用时初始化
   NetUtil._internal() {
-    if (null == _dio) {
-      _dio = new Dio(
-          new BaseOptions(baseUrl:  Global.serviceurl, connectTimeout: 5000, receiveTimeout: 3000));
-    }
+    _dio ??= new Dio(
+      new BaseOptions(
+        baseUrl: Global.serviceurl,
+        connectTimeout: 5000,
+        receiveTimeout: 3000,
+      ),
+    );
   }
 
   static NetUtil getInstance({String? baseUrl}) {
@@ -41,136 +43,149 @@ class NetUtil {
     return this;
   }
 
-
-  Future<void> download(String url, String filepath, Function errorCallBack, Function callBack) async {
+  Future<void> download(
+    String url,
+    String filepath,
+    Function errorCallBack,
+    Function callBack,
+  ) async {
     Response responce = await _dio!.download(url, filepath);
-    if(responce.statusCode == 200){
+    if (responce.statusCode == 200) {
       callBack();
-    }
-    else{
+    } else {
       errorCallBack();
     }
   }
 
   ///get请求
-  Future<void> get(String url, Function callBack,
-      {Map<String, String>? params, Function? errorCallBack}) async {
+  Future<void> get(
+    String url,
+    Function callBack, {
+    Map<String, String>? params,
+    Function? errorCallBack,
+  }) async {
     Response response;
     try {
       response = await _dio!.get(url, queryParameters: params);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return resultError(e);
     }
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       if (response.data["status"] != null) {
         if (response.data["status"] < 0) {
           if (errorCallBack != null) {
-            errorCallBack(response.data["status"].toString(), response.data["msg"].toString());
+            errorCallBack(
+              response.data["status"].toString(),
+              response.data["msg"].toString(),
+            );
           }
           return;
+        } else {
+          ///print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
+          callBack(response.data);
         }
-        else {
-          if (callBack != null) {
-            ///print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
-            callBack(response.data);
-          }
-        }
-      }
-      else{
+      } else {
         callBack(response.data);
       }
     }
   }
 
-  post(FormData formData, String api, Function callBack, Function errorCallBack, {bool isloginOut = false}) async {
+  Future post(
+    FormData formData,
+    String api,
+    Function callBack,
+    Function errorCallBack, {
+    bool isloginOut = false,
+  }) async {
     Response response;
     try {
       response = await _dio!.post(api, data: formData);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return resultError(e);
     }
 
     if (response.data["status"] < 0) {
       ///token过期
-      if(response.data["status"] == -9006) {
-        if(!isloginOut) {
+      if (response.data["status"] == -9006) {
+        if (!isloginOut) {
           _handError(errorCallBack, response);
           Global.navigatorKey.currentState!.pushNamed('/Login');
         }
-      }
-      else {
-        if (errorCallBack != null) {
-          //print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
-          _handError(errorCallBack, response);
-        }
-      }
-    }
-    else {
-      if (callBack != null) {
+      } else {
         //print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
-        callBack(response.data);
+        _handError(errorCallBack, response);
       }
+    } else {
+      //print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
+      callBack(response.data);
     }
   }
 
   ///外网的网络请求
-  Future<void> wget(String url, Function callBack,
-      {Map<String, String>? params, Function? errorCallBack}) async {
+  Future<void> wget(
+    String url,
+    Function callBack, {
+    Map<String, String>? params,
+    Function? errorCallBack,
+  }) async {
     Response response;
     try {
       response = await _dio!.get(url, queryParameters: params);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return resultError(e);
     }
 
-    if(response.statusCode == 200) {
-      if(response.data["status"] == "1")
+    if (response.statusCode == 200) {
+      if (response.data["status"] == "1") {
         callBack(response.data["pois"]);
+      }
     }
   }
 
-
-  static Future<void> aliyunOSSpost(FormData formData ,  String url, Function callBack, Function errorCallBack) async {
+  static Future<void> aliyunOSSpost(
+    FormData formData,
+    String url,
+    Function callBack,
+    Function errorCallBack,
+  ) async {
     Response response;
-    BaseOptions options = new BaseOptions();
+    BaseOptions options = BaseOptions();
     options.responseType = ResponseType.plain;
     options.contentType = "application/x-png";
     response = await Dio(options).post(url, data: formData);
 
     if (response.statusCode != 200) {
       errorCallBack(response.statusCode, response.statusMessage);
-    }
-    else {
-      if (callBack != null) {
-        //print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
-        callBack(response.data);
-      }
+    } else {
+      //print("<net> response data:" + response.data["data"].runtimeType == "_InternalLinkedHashMap<int, String>");
+      callBack(response.data);
     }
   }
 
   //处理异常
   static void _handError(Function errorCallback, Response response) {
-    if (errorCallback != null) {
-      errorCallback(response.data["status"].toString(), response.data["msg"].toString());
-    }
+    errorCallback(
+      response.data["status"].toString(),
+      response.data["msg"].toString(),
+    );
     //print("<net> errorMsg :" + response.data["msg"]);
   }
 
-  resultError(DioError error) {
+  void resultError(DioException error) {
     switch (error.type) {
-      case DioErrorType.cancel:
+      case DioExceptionType.cancel:
         ShowMessage.showToast("请求取消!");
         break;
-      case DioErrorType.connectTimeout:
+      case DioExceptionType.connectTimeout:
         ShowMessage.showToast("连接超时!");
 
         break;
-      case DioErrorType.sendTimeout:
+      case DioExceptionType.sendTimeout:
         ShowMessage.showToast("请求超时!");
 
         break;
-      case DioErrorType.receiveTimeout:
+      case DioExceptionType.receiveTimeout:
         ShowMessage.showToast("响应超时!");
         break;
 

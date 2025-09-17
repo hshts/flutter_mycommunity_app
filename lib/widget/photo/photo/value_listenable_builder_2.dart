@@ -2,16 +2,18 @@
 /// [Author] Alex (https://github.com/AlexV525)
 /// [Date] 2021-03-27 18:53
 ///
+library;
+
 import 'package:flutter/material.dart';
 
 class ValueListenableBuilder2<A, B> extends StatelessWidget {
   const ValueListenableBuilder2({
-    Key? key,
+    super.key,
     required this.firstNotifier,
     required this.secondNotifier,
     required this.builder,
     this.child,
-  }) : super(key: key);
+  });
 
   final ValueNotifier<A> firstNotifier;
   final ValueNotifier<B> secondNotifier;

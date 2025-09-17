@@ -13,10 +13,10 @@ class MemberList extends StatefulWidget {
   int status = 0;
   int reporttype = 0;
 
-  MemberList({this.arguments}) {
-    this.cid = (arguments as Map)["cid"];
-    this.status = (arguments as Map)["status"];
-    this.reporttype = (arguments as Map)["reporttype"];
+  MemberList({super.key, this.arguments}) {
+    cid = (arguments as Map)["cid"];
+    status = (arguments as Map)["status"];
+    reporttype = (arguments as Map)["reporttype"];
   }
 
   @override
@@ -24,9 +24,9 @@ class MemberList extends StatefulWidget {
 }
 
 class _MemberListState extends State<MemberList> {
-  ImService _imService = ImService();
+  final ImService _imService = ImService();
   double pageheight = 0.0;
-  ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   List<User> members = [];
   @override
   void initState() {
@@ -35,9 +35,9 @@ class _MemberListState extends State<MemberList> {
     getCommunityMember();
   }
 
-  getCommunityMember() async {
+  Future<void> getCommunityMember() async {
     members = await _imService.getCommunityMemberList(widget.cid, 0);
-    if (members != null && members.length > 0) {
+    if (members.isNotEmpty) {
       if (mounted) setState(() {});
     }
   }
@@ -65,7 +65,7 @@ class _MemberListState extends State<MemberList> {
           PopupMenuButton<String>(
             onSelected: (String result) async {
               if (result == "不看群消息") {
-                if (widget.status == null || widget.status == 1) {
+                if (widget.status == 1) {
                   Navigator.pop(context, 2);
                 } else {
                   Navigator.pop(context, 1);
@@ -73,34 +73,43 @@ class _MemberListState extends State<MemberList> {
               }
 
               if (result == "删除并退出") {
-                bool ret = await _imService.delQuitCommunity(widget.cid,
-                    Global.profile.user!.uid, Global.profile.user!.token!,
-                    (String statusCode, String msg) {
-                  ShowMessage.cancel();
-                  ShowMessage.showToast(msg);
-                });
+                bool ret = await _imService.delQuitCommunity(
+                  widget.cid,
+                  Global.profile.user!.uid,
+                  Global.profile.user!.token!,
+                  (String statusCode, String msg) {
+                    ShowMessage.cancel();
+                    ShowMessage.showToast(msg);
+                  },
+                );
 
                 if (ret) {
                   await _imHelper.delGroupRelation(
-                      widget.cid, Global.profile.user!.uid);
+                    widget.cid,
+                    Global.profile.user!.uid,
+                  );
                   Navigator.pop(context);
                   Navigator.pop(context);
                 }
               }
 
               if (result == "添加新成员") {
-                if (members != null && members.length > 0) {
+                if (members.isNotEmpty) {
                   String oldmembers = "";
-                  members.forEach((element) {
-                    oldmembers += element.uid.toString() + ",";
-                  });
+                  for (var element in members) {
+                    oldmembers += "${element.uid},";
+                  }
                   oldmembers.substring(0, oldmembers.length - 1);
 
-                  Navigator.pushNamed(context, '/JoinCommunity', arguments: {
-                    "timeline_id": widget.cid,
-                    "reporttype": widget.reporttype,
-                    "oldmembers": oldmembers
-                  }).then((value) {
+                  Navigator.pushNamed(
+                    context,
+                    '/JoinCommunity',
+                    arguments: {
+                      "timeline_id": widget.cid,
+                      "reporttype": widget.reporttype,
+                      "oldmembers": oldmembers,
+                    },
+                  ).then((value) {
                     getCommunityMember();
                   });
                 } else {
@@ -108,15 +117,11 @@ class _MemberListState extends State<MemberList> {
                 }
               }
             },
-            icon: Icon(
-              Icons.more_horiz,
-              color: Colors.black,
-              size: 18,
-            ),
+            icon: Icon(Icons.more_horiz, color: Colors.black, size: 18),
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               PopupMenuItem<String>(
                 value: "不看群消息",
-                child: widget.status == null || widget.status == 1
+                child: widget.status == 1
                     ? Text(
                         "屏蔽群消息",
                         style: TextStyle(color: Colors.black87, fontSize: 14),
@@ -155,14 +160,19 @@ class _MemberListState extends State<MemberList> {
       child: ListTile(
         onTap: () async {
           bool ret = await _imService.delQuitCommunity(
-              widget.cid, Global.profile.user!.uid, Global.profile.user!.token!,
-              (String statusCode, String msg) {
-            ShowMessage.cancel();
-            ShowMessage.showToast(msg);
-          });
+            widget.cid,
+            Global.profile.user!.uid,
+            Global.profile.user!.token!,
+            (String statusCode, String msg) {
+              ShowMessage.cancel();
+              ShowMessage.showToast(msg);
+            },
+          );
           if (ret) {
             await _imHelper.delGroupRelation(
-                widget.cid, Global.profile.user!.uid);
+              widget.cid,
+              Global.profile.user!.uid,
+            );
             Navigator.pop(context);
             Navigator.pop(context);
           }
@@ -197,7 +207,7 @@ class _MemberListState extends State<MemberList> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                widget.status == null || widget.status == 1
+                widget.status == 1
                     ? Text(
                         "屏蔽群消息",
                         style: TextStyle(color: Colors.black87, fontSize: 14),
@@ -210,7 +220,7 @@ class _MemberListState extends State<MemberList> {
             ),
           ),
           onTap: () {
-            if (widget.status == null || widget.status == 1) {
+            if (widget.status == 1) {
               Navigator.pop(context, 2);
             } else {
               Navigator.pop(context, 1);
@@ -223,93 +233,95 @@ class _MemberListState extends State<MemberList> {
   }
 
   Widget buildNewMemberList() {
-    return members != null
-        ? ListView(children: buildMemberList(members))
-        : SizedBox();
+    return ListView(children: buildMemberList(members));
   }
 
   List<Widget> buildMemberList(List<User> members) {
     List<Widget> widgets = [];
-    widgets.add(SizedBox(
-      height: 10,
-    ));
-    members.forEach((element) {
-      widgets.add(Padding(
-        padding: EdgeInsets.only(left: 5, right: 5, top: 0),
-        child: Card(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(14.0))), //设置圆角
-          elevation: 0,
-          child: ListTile(
-            onTap: () {
-              if (Global.profile.user == null) {
-                Navigator.pushNamed(context, '/OtherProfile',
-                    arguments: {"uid": element.uid});
-              } else if (element.uid != Global.profile.user!.uid) {
-                Navigator.pushNamed(context, '/OtherProfile',
-                    arguments: {"uid": element.uid});
-              } else {
-                Navigator.pushNamed(context, '/MyProfile');
-              }
-              ;
-            },
-            title: Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 3),
-              child: Text(
-                element.username,
-                style: TextStyle(
+    widgets.add(SizedBox(height: 10));
+    for (var element in members) {
+      widgets.add(
+        Padding(
+          padding: EdgeInsets.only(left: 5, right: 5, top: 0),
+          child: Card(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(14.0)),
+            ), //设置圆角
+            elevation: 0,
+            child: ListTile(
+              onTap: () {
+                if (Global.profile.user == null) {
+                  Navigator.pushNamed(
+                    context,
+                    '/OtherProfile',
+                    arguments: {"uid": element.uid},
+                  );
+                } else if (element.uid != Global.profile.user!.uid) {
+                  Navigator.pushNamed(
+                    context,
+                    '/OtherProfile',
+                    arguments: {"uid": element.uid},
+                  );
+                } else {
+                  Navigator.pushNamed(context, '/MyProfile');
+                }
+              },
+              title: Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 3),
+                child: Text(
+                  element.username,
+                  style: TextStyle(
                     color: Colors.black87,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  element.signature == null ? 'Ta很神秘' : element.signature,
-                  maxLines: 2,
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    element.signature ?? 'Ta很神秘',
+                    maxLines: 2,
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),
-                ),
-                SizedBox(
-                  height: 3,
-                ),
-              ],
-            ),
-            leading: NoCacheCircleHeadImage(
-              imageUrl: element.profilepicture == null
-                  ? Global.profile.profilePicture!
-                  : element.profilepicture!,
-              width: 50,
-              uid: element.uid,
-            ),
-            trailing: element.uid == Global.profile.user!.uid
-                ? SizedBox()
-                : Container(
-                    height: 36,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Global.profile.backColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
+                  SizedBox(height: 3),
+                ],
+              ),
+              leading: NoCacheCircleHeadImage(
+                imageUrl: element.profilepicture == null
+                    ? Global.profile.profilePicture!
+                    : element.profilepicture!,
+                width: 50,
+                uid: element.uid,
+              ),
+              trailing: element.uid == Global.profile.user!.uid
+                  ? SizedBox()
+                  : SizedBox(
+                      height: 36,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Global.profile.backColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                        ),
+                        child: Text(
+                          '删除',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        onPressed: () async {
+                          await _asked(element);
+                        },
                       ),
-                      child: Text('删除',
-                          style: TextStyle(color: Colors.white, fontSize: 14)),
-                      onPressed: () async {
-                        await _asked(element);
-                      },
                     ),
-                  ),
+            ),
           ),
         ),
-      ));
-//      }
-    });
+      );
+      //      }
+    }
     return widgets;
   }
 
@@ -321,38 +333,40 @@ class _MemberListState extends State<MemberList> {
     String msg = "确认要删除吗?";
 
     showDialog<bool>(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text(msg, style: new TextStyle(fontSize: 17.0)),
-            actions: <Widget>[
-              new TextButton(
-                child: new Text('确定'),
-                onPressed: () async {
-                  bool ret = await _imService.delCommunityMember(
-                      Global.profile.user!.token!,
-                      Global.profile.user!.uid,
-                      widget.cid,
-                      member.uid,
-                      errorCallBack);
-                  if (ret) {
-                    members.remove(member);
-                    setState(() {});
-                    Navigator.pop(context);
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-              new TextButton(
-                child: new Text('取消'),
-                onPressed: () {
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(msg, style: TextStyle(fontSize: 17.0)),
+          actions: <Widget>[
+            TextButton(
+              child: Text('确定'),
+              onPressed: () async {
+                bool ret = await _imService.delCommunityMember(
+                  Global.profile.user!.token!,
+                  Global.profile.user!.uid,
+                  widget.cid,
+                  member.uid,
+                  errorCallBack,
+                );
+                if (ret) {
+                  members.remove(member);
+                  setState(() {});
                   Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        });
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            TextButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

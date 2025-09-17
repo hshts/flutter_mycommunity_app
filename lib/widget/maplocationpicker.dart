@@ -31,7 +31,7 @@ class MapLocationPicker extends StatefulWidget {
   bool isMapImage = false; //是否要返回地图截图
 
   //LatLng(26.017794, 119.41755599999999)
-  MapLocationPicker({this.arguments}) {
+  MapLocationPicker({super.key, this.arguments}) {
     latLng = LatLng(
       (arguments as Map)["lat"] as double,
       (arguments as Map)["lng"] as double,
@@ -57,7 +57,7 @@ class _MapLocationPickerState extends State<MapLocationPicker>
   );
   AMapController? _controller;
   final PanelController _panelController = PanelController();
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
   final _indicator = 'images/indicator.png';
   final _indicator1 = 'images/3.0x/indicator.png';
   final _iconSize = 50.0;
@@ -70,8 +70,8 @@ class _MapLocationPickerState extends State<MapLocationPicker>
   bool _moveByUser = true;
 
   final _searchQueryController = TextEditingController();
-  CustomStyleOptions _customStyleOptions = CustomStyleOptions(false);
-  MyLocationStyleOptions _myLocationStyleOptions = MyLocationStyleOptions(
+  final CustomStyleOptions _customStyleOptions = CustomStyleOptions(false);
+  final MyLocationStyleOptions _myLocationStyleOptions = MyLocationStyleOptions(
     false,
   ); //小蓝点
   // 当前地图中心点
@@ -82,11 +82,12 @@ class _MapLocationPickerState extends State<MapLocationPicker>
     tilt: 30,
     bearing: 0,
   );
+  @override
   final _poiStream = StreamController<List<MyAMapPoi>>();
   List<MyAMapPoi> _poiInfoList = [];
-  CommonJSONService _commonJSONService = new CommonJSONService();
+  final CommonJSONService _commonJSONService = CommonJSONService();
 
-  String _searchtype =
+  final String _searchtype =
       "010000|020000|030000|040000|050000|060000|070000|080000|090000|100000|110000|120201|120300|140000|150400|190600|190301";
   final Map<String, Marker> _markers = <String, Marker>{};
   MyAMapPoi? _sendMsg;
@@ -190,6 +191,8 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                     right: 16.0,
                     bottom: _fabHeight,
                     child: FloatingActionButton(
+                      onPressed: _showMyLocation,
+                      backgroundColor: Colors.white,
                       child: StreamBuilder<bool>(
                         stream: _onMyLocation.stream,
                         initialData: true,
@@ -202,14 +205,12 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                           );
                         },
                       ),
-                      onPressed: _showMyLocation,
-                      backgroundColor: Colors.white,
                     ),
                   ),
                   Positioned(
                     right: 16.0,
                     top: _fabHeightSend,
-                    child: Container(
+                    child: SizedBox(
                       width: 60,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -288,11 +289,9 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                         margin: EdgeInsets.only(left: 10, right: 10, top: 10),
                         alignment: Alignment.center,
                         height: 39,
-                        decoration: new BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.black12.withAlpha(10),
-                          borderRadius: new BorderRadius.all(
-                            new Radius.circular(15.0),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -310,6 +309,9 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 10),
                                   child: Theme(
+                                    data: Theme.of(
+                                      context,
+                                    ).copyWith(primaryColor: Colors.black),
                                     child: TextField(
                                       focusNode: _focusNode,
                                       keyboardType: TextInputType.text,
@@ -325,9 +327,6 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                                         hintText: "搜索地点",
                                       ),
                                     ),
-                                    data: Theme.of(
-                                      context,
-                                    ).copyWith(primaryColor: Colors.black),
                                   ),
                                 ),
                               ),
@@ -410,18 +409,10 @@ class _MapLocationPickerState extends State<MapLocationPicker>
   }
 
   void _onCameraMove(CameraPosition cameraPosition) {
-    if (null == cameraPosition) {
-      return;
-    }
-    //这里需要保证放大缩小的时候中心点位置不变
-
     print('onCameraMove===> ${cameraPosition.toMap()}');
   }
 
   void _onCameraMoveEnd(CameraPosition cameraPosition) {
-    if (null == cameraPosition) {
-      return;
-    }
     if (_currentZoom != cameraPosition.zoom) {
       _currentZoom = cameraPosition.zoom;
     }
@@ -435,30 +426,18 @@ class _MapLocationPickerState extends State<MapLocationPicker>
   }
 
   void _onMapPoiTouched(AMapPoi poi) {
-    if (null == poi) {
-      return;
-    }
     print('_onMapPoiTouched===> ${poi.toJson()}');
   }
 
   void _onLocationChanged(AMapLocation location) {
-    if (null == location) {
-      return;
-    }
     print('_onLocationChanged ${location.toJson()}');
   }
 
   void _onMapTap(LatLng latLng) {
-    if (null == latLng) {
-      return;
-    }
     print('_onMapTap===> ${latLng.toJson()}');
   }
 
   void _onMapLongPress(LatLng latLng) {
-    if (null == latLng) {
-      return;
-    }
     print('_onMapLongPress===> ${latLng.toJson()}');
   }
 
@@ -500,15 +479,13 @@ class _MapLocationPickerState extends State<MapLocationPicker>
     _panelController.close();
   }
 
-  _onTextChanged(String newText) async {
+  Future<void> _onTextChanged(String newText) async {
     _searchkeyword(newText);
     _animate = true;
   }
 
   Future<void> _search(LatLng location, {bool ismore = false}) async {
-    if (location != null &&
-        location.latitude != null &&
-        location.longitude != null) {
+    if (location.latitude != null) {
       _commonJSONService.getAmapPoi(
         "${location.latitude},${location.longitude}",
         _searchtype,
@@ -517,12 +494,12 @@ class _MapLocationPickerState extends State<MapLocationPicker>
         10,
         _page,
         (List poiList) {
-          poiList.forEach((e) {
+          for (var e in poiList) {
             List<double> tem = [];
             tem.add(double.parse(e['location'].toString().split(",")[1]));
             tem.add(double.parse(e['location'].toString().split(",")[0]));
             _poiInfoList.add(
-              new MyAMapPoi(
+              MyAMapPoi(
                 e["id"],
                 e["name"],
                 tem,
@@ -531,9 +508,9 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                 e["adcode"],
               ),
             );
-          });
+          }
           if (!ismore) {
-            if (_poiInfoList.length > 0) {
+            if (_poiInfoList.isNotEmpty) {
               _sendMsg = _poiInfoList[0];
             }
             _page = 1;
@@ -546,7 +523,7 @@ class _MapLocationPickerState extends State<MapLocationPicker>
   }
 
   Future<void> _searchkeyword(String wordkeys, {bool ismore = false}) async {
-    if (wordkeys != null && wordkeys.isNotEmpty) {
+    if (wordkeys.isNotEmpty) {
       _iskeyword = true;
 
       if (!ismore) {
@@ -561,12 +538,12 @@ class _MapLocationPickerState extends State<MapLocationPicker>
         10,
         _page,
         (List poiList) {
-          poiList.forEach((e) {
+          for (var e in poiList) {
             List<double> tem = [];
             tem.add(double.parse(e['location'].toString().split(",")[1]));
             tem.add(double.parse(e['location'].toString().split(",")[0]));
             _poiInfoList.add(
-              new MyAMapPoi(
+              MyAMapPoi(
                 e["id"],
                 e["name"],
                 tem,
@@ -575,7 +552,7 @@ class _MapLocationPickerState extends State<MapLocationPicker>
                 e["adcode"],
               ),
             );
-          });
+          }
           if (!ismore) {
             _page = 1;
           }

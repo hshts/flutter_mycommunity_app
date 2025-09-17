@@ -13,7 +13,7 @@ class JoinCommunity extends StatefulWidget {
   Object? arguments;
   String timeline_id = "";
   String oldmembers = "";
-  JoinCommunity({this.arguments}) {
+  JoinCommunity({super.key, this.arguments}) {
     timeline_id = (arguments as Map)["timeline_id"];
     oldmembers = (arguments as Map)["oldmembers"];
   }
@@ -23,8 +23,8 @@ class JoinCommunity extends StatefulWidget {
 }
 
 class _JoinCommunityState extends State<JoinCommunity> {
-  ImService _imService = new ImService();
-  UserService _userService = new UserService();
+  final ImService _imService = ImService();
+  final UserService _userService = UserService();
 
   List<User> users = [];
   List<int> selectItem = [];
@@ -40,7 +40,7 @@ class _JoinCommunityState extends State<JoinCommunity> {
   String joinruleValue = "1";
   bool _isButtonEnable = true;
   bool _ismore = true;
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
 
@@ -59,13 +59,13 @@ class _JoinCommunityState extends State<JoinCommunity> {
       users.length,
     );
 
-    if (moredata.length > 0) users = users + moredata;
+    if (moredata.isNotEmpty) users = users + moredata;
 
     await getFansRemoveOld();
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -79,9 +79,9 @@ class _JoinCommunityState extends State<JoinCommunity> {
     super.initState();
   }
 
-  getFansRemoveOld() async {
+  Future<void> getFansRemoveOld() async {
     for (int i = users.length - 1; i >= 0; i--) {
-      if (widget.oldmembers.indexOf(users[i].uid.toString()) >= 0) {
+      if (widget.oldmembers.contains(users[i].uid.toString())) {
         users.remove(users[i]);
       }
     }
@@ -144,14 +144,14 @@ class _JoinCommunityState extends State<JoinCommunity> {
               );
             }
             print(mode);
-            return Container(height: 55.0, child: Center(child: body));
+            return SizedBox(height: 55.0, child: Center(child: body));
           },
         ),
         controller: _refreshController,
         onLoading: _onLoading,
         child:
             _refreshController.headerStatus == RefreshStatus.completed &&
-                users.length == 0
+                users.isEmpty
             ? Center(
                 child: Text(
                   '没有其他新粉丝了',
@@ -180,9 +180,9 @@ class _JoinCommunityState extends State<JoinCommunity> {
               if (_isButtonEnable) {
                 _isButtonEnable = false;
                 List<int> tem = [];
-                selectItem.forEach((e) {
+                for (var e in selectItem) {
                   tem.add(e);
-                });
+                }
 
                 bool ret = await _imService.joinCommunity(
                   Global.profile.user!.token!,
@@ -193,7 +193,7 @@ class _JoinCommunityState extends State<JoinCommunity> {
                   selectItemName,
                   errorCallBack,
                 );
-                if (ret != null && ret) {
+                if (ret) {
                   Navigator.pop(context);
                   return;
                 } else {
@@ -214,45 +214,43 @@ class _JoinCommunityState extends State<JoinCommunity> {
 
   List<Widget> buildMyFans() {
     List<Widget> contents = [];
-    if (users != null) {
-      for (User user in users) {
-        contents.add(
-          Column(
-            children: [
-              ListTile(
-                title: Row(
-                  children: [
-                    RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
-                    SizedBox(width: 10),
-                    NoCacheClipRRectOhterHeadImage(
-                      imageUrl: user.profilepicture!,
-                      width: 30,
-                      uid: user.uid,
-                      cir: 50,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      user.username,
-                      style: TextStyle(color: Colors.black87, fontSize: 14),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  if (!(selectItem.indexOf(user.uid) >= 0)) {
-                    selectItem.add(user.uid);
-                    selectItemName.add(user.username);
-                  } else {
-                    selectItem.remove(user.uid);
-                    selectItemName.remove(user.username);
-                  }
-                  setState(() {});
-                },
+    for (User user in users) {
+      contents.add(
+        Column(
+          children: [
+            ListTile(
+              title: Row(
+                children: [
+                  RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+                  SizedBox(width: 10),
+                  NoCacheClipRRectOhterHeadImage(
+                    imageUrl: user.profilepicture!,
+                    width: 30,
+                    uid: user.uid,
+                    cir: 50,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    user.username,
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                  ),
+                ],
               ),
-              MyDivider(),
-            ],
-          ),
-        );
-      }
+              onTap: () {
+                if (!(selectItem.indexOf(user.uid) >= 0)) {
+                  selectItem.add(user.uid);
+                  selectItemName.add(user.username);
+                } else {
+                  selectItem.remove(user.uid);
+                  selectItemName.remove(user.username);
+                }
+                setState(() {});
+              },
+            ),
+            MyDivider(),
+          ],
+        ),
+      );
     }
     return contents;
   }
@@ -263,7 +261,7 @@ class _JoinCommunityState extends State<JoinCommunity> {
 }
 
 class RoundCheckBox extends StatefulWidget {
-  RoundCheckBox({Key? key, required this.value}) : super(key: key);
+  const RoundCheckBox({super.key, required this.value});
 
   final bool value;
   @override
@@ -273,6 +271,7 @@ class RoundCheckBox extends StatefulWidget {
 }
 
 class RoundCheckBoxWidgetBuilder extends State<RoundCheckBox> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 24,

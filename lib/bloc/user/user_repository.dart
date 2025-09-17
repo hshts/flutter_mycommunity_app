@@ -13,7 +13,7 @@ import '../../global.dart';
 
 class UserRepository {
   User? user;
-  UserService _userService = new UserService();
+  final UserService _userService = UserService();
   ImHelper imHelper = ImHelper();
 
   ///登录并返回1.密码 2.验证码
@@ -167,9 +167,9 @@ class UserRepository {
   //更新关注
   Future<void> getfollow(User user, Function errorCallBack) async {
     List<int> ret = await imHelper.selMyFollowState(user.uid);
-    if (ret.length <= 0) {
+    if (ret.isEmpty) {
       List<int> follows = await _userService.getFollow(user.uid);
-      if (follows.length > 0) {
+      if (follows.isNotEmpty) {
         for (int i = 0; i < follows.length; i++) {
           imHelper.delFollowState(follows[i], user.uid);
           imHelper.saveFollowState(follows[i], user.uid);
@@ -184,9 +184,9 @@ class UserRepository {
     Function errorCallBack,
   ) async {
     List<int> ret = await imHelper.getNotInteresteduids(user.uid);
-    if (ret.length <= 0) {
+    if (ret.isEmpty) {
       List<String> notInteresteduids = user.notinteresteduids!.split(",");
-      if (notInteresteduids.length > 0) {
+      if (notInteresteduids.isNotEmpty) {
         for (int i = 0; i < notInteresteduids.length; i++) {
           imHelper.saveNotInteresteduids(
             user.uid,
@@ -203,10 +203,10 @@ class UserRepository {
     Function errorCallBack,
   ) async {
     List<int> ret = await imHelper.getGoodPriceNotInteresteduids(user.uid);
-    if (ret.length <= 0) {
+    if (ret.isEmpty) {
       List<String> goodpricenotinteresteduids = user.goodpricenotinteresteduids!
           .split(",");
-      if (goodpricenotinteresteduids.length > 0) {
+      if (goodpricenotinteresteduids.isNotEmpty) {
         for (int i = 0; i < goodpricenotinteresteduids.length; i++) {
           imHelper.saveGoodPriceNotInteresteduids(
             user.uid,
@@ -220,9 +220,9 @@ class UserRepository {
   //更新我的黑名单
   Future<void> updateBlacklist(User user, Function errorCallBack) async {
     List<int> ret = await imHelper.getBlacklistUid(user.uid);
-    if (ret.length <= 0) {
+    if (ret.isEmpty) {
       List<String> blacklist = user.blacklist!.split(",");
-      if (blacklist.length > 0) {
+      if (blacklist.isNotEmpty) {
         for (int i = 0; i < blacklist.length; i++) {
           imHelper.saveBlacklistUid(
             user.uid,
@@ -265,10 +265,10 @@ class UserRepository {
     ///更新用户到全局变量
     Global.profile.user = user;
 
-    if (user.profilepicture != null && user.profilepicture!.isNotEmpty)
-      Global.profile.defProfilePicture = new NetworkImage(user.profilepicture!);
-    if (user.profilepicture == null)
-      user.profilepicture = Global.profile.profilePicture;
+    if (user.profilepicture != null && user.profilepicture!.isNotEmpty) {
+      Global.profile.defProfilePicture = NetworkImage(user.profilepicture!);
+    }
+    user.profilepicture ??= Global.profile.profilePicture;
 
     // ImageCache imageCache = new ImageCache();
     // imageCache.evict(user.profilepicture);
@@ -280,13 +280,11 @@ class UserRepository {
   Future<void> updateUserPicture(User user, String profilepicture) async {
     //删除图片缓存刷新引用
     ImageCache imageCache = PaintingBinding.instance.imageCache;
-    await imageCache.evict(NetworkImage(user.profilepicture!));
+    imageCache.evict(NetworkImage(user.profilepicture!));
     user.profilepicture = profilepicture;
     Global.saveProfile();
-    user.profilepicture = profilepicture + "?${Random().nextInt(111111111)}";
-    Global.profile.defProfilePicture = await new NetworkImage(
-      user.profilepicture!,
-    );
+    user.profilepicture = "$profilepicture?${Random().nextInt(111111111)}";
+    Global.profile.defProfilePicture = NetworkImage(user.profilepicture!);
 
     // imageCache.clearLiveImages();
     // imageCache.clear();
@@ -301,20 +299,21 @@ class UserRepository {
 
   ///是否已经登录
   bool hasToUser() {
-    if (Global.profile.user != null)
+    if (Global.profile.user != null) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   String generateMd5(String data) {
-    var content = new Utf8Encoder().convert(data);
+    var content = Utf8Encoder().convert(data);
     var digest = md5.convert(content);
     // 这里其实就是 digest.toString()
     return hex.encode(digest.bytes);
   }
 
-  successResponse(Map<String, dynamic> data) {
+  void successResponse(Map<String, dynamic> data) {
     if (data["data"]["token"].toString() != "") {
       user = User.fromJson(
         json.decode(CommonUtil.GetJsonString(data["data"]["token"].toString())),

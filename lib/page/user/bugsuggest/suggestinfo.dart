@@ -19,7 +19,7 @@ class SuggestInfo extends StatefulWidget {
   Object? arguments;
   String suggestid = "";
 
-  SuggestInfo({this.arguments}) {
+  SuggestInfo({super.key, this.arguments}) {
     if (arguments != null) {
       suggestid = (arguments as Map)["suggestid"];
     }
@@ -37,10 +37,10 @@ class _SuggestInfoState extends State<SuggestInfo> {
   bool _islike = false, _isLikeEnter = true, _isCommentLike = true;
   String _hidemessage = "给楼主留言";
   String _message = "";
-  ImService imService = new ImService();
+  ImService imService = ImService();
   List<Comment> listComments = [];
   String _ordertype = "0"; //排序类型， 0：按时间 1：按热度
-  ImHelper imhelper = new ImHelper();
+  ImHelper imhelper = ImHelper();
   String error = "";
   String errorstatusCode = "";
 
@@ -48,12 +48,10 @@ class _SuggestInfoState extends State<SuggestInfo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.suggestid != null) {
-      getSuggest();
-    }
+    getSuggest();
   }
 
-  getSuggest() async {
+  Future<void> getSuggest() async {
     _suggest = await imService.getSuggestInfo(
       Global.profile.user!.uid,
       Global.profile.user!.token!,
@@ -71,10 +69,10 @@ class _SuggestInfoState extends State<SuggestInfo> {
         Global.profile.user!.uid,
         1,
         (List<String> actid) {
-          if (actid.length > 0) _islike = true;
+          if (actid.isNotEmpty) _islike = true;
         },
       );
-      if (listComments != null && listComments.length > 0) {
+      if (listComments.isNotEmpty) {
         listComments = sortComment(listComments, _ordertype);
       }
       setState(() {});
@@ -132,8 +130,8 @@ class _SuggestInfoState extends State<SuggestInfo> {
   }
 
   //头部，社团头像。名称，等
-  Container buildHeadInfo() {
-    return Container(
+  Widget buildHeadInfo() {
+    return SizedBox(
       height: 70,
       child: Row(
         children: <Widget>[
@@ -194,7 +192,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
       return SizedBox.shrink();
     }
     _listimgs = _suggest!.images.split(',');
-    if (_listimgs.length > 0) {
+    if (_listimgs.isNotEmpty) {
       for (int i = 0; i < _listimgs.length; i++) {
         imglist.add({
           "tag": UniqueKey().toString(),
@@ -251,7 +249,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
 
   Widget buildCommentContainer(List<Comment> comments) {
     Widget actComment = SizedBox.shrink();
-    if (comments != null && comments.length > 0) {
+    if (comments.isNotEmpty) {
       _isCommentLike = true;
       actComment = Container(
         margin: EdgeInsets.only(top: 10),
@@ -283,7 +281,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                       ],
                     ),
                     onTap: () {
-                      if (comments != null && comments.length > 0) {
+                      if (comments.isNotEmpty) {
                         if (_sortname == "按时间") {
                           _sortname = '按热度'; //当前排序方式
                           _ordertype = "1";
@@ -329,7 +327,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                 ],
               ),
               SizedBox(height: 5),
-              Container(
+              SizedBox(
                 height: 50,
                 width: double.infinity,
                 child: Center(
@@ -350,7 +348,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
 
   Widget buildComment(List<Comment> comments) {
     List<Widget> tem = [];
-    if (comments != null && comments.length > 0) {
+    if (comments.isNotEmpty) {
       listComments = comments;
 
       listComments.map((v) {
@@ -403,21 +401,18 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                 onTap: () {
                                   int uid = v.user!.uid;
                                   if (Global.profile.user == null) {
-                                    if (uid != null)
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/OtherProfile',
-                                        arguments: {"uid": uid},
-                                      );
-                                  } else if (uid != null &&
-                                      uid != Global.profile.user!.uid) {
                                     Navigator.pushNamed(
                                       context,
                                       '/OtherProfile',
                                       arguments: {"uid": uid},
                                     );
-                                  } else if (uid != null &&
-                                      uid == Global.profile.user!.uid)
+                                  } else if (uid != Global.profile.user!.uid) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/OtherProfile',
+                                      arguments: {"uid": uid},
+                                    );
+                                  } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
                               ),
@@ -456,13 +451,13 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                           );
                                       if (ret) {
                                         //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
-                                        comments.forEach((e) {
+                                        for (var e in comments) {
                                           if (e.commentid == v.commentid) {
                                             e.likeuid =
                                                 Global.profile.user!.uid;
                                             e.likenum = e.likenum! + 1;
                                           }
-                                        });
+                                        }
                                         setState(() {});
                                       }
                                     } else {
@@ -475,12 +470,12 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                             errorCallBack,
                                           );
                                       if (ret) {
-                                        comments.forEach((e) {
+                                        for (var e in comments) {
                                           if (e.commentid == v.commentid) {
                                             e.likeuid = 0;
                                             e.likenum = e.likenum! - 1;
                                           }
-                                        });
+                                        }
                                         setState(() {});
                                       }
                                     }
@@ -544,8 +539,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                         Global.profile.user!.uid,
                                         errorCallBack,
                                       );
-                                  if (listComments != null &&
-                                      listComments.length > 0) {
+                                  if (listComments.isNotEmpty) {
                                     listComments = sortComment(
                                       listComments,
                                       _ordertype,
@@ -577,7 +571,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
       }).toList();
     } else {
       tem.add(
-        Container(
+        SizedBox(
           height: 50,
           width: double.infinity,
           child: Center(
@@ -778,11 +772,9 @@ class _SuggestInfoState extends State<SuggestInfo> {
                               errorCallBack,
                             );
                         if (temreplyid > 0) {
-                          listComments.forEach((e) {
+                          for (var e in listComments) {
                             if (e.commentid == commentid) {
-                              if (e.replys == null) {
-                                e.replys = [];
-                              }
+                              e.replys ??= [];
                               e.replys!.add(
                                 CommentReply(
                                   temreplyid,
@@ -801,7 +793,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                 ),
                               );
                             }
-                          });
+                          }
                           setState(() {});
                         } else {
                           errorHandle(commentid, touid, touser!);
@@ -886,7 +878,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${v.touser!.username}',
+                                text: v.touser!.username,
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 14,
@@ -948,7 +940,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                             Global.profile.user!.uid,
                             errorCallBack,
                           );
-                          if (listComments != null && listComments.length > 0) {
+                          if (listComments.isNotEmpty) {
                             listComments = sortComment(
                               listComments,
                               _ordertype,
@@ -977,13 +969,13 @@ class _SuggestInfoState extends State<SuggestInfo> {
     }).toList();
     return Container(
       margin: EdgeInsets.only(left: 40, top: 10, right: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        color: Colors.black12.withAlpha(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: tem,
-      ),
-      decoration: new BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        color: Colors.black12.withAlpha(20),
       ),
     );
   }
@@ -1003,20 +995,20 @@ class _SuggestInfoState extends State<SuggestInfo> {
   }
 
   List<Comment> sortComment(List<Comment> comments, String ordertype) {
-    if (ordertype == "0")
+    if (ordertype == "0") {
       comments.sort((a, b) => (b.createtime!).compareTo(a.createtime!));
-    else {
+    } else {
       comments.sort((a, b) => (b.likenum!).compareTo(a.likenum!));
     }
     return comments;
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     error = msg;
     errorstatusCode = statusCode;
   }
 
-  errorHandle(int commentid, int touid, User? touser) {
+  void errorHandle(int commentid, int touid, User? touser) {
     if (errorstatusCode != "200") {
       if (errorstatusCode == "-1008") {
         loadingBlockPuzzle(
@@ -1031,7 +1023,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
     }
   }
 
-  loadingBlockPuzzle(
+  void loadingBlockPuzzle(
     BuildContext context, {
     barrierDismissible = true,
     int commentid = 0,
@@ -1079,11 +1071,9 @@ class _SuggestInfoState extends State<SuggestInfo> {
                 errorCallBack,
               );
               if (temreplyid > 0) {
-                listComments.forEach((e) {
+                for (var e in listComments) {
                   if (e.commentid == commentid) {
-                    if (e.replys == null) {
-                      e.replys = [];
-                    }
+                    e.replys ??= [];
                     e.replys!.add(
                       CommentReply(
                         temreplyid,
@@ -1102,7 +1092,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                       ),
                     );
                   }
-                });
+                }
                 setState(() {});
               }
             }

@@ -17,7 +17,7 @@ class Evaluate extends StatefulWidget {
   Object? arguments;
   late Order order;
 
-  Evaluate({this.arguments}) {
+  Evaluate({super.key, this.arguments}) {
     order = (arguments as Map)["order"];
   }
 
@@ -26,17 +26,17 @@ class Evaluate extends StatefulWidget {
 }
 
 class _EvaluateState extends State<Evaluate> {
-  TextEditingController _textEditingController = new TextEditingController();
-  ActivityService _activityService = new ActivityService();
-  AliyunService _aliyunService = new AliyunService();
+  final TextEditingController _textEditingController = TextEditingController();
+  final ActivityService _activityService = ActivityService();
+  final AliyunService _aliyunService = AliyunService();
   List<AssetEntity> _images = [];
-  int _imageMax = 3; //最多上传3张图
+  final int _imageMax = 3; //最多上传3张图
   SecurityToken? _securityToken;
-  List<String> _imagesUrl = [];
-  List<String> _imagesWH = []; //图片的分辨率
+  final List<String> _imagesUrl = [];
+  final List<String> _imagesWH = []; //图片的分辨率
   int _liketype = 5; //1非常差 2差 3一般 4好 5非常好
   String _msg = "非常好";
-  FocusNode _contentfocusNode = FocusNode();
+  final FocusNode _contentfocusNode = FocusNode();
 
   @override
   void dispose() {
@@ -51,18 +51,17 @@ class _EvaluateState extends State<Evaluate> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 18,
-          ),
+          icon: Icon(Icons.arrow_back_ios, size: 18),
           color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text('商品评价',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black, fontSize: 16)),
+        title: Text(
+          '商品评价',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -70,9 +69,7 @@ class _EvaluateState extends State<Evaluate> {
           buildEvaluateType(),
           buildEvaluateText(),
           buildGridView(),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
         ],
       ),
       bottomNavigationBar: buildSubBtn(),
@@ -81,24 +78,25 @@ class _EvaluateState extends State<Evaluate> {
 
   Widget buildEvaluateText() {
     return TextField(
-        controller: _textEditingController,
-        focusNode: _contentfocusNode,
-        maxLength: 500, //最大长度，设置此项会让TextField右下角有一个输入数量的统计字符串
-        maxLines: 9, //最大行数
-        autocorrect: true, //是否自动更正
-        autofocus: false, //是否自动对焦
-        textAlign: TextAlign.left, //文本对齐方式
-        style: TextStyle(fontSize: 14.0, color: Colors.black87), //输入文本的样式
-        onChanged: (text) {
-          //内容改变的回调
-        },
-        decoration: InputDecoration(
-          counterText: "",
-          border: InputBorder.none, //去掉输入框的下滑线
-          hintText: "您的评价会帮助我们选择更好的商品哦~",
-          filled: true,
-          fillColor: Colors.white,
-        ));
+      controller: _textEditingController,
+      focusNode: _contentfocusNode,
+      maxLength: 500, //最大长度，设置此项会让TextField右下角有一个输入数量的统计字符串
+      maxLines: 9, //最大行数
+      autocorrect: true, //是否自动更正
+      autofocus: false, //是否自动对焦
+      textAlign: TextAlign.left, //文本对齐方式
+      style: TextStyle(fontSize: 14.0, color: Colors.black87), //输入文本的样式
+      onChanged: (text) {
+        //内容改变的回调
+      },
+      decoration: InputDecoration(
+        counterText: "",
+        border: InputBorder.none, //去掉输入框的下滑线
+        hintText: "您的评价会帮助我们选择更好的商品哦~",
+        filled: true,
+        fillColor: Colors.white,
+      ),
+    );
   }
 
   Widget buildGridView() {
@@ -107,18 +105,21 @@ class _EvaluateState extends State<Evaluate> {
       child: Padding(
         padding: EdgeInsets.all(10),
         child: GridView.count(
-            shrinkWrap: true, // 自动高
-            physics: NeverScrollableScrollPhysics(), // 添加
-            childAspectRatio: 1.0,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 3,
-            children: List.generate(
-                _images.length == _imageMax
-                    ? _images.length
-                    : _images.length + 1, (index) {
+          shrinkWrap: true, // 自动高
+          physics: NeverScrollableScrollPhysics(), // 添加
+          childAspectRatio: 1.0,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          crossAxisCount: 3,
+          children: List.generate(
+            _images.length == _imageMax ? _images.length : _images.length + 1,
+            (index) {
               if (index == _images.length && index < _imageMax) {
                 return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
                   child: Center(
                     child: IconButton(
                       alignment: Alignment.center,
@@ -132,32 +133,24 @@ class _EvaluateState extends State<Evaluate> {
                       },
                     ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.all(new Radius.circular(5.0)),
-                  ),
                 );
               } else if (index < _images.length) {
                 AssetEntity asset = _images[index];
                 return Stack(
                   children: <Widget>[
                     ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
                       child: ExtendedImage(
-                        image: AssetEntityImageProvider(
-                          asset,
-                        ),
+                        image: AssetEntityImageProvider(asset),
                         width: 300,
                         height: 300,
                         fit: BoxFit.fill,
-                      ),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5),
                       ),
                     ),
                     Positioned(
                       right: 0.08,
                       top: 0.08,
-                      child: new GestureDetector(
+                      child: GestureDetector(
                         onTap: () {
                           _images.removeAt(index);
                           _imagesUrl.removeAt(index);
@@ -165,12 +158,12 @@ class _EvaluateState extends State<Evaluate> {
 
                           setState(() {});
                         },
-                        child: new Container(
-                          decoration: new BoxDecoration(
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: Colors.black45,
                             shape: BoxShape.circle,
                           ),
-                          child: new Icon(
+                          child: Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 20.0,
@@ -183,7 +176,9 @@ class _EvaluateState extends State<Evaluate> {
               }
 
               return SizedBox.shrink();
-            })),
+            },
+          ),
+        ),
       ),
     );
   }
@@ -199,13 +194,12 @@ class _EvaluateState extends State<Evaluate> {
           Text(
             '商品评价',
             style: TextStyle(
-                color: Colors.black87,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          SizedBox(
-            width: 20,
-          ),
+          SizedBox(width: 20),
           FFStars(
             normalStar: Image.asset("images/orangeNormal.png"),
             selectedStar: Image.asset("images/orangeSelected.png"),
@@ -231,13 +225,8 @@ class _EvaluateState extends State<Evaluate> {
             step: 1.0,
             defaultStars: 5,
           ),
-          SizedBox(
-            width: 20,
-          ),
-          Text(
-            _msg,
-            style: TextStyle(color: Colors.black45, fontSize: 14),
-          )
+          SizedBox(width: 20),
+          Text(_msg, style: TextStyle(color: Colors.black45, fontSize: 14)),
         ],
       ),
     );
@@ -256,25 +245,30 @@ class _EvaluateState extends State<Evaluate> {
           child: Text(
             '提交评价',
             style: TextStyle(
-                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           onPressed: () async {
             String temimageurl = "";
-            if (_imagesUrl.length > 0) {
+            if (_imagesUrl.isNotEmpty) {
               for (int i = 0; i < _imagesUrl.length; i++) {
-                temimageurl += _imagesUrl[i] + ",";
+                temimageurl += "${_imagesUrl[i]},";
               }
               temimageurl = temimageurl.substring(0, temimageurl.length - 1);
             }
             bool ret = await _activityService.evaluateActivity(
-                Global.profile.user!.uid,
-                Global.profile.user!.token!,
-                _textEditingController.text,
-                widget.order.orderid!,
-                temimageurl,
-                _liketype, (String statusCode, String msg) {
-              ShowMessage.showToast(msg);
-            });
+              Global.profile.user!.uid,
+              Global.profile.user!.token!,
+              _textEditingController.text,
+              widget.order.orderid!,
+              temimageurl,
+              _liketype,
+              (String statusCode, String msg) {
+                ShowMessage.showToast(msg);
+              },
+            );
             if (ret) {
               Navigator.pop(context, 1);
             }
@@ -299,24 +293,29 @@ class _EvaluateState extends State<Evaluate> {
     } on Exception catch (e) {
       print(e.toString());
     }
-    if (resultList != null && resultList.length != 0) {
+    if (resultList != null && resultList.isNotEmpty) {
       //添加图片并上传oss 1.申请oss临时token，1000s后过期
       _securityToken = await _aliyunService.getActivitySecurityToken(
-          Global.profile.user!.token!, Global.profile.user!.uid);
+        Global.profile.user!.token!,
+        Global.profile.user!.uid,
+      );
       if (_securityToken != null) {
         for (int i = 0; i < resultList.length; i++) {
           int width = resultList[i].orientatedWidth;
           int height = resultList[i].orientatedWidth;
           String url = await CommonUtil.upLoadImage(
-              (await resultList[i].file)!, _securityToken!, _aliyunService);
+            (await resultList[i].file)!,
+            _securityToken!,
+            _aliyunService,
+          );
           if (!_imagesUrl.contains(url)) {
             _imagesUrl.add(url);
-            _imagesWH.add("${width},${height}");
+            _imagesWH.add("$width,$height");
           }
         }
         if (!mounted) return;
         setState(() {
-          if (resultList!.length != 0) _images = resultList;
+          if (resultList!.isNotEmpty) _images = resultList;
         });
       }
     }

@@ -13,19 +13,19 @@ import '../../../util/imhelper_util.dart';
 import '../../../global.dart';
 
 class MyOrderFinish extends StatefulWidget {
-  MyOrderFinish();
+  const MyOrderFinish({super.key});
 
   @override
   _MyOrderFinishState createState() => _MyOrderFinishState();
 }
 
 class _MyOrderFinishState extends State<MyOrderFinish> {
-  UserService _userService = UserService();
-  ActivityService _activityService = ActivityService();
+  final UserService _userService = UserService();
+  final ActivityService _activityService = ActivityService();
   List<Order> _orderList = [];
   int _pagestatus = 0; //简单处理载入状态
-  ImHelper _imhelper = new ImHelper();
-  GPService _gpservice = new GPService();
+  final ImHelper _imhelper = ImHelper();
+  final GPService _gpservice = GPService();
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
     _getMyOrder();
   }
 
-  _getMyOrder() async {
+  Future<void> _getMyOrder() async {
     _orderList = await _userService.getMyOrderFinish(
       Global.profile.user!.token!,
       Global.profile.user!.uid,
@@ -83,11 +83,17 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
     Widget ret = SizedBox.shrink();
     List<Widget> lists = [];
 
-    if (_orderList != null && _orderList.length > 0) {
-      _orderList.forEach((e) {
+    if (_orderList.isNotEmpty) {
+      for (var e in _orderList) {
         lists.add(
           Container(
             padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            decoration: BoxDecoration(
+              //背景
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              //设置四周边框
+            ),
             child: Column(
               children: [
                 SizedBox(height: 12),
@@ -240,16 +246,10 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
                 SizedBox(height: 9),
               ],
             ),
-            decoration: new BoxDecoration(
-              //背景
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
-            ),
           ),
         );
         lists.add(Container(height: 6, color: Colors.grey.shade200));
-      });
+      }
 
       lists.add(SizedBox(height: 10));
 
@@ -282,14 +282,14 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(
+        return AlertDialog(
+          title: Text(
             '如果商家已经发货可能无法完成退款，确定要退货吗?',
-            style: new TextStyle(fontSize: 17.0),
+            style: TextStyle(fontSize: 17.0),
           ),
           actions: <Widget>[
-            new TextButton(
-              child: new Text('确定'),
+            TextButton(
+              child: Text('确定'),
               onPressed: () async {
                 Navigator.of(context).pop();
                 bool ret = await _activityService.refundActivityOrder(
@@ -309,8 +309,8 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
                 }
               },
             ),
-            new TextButton(
-              child: new Text('取消'),
+            TextButton(
+              child: Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -326,11 +326,11 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text('确定已经收到商品了吗?', style: new TextStyle(fontSize: 17.0)),
+        return AlertDialog(
+          title: Text('确定已经收到商品了吗?', style: TextStyle(fontSize: 17.0)),
           actions: <Widget>[
-            new TextButton(
-              child: new Text('确定'),
+            TextButton(
+              child: Text('确定'),
               onPressed: () async {
                 Navigator.of(context).pop();
                 bool ret = await _activityService.activityFundTransfer(
@@ -350,8 +350,8 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
                 }
               },
             ),
-            new TextButton(
-              child: new Text('取消'),
+            TextButton(
+              child: Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -363,7 +363,7 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
   }
 
   Future<void> _telCustomerCare(String vcode, int touid) async {
-    String timeline_id = "";
+    String timelineId = "";
     //获取客服
     int uid = Global.profile.user!.uid;
     if (uid == touid) {
@@ -372,17 +372,17 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
     }
 
     if (uid > touid) {
-      timeline_id = touid.toString() + uid.toString();
+      timelineId = touid.toString() + uid.toString();
     } else {
-      timeline_id = uid.toString() + touid.toString();
+      timelineId = uid.toString() + touid.toString();
     }
     GroupRelation? groupRelation = await _imhelper.getGroupRelationByGroupid(
       uid,
-      timeline_id,
+      timelineId,
     );
     if (groupRelation == null) {
       groupRelation = await _userService.joinSingleCustomer(
-        timeline_id,
+        timelineId,
         uid,
         touid,
         Global.profile.user!.token!,
@@ -409,7 +409,7 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
       }
       if (ret > 0) {
         Navigator.pushNamed(
-          this.context,
+          context,
           '/MyMessage',
           arguments: {"GroupRelation": groupRelation},
         );
@@ -418,7 +418,7 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
   }
 
   //滑动拼图
-  _loadingBlockPuzzle(
+  void _loadingBlockPuzzle(
     BuildContext context, {
     barrierDismissible = true,
     required int touid,

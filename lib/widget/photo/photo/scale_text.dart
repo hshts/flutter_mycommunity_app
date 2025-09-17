@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ScaleText extends StatelessWidget {
   const ScaleText(
     this.text, {
+    super.key,
     this.style,
     this.strutStyle,
     this.maxLines,
@@ -26,10 +27,11 @@ class ScaleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mqd = MediaQuery.of(context);
-    final double effectiveFactor =
-        mqd.textScaleFactor.clamp(minScaleFactor, maxScaleFactor).toDouble();
+    final double effectiveFactor = mqd.textScaleFactor
+        .clamp(minScaleFactor, maxScaleFactor)
+        .toDouble();
     return MediaQuery(
-      data: mqd.copyWith(textScaleFactor: effectiveFactor),
+      data: mqd.copyWith(textScaler: TextScaler.linear(effectiveFactor)),
       child: Text(
         text,
         style: style,

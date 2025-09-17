@@ -14,7 +14,7 @@ import '../../global.dart';
 class SearchProductResultPage extends StatefulWidget {
   Object? arguments;
   String content = "";
-  SearchProductResultPage({this.arguments}) {
+  SearchProductResultPage({super.key, this.arguments}) {
     content = (arguments as Map)["content"];
   }
 
@@ -25,7 +25,7 @@ class SearchProductResultPage extends StatefulWidget {
 
 class _SearchProductResultPageState extends State<SearchProductResultPage> {
   SearchBarStyle searchBarStyle = const SearchBarStyle();
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
 
@@ -36,13 +36,13 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
   String citycode = Global.profile.locationGoodPriceCode;
   bool isAllCity = false;
   double cityDropHeight = 0.0;
-  ScrollController _scrollControllerContent = new ScrollController(
+  final ScrollController _scrollControllerContent = ScrollController(
     initialScrollOffset: 0,
   );
   late TextEditingController _textEditingController;
   int selected = -1;
   bool isgotogoodprice = false;
-  final ImHelper imHelper = new ImHelper();
+  final ImHelper imHelper = ImHelper();
   List<GoodPiceModel> goodPiceModels = [];
   GPService gpService = GPService();
   List<int> goodpricenotinteresteduids = [];
@@ -87,11 +87,11 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
       errorCallBack,
     );
 
-    if (moredata.length > 0) goodPiceModels = goodPiceModels + moredata;
+    if (moredata.isNotEmpty) goodPiceModels = goodPiceModels + moredata;
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -99,7 +99,7 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
     if (mounted) setState(() {});
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 
@@ -118,10 +118,10 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
         ),
       ),
     );
-    if (citycode == null || citycode.isEmpty) citycode = "allCode";
+    if (citycode.isEmpty) citycode = "allCode";
 
-    ImHelper _imHelper = ImHelper();
-    _imHelper.saveSearchHistory(0, widget.content);
+    ImHelper imHelper = ImHelper();
+    imHelper.saveSearchHistory(0, widget.content);
   }
 
   @override
@@ -144,7 +144,7 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
         leadingWidth: 0,
         title: Padding(
           padding: EdgeInsets.only(right: 10, top: 10),
-          child: Container(
+          child: SizedBox(
             height: 46,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -245,13 +245,13 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
               );
             }
             print(mode);
-            return Container(height: 55.0, child: Center(child: body));
+            return SizedBox(height: 55.0, child: Center(child: body));
           },
         ),
         controller: _refreshController,
         onLoading: _onLoading,
         child:
-            goodPiceModels.length == 0 &&
+            goodPiceModels.isEmpty &&
                 _refreshController.headerStatus == RefreshStatus.completed
             ? widgetMessage
             : ListView(
@@ -287,13 +287,17 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
       List<Widget> wtag = [];
       wtag.add(SizedBox.shrink());
 
-      if (goodPiceModel.tag != null && goodPiceModel.tag.isNotEmpty) {
+      if (goodPiceModel.tag.isNotEmpty) {
         List<String> stag = goodPiceModel.tag.split(",");
-        stag.forEach((e) {
+        for (var e in stag) {
           wtag.add(
             Container(
               alignment: Alignment.center,
               padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
               child: Text(
                 e,
                 style: TextStyle(
@@ -302,15 +306,11 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
             ),
           );
 
           wtag.add(SizedBox(width: 5));
-        });
+        }
 
         tag = Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -326,16 +326,15 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
               List<int> goodpricenotinteresteduids = await imHelper
                   .getGoodPriceNotInteresteduids(Global.profile.user!.uid);
               List<GoodPiceModel> emptyList = [];
-              goodPiceModels.forEach((e) {
+              for (var e in goodPiceModels) {
                 emptyList.add(e);
-              });
+              }
 
-              emptyList.forEach((e) {
-                if (goodpricenotinteresteduids != null &&
-                    goodpricenotinteresteduids.contains(e.uid)) {
+              for (var e in emptyList) {
+                if (goodpricenotinteresteduids.contains(e.uid)) {
                   goodPiceModels.remove(e);
                 }
-              });
+              }
 
               setState(() {});
             }
@@ -351,6 +350,10 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
           image: goodPiceModel.pic,
           icon: Container(
             margin: EdgeInsets.only(left: 7, right: 7, bottom: 7),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
             child: Padding(
               padding: EdgeInsets.only(left: 9, right: 9, bottom: 9, top: 9),
               child: Row(
@@ -460,10 +463,6 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                 ],
               ),
             ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
           ),
         ),
       );
@@ -486,11 +485,12 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
 
 class InputSelect1 extends StatelessWidget {
   const InputSelect1({
+    super.key,
     required this.index,
     required this.widget,
     required this.parent,
     required this.choice,
-  }) : super();
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -32,7 +32,7 @@ class GoodPriceInfo extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => GoodPriceInfoState();
 
-  GoodPriceInfo({required this.arguments}) {
+  GoodPriceInfo({super.key, required this.arguments}) {
     if (arguments != null) goodPiceModel = (arguments as Map)["goodprice"];
   }
 }
@@ -53,11 +53,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
       _isCommentLike = true;
   List<Map<String, String>> imglist = [];
   List<Map<String, String>> albumpicslist = [];
-  GPService _gpService = GPService();
-  ActivityService _activityService = ActivityService();
+  final GPService _gpService = GPService();
+  final ActivityService _activityService = ActivityService();
   String error = "";
   String errorstatusCode = "";
-  ImHelper imHelper = new ImHelper();
+  ImHelper imHelper = ImHelper();
   String _hidemessage = "问问商家";
   List<Comment> _comments = [];
   List<EvaluateActivity> _evaluates = [];
@@ -135,7 +135,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
       btnTop: 36,
       left: 0,
       opacity: 0,
-      content: Container(
+      content: SizedBox(
         width: 69,
         child: Text(
           widget.goodPiceModel.title,
@@ -151,33 +151,41 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     getCollectionAndComment();
   }
 
-  getCollectionAndComment() async {
-    if (Global.profile.user != null)
+  Future<void> getCollectionAndComment() async {
+    if (Global.profile.user != null) {
       _comments = await _gpService.getCommentList(
-          widget.goodPiceModel.goodpriceid,
-          Global.profile.user!.uid,
-          errorCallBack);
-    else {
+        widget.goodPiceModel.goodpriceid,
+        Global.profile.user!.uid,
+        errorCallBack,
+      );
+    } else {
       _comments = await _gpService.getCommentList(
-          widget.goodPiceModel.goodpriceid, 0, errorCallBack);
+        widget.goodPiceModel.goodpriceid,
+        0,
+        errorCallBack,
+      );
     }
     sortComment(_comments, "1");
 
     _evaluates = await _gpService.getEvaluateGoodPriceList(
-        widget.goodPiceModel.goodpriceid, 0, errorCallBack);
+      widget.goodPiceModel.goodpriceid,
+      0,
+      errorCallBack,
+    );
 
     if (Global.profile.user != null) {
       Map collectionstate = await _gpService.getGoodPriceCollectionState(
-          widget.goodPiceModel.goodpriceid, Global.profile.user!.uid);
+        widget.goodPiceModel.goodpriceid,
+        Global.profile.user!.uid,
+      );
       _iscollection = collectionstate["iscollection"];
     }
     //获取相关活动
-    _activitys =
-        await _gpService.getActivityList(widget.goodPiceModel.goodpriceid);
+    _activitys = await _gpService.getActivityList(
+      widget.goodPiceModel.goodpriceid,
+    );
 
-    if (_iscollection ||
-        (_comments != null && _comments.length > 0) ||
-        (_activitys != null && _activitys.length > 0)) {
+    if (_iscollection || (_comments.isNotEmpty) || (_activitys.isNotEmpty)) {
       if (mounted) {
         setState(() {});
       }
@@ -186,7 +194,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
   double maxOffset = 80.0;
 
-  scrollViewDidScrolled(double offSet) {
+  void scrollViewDidScrolled(double offSet) {
     //print('scroll offset ' + offSet.toString());
     ///appbar 透明度
     double appBarOpacity = offSet / maxOffset;
@@ -214,14 +222,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     }
     //print('roundOpacity $roundOpacity rectOpacity $rectOpacity');
     ///更新透明度
-    if (appBar != null && appBar.updateAppBarOpacity != null) {
+    if (appBar.updateAppBarOpacity != null) {
       appBar.updateAppBarOpacity!(appBarOpacity);
     }
-    if (roundLeftBtn != null && roundLeftBtn.updateOpacity != null) {
+    if (roundLeftBtn.updateOpacity != null) {
       roundLeftBtn.updateOpacity!(roundOpacity);
       shareBtn.updateOpacity!(roundOpacity);
     }
-    if (rectLeftBtn != null && rectLeftBtn.updateOpacity != null) {
+    if (rectLeftBtn.updateOpacity != null) {
       rectLeftBtn.updateOpacity!(rectOpacity);
       rectshareBtn.updateOpacity!(rectOpacity);
       rectTitleBtn.updateOpacity!(rectOpacity);
@@ -234,391 +242,354 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     print(_pageWidth);
     rectTitleBtn.left = (_pageWidth) / 2 - 35;
 
-    return widget.goodPiceModel != null
-        ? Scaffold(
-            bottomNavigationBar: Container(
-              padding: EdgeInsets.only(left: 10),
-              color: Colors.white,
-              height: 53,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  InkWell(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Text('赞', style: TextStyle(fontSize: 17)),
-                        Text(
-                            widget.goodPiceModel.satisfactionrate == 0
-                                ? '0'
-                                : '${(widget.goodPiceModel.satisfactionrate * 100).toInt()}%',
-                            style: TextStyle(
-                              fontSize: 16,
-                            )),
-                      ],
-                    ),
-                    onTap: () async {
-                      if (Global.profile.user != null) {
-                        bool isLike = await imHelper.selGoodPriceState(
-                            widget.goodPiceModel.goodpriceid,
-                            Global.profile.user!.uid,
-                            1);
-                        bool isUnLike = await imHelper.selGoodPriceState(
-                            widget.goodPiceModel.goodpriceid,
-                            Global.profile.user!.uid,
-                            0);
-
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return new Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  InkWell(
-                                    child: Container(
-                                      margin:
-                                          EdgeInsets.only(top: 20, bottom: 20),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "赞 ${widget.goodPiceModel.likenum}",
-                                        style: TextStyle(
-                                            color: isLike
-                                                ? Colors.red
-                                                : Colors.black87),
-                                      ),
-                                    ),
-                                    onTap: () async {
-                                      if (isLike) {
-                                        bool ret =
-                                            await _gpService.delGoodPriceLike(
-                                                widget
-                                                    .goodPiceModel.goodpriceid,
-                                                Global.profile.user!.uid,
-                                                Global.profile.user!.token!,
-                                                errorCallBack);
-                                        if (ret)
-                                          widget.goodPiceModel.likenum =
-                                              widget.goodPiceModel.likenum - 1;
-                                      } else {
-                                        //先取消不赞，在点赞
-                                        if (isUnLike) {
-                                          bool ret = await _gpService
-                                              .updateCancelUnLike(
-                                                  widget.goodPiceModel
-                                                      .goodpriceid,
-                                                  Global.profile.user!.uid,
-                                                  Global.profile.user!.token!,
-                                                  errorCallBack);
-                                          if (ret)
-                                            widget.goodPiceModel.unlikenum =
-                                                widget.goodPiceModel.unlikenum -
-                                                    1;
-                                        }
-                                        bool ret = await _gpService
-                                            .updateGoodPriceLike(
-                                                widget
-                                                    .goodPiceModel.goodpriceid,
-                                                Global.profile.user!.uid,
-                                                Global.profile.user!.token!,
-                                                errorCallBack);
-                                        if (ret)
-                                          widget.goodPiceModel.likenum =
-                                              widget.goodPiceModel.likenum + 1;
-                                      }
-                                      if (widget.goodPiceModel.likenum +
-                                              widget.goodPiceModel.unlikenum >
-                                          0) {
-                                        widget.goodPiceModel.satisfactionrate =
-                                            widget.goodPiceModel.likenum /
-                                                (widget.goodPiceModel.likenum +
-                                                    widget.goodPiceModel
-                                                        .unlikenum);
-                                      } else {
-                                        widget.goodPiceModel.satisfactionrate =
-                                            0;
-                                      }
-                                      Navigator.pop(context);
-                                      setState(() {});
-                                    },
-                                  ),
-                                  MyDivider(),
-                                  InkWell(
-                                    onTap: () async {
-                                      if (isUnLike) {
-                                        bool ret =
-                                            await _gpService.updateCancelUnLike(
-                                                widget
-                                                    .goodPiceModel.goodpriceid,
-                                                Global.profile.user!.uid,
-                                                Global.profile.user!.token!,
-                                                errorCallBack);
-                                        if (ret)
-                                          widget.goodPiceModel.unlikenum =
-                                              widget.goodPiceModel.unlikenum -
-                                                  1;
-                                      } else {
-                                        if (isLike) {
-                                          bool ret =
-                                              await _gpService.delGoodPriceLike(
-                                                  widget.goodPiceModel
-                                                      .goodpriceid,
-                                                  Global.profile.user!.uid,
-                                                  Global.profile.user!.token!,
-                                                  errorCallBack);
-                                          if (ret)
-                                            widget.goodPiceModel.likenum =
-                                                widget.goodPiceModel.likenum -
-                                                    1;
-                                        }
-                                        bool ret =
-                                            await _gpService.updateUnLike(
-                                                widget
-                                                    .goodPiceModel.goodpriceid,
-                                                Global.profile.user!.uid,
-                                                Global.profile.user!.token!,
-                                                errorCallBack);
-                                        if (ret)
-                                          widget.goodPiceModel.unlikenum =
-                                              widget.goodPiceModel.unlikenum +
-                                                  1;
-                                      }
-
-                                      if (widget.goodPiceModel.likenum +
-                                              widget.goodPiceModel.unlikenum >
-                                          0) {
-                                        widget.goodPiceModel.satisfactionrate =
-                                            widget.goodPiceModel.likenum /
-                                                (widget.goodPiceModel.likenum +
-                                                    widget.goodPiceModel
-                                                        .unlikenum);
-                                      } else {
-                                        widget.goodPiceModel.satisfactionrate =
-                                            0;
-                                      }
-                                      Navigator.pop(context);
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      margin:
-                                          EdgeInsets.only(top: 20, bottom: 20),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                          "不赞 ${widget.goodPiceModel.unlikenum}",
-                                          style: TextStyle(
-                                              color: isUnLike
-                                                  ? Colors.red
-                                                  : Colors.black87)),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            });
-                      } else {
-                        Navigator.pushNamed(context, '/Login');
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  InkWell(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Icon(
-                            _iscollection
-                                ? IconFont.icon_collection_b
-                                : IconFont.icon_shoucang,
-                            color: _iscollection
-                                ? Colors.blueAccent
-                                : Colors.black87,
-                            size: 17),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          '${widget.goodPiceModel.collectionnum}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    onTap: () async {
-                      if (Global.profile.user == null) {
-                        Navigator.pushNamed(context, '/Login');
-                        return;
-                      }
-                      if (_isCollectEnter) {
-                        _isCollectEnter = false;
-                        if (!_iscollection) {
-                          await _gpService.updateGoodPriceCollection(
-                              widget.goodPiceModel,
-                              Global.profile.user!.uid,
-                              Global.profile.user!.token!,
-                              errorCallBack);
-                          _isCollectEnter = true;
-                          _iscollection = true;
-                          setState(() {
-                            widget.goodPiceModel.collectionnum =
-                                widget.goodPiceModel.collectionnum + 1;
-                          });
-                        } else {
-                          await _gpService.delGoodPriceCollection(
-                              widget.goodPiceModel.goodpriceid,
-                              Global.profile.user!.uid,
-                              Global.profile.user!.token!,
-                              errorCallBack);
-                          _isCollectEnter = true;
-                          _iscollection = false;
-                          if (mounted) {
-                            setState(() {
-                              widget.goodPiceModel.collectionnum =
-                                  widget.goodPiceModel.collectionnum - 1;
-                            });
-                          }
-                        }
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  InkWell(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Icon(IconFont.icon_liuyan,
-                              color: Colors.black87, size: 19),
-                          SizedBox(
-                            height: 2,
-                          ),
-                          Text("问问商家", style: TextStyle(fontSize: 14)),
-                        ],
-                      ),
-                      onTap: () {
-                        if (Global.profile.user != null) {
-                          if (Global.profile.user != null) {
-                            _hidemessage = "问问商家";
-                            sendMessage(0, widget.goodPiceModel.uid);
-                          } else {
-                            Navigator.pushNamed(context, '/Login');
-                          }
-                        } else {
-                          Navigator.pushNamed(context, '/Login').then((val) {
-                            if (Global.profile.user != null) {
-                              //_activityInfoBloc.add(GetInfo(_actid, Global.profile.user));
-                            }
-                          });
-                        }
-                      }),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      child: Container(
-                        margin: EdgeInsets.all(8),
-                        alignment: Alignment.center,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('一起出发',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 14)),
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          color: Global.profile.backColor,
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                        ),
-                      ),
-                      onTap: () {
-                        if (Global.profile.user != null) {
-                          Navigator.pushNamed(context, '/IssuedActivity',
-                              arguments: {
-                                "maxcost": widget.goodPiceModel.maxcost,
-                                "provinceCode": widget.goodPiceModel.province,
-                                "city": widget.goodPiceModel.city,
-                                "address": widget.goodPiceModel.address,
-                                "addresstitle":
-                                    widget.goodPiceModel.addresstitle,
-                                "lat": widget.goodPiceModel.lat,
-                                "lng": widget.goodPiceModel.lng,
-                                "mincost": widget.goodPiceModel.mincost,
-                                "content": widget.goodPiceModel.title,
-                                "pic": widget.goodPiceModel.pic,
-                                "goodpriceid": widget.goodPiceModel.goodpriceid
-                              });
-                        } else {
-                          Navigator.pushNamed(context, '/Login');
-                        }
-                      },
-                    ),
+    return Scaffold(
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(left: 10),
+        color: Colors.white,
+        height: 53,
+        child: Row(
+          children: [
+            SizedBox(width: 10),
+            InkWell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Text('赞', style: TextStyle(fontSize: 17)),
+                  Text(
+                    widget.goodPiceModel.satisfactionrate == 0
+                        ? '0'
+                        : '${(widget.goodPiceModel.satisfactionrate * 100).toInt()}%',
+                    style: TextStyle(fontSize: 16),
                   ),
                 ],
               ),
-            ),
-            body: Stack(
-              children: <Widget>[
-                ///监听滚动
-                NotificationListener(
-                  onNotification: (notification) {
-                    if (notification is ScrollUpdateNotification &&
-                        notification.depth == 0) {
-                      ///滑动通知
-                      scrollViewDidScrolled(notification.metrics.pixels);
-                    }
+              onTap: () async {
+                if (Global.profile.user != null) {
+                  bool isLike = await imHelper.selGoodPriceState(
+                    widget.goodPiceModel.goodpriceid,
+                    Global.profile.user!.uid,
+                    1,
+                  );
+                  bool isUnLike = await imHelper.selGoodPriceState(
+                    widget.goodPiceModel.goodpriceid,
+                    Global.profile.user!.uid,
+                    0,
+                  );
 
-                    ///通知不再上传
-                    return true;
-                  },
-                  child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ListView(
-                        controller: scrollController,
-                        children: [
-                          buildContentHeadImg(),
-                          buildContentHeadinfo(),
-                          SizedBox(
-                            height: 10,
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return new Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 20, bottom: 20),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "赞 ${widget.goodPiceModel.likenum}",
+                                style: TextStyle(
+                                  color: isLike ? Colors.red : Colors.black87,
+                                ),
+                              ),
+                            ),
+                            onTap: () async {
+                              if (isLike) {
+                                bool ret = await _gpService.delGoodPriceLike(
+                                  widget.goodPiceModel.goodpriceid,
+                                  Global.profile.user!.uid,
+                                  Global.profile.user!.token!,
+                                  errorCallBack,
+                                );
+                                if (ret)
+                                  widget.goodPiceModel.likenum =
+                                      widget.goodPiceModel.likenum - 1;
+                              } else {
+                                //先取消不赞，在点赞
+                                if (isUnLike) {
+                                  bool ret = await _gpService
+                                      .updateCancelUnLike(
+                                        widget.goodPiceModel.goodpriceid,
+                                        Global.profile.user!.uid,
+                                        Global.profile.user!.token!,
+                                        errorCallBack,
+                                      );
+                                  if (ret)
+                                    widget.goodPiceModel.unlikenum =
+                                        widget.goodPiceModel.unlikenum - 1;
+                                }
+                                bool ret = await _gpService.updateGoodPriceLike(
+                                  widget.goodPiceModel.goodpriceid,
+                                  Global.profile.user!.uid,
+                                  Global.profile.user!.token!,
+                                  errorCallBack,
+                                );
+                                if (ret)
+                                  widget.goodPiceModel.likenum =
+                                      widget.goodPiceModel.likenum + 1;
+                              }
+                              if (widget.goodPiceModel.likenum +
+                                      widget.goodPiceModel.unlikenum >
+                                  0) {
+                                widget.goodPiceModel.satisfactionrate =
+                                    widget.goodPiceModel.likenum /
+                                    (widget.goodPiceModel.likenum +
+                                        widget.goodPiceModel.unlikenum);
+                              } else {
+                                widget.goodPiceModel.satisfactionrate = 0;
+                              }
+                              Navigator.pop(context);
+                              setState(() {});
+                            },
                           ),
-                          buildCurrentOrder(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          buildProductEvaluate(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          buildProductQuestion(),
-                          SizedBox(
-                            height: 10,
+                          MyDivider(),
+                          InkWell(
+                            onTap: () async {
+                              if (isUnLike) {
+                                bool ret = await _gpService.updateCancelUnLike(
+                                  widget.goodPiceModel.goodpriceid,
+                                  Global.profile.user!.uid,
+                                  Global.profile.user!.token!,
+                                  errorCallBack,
+                                );
+                                if (ret)
+                                  widget.goodPiceModel.unlikenum =
+                                      widget.goodPiceModel.unlikenum - 1;
+                              } else {
+                                if (isLike) {
+                                  bool ret = await _gpService.delGoodPriceLike(
+                                    widget.goodPiceModel.goodpriceid,
+                                    Global.profile.user!.uid,
+                                    Global.profile.user!.token!,
+                                    errorCallBack,
+                                  );
+                                  if (ret)
+                                    widget.goodPiceModel.likenum =
+                                        widget.goodPiceModel.likenum - 1;
+                                }
+                                bool ret = await _gpService.updateUnLike(
+                                  widget.goodPiceModel.goodpriceid,
+                                  Global.profile.user!.uid,
+                                  Global.profile.user!.token!,
+                                  errorCallBack,
+                                );
+                                if (ret)
+                                  widget.goodPiceModel.unlikenum =
+                                      widget.goodPiceModel.unlikenum + 1;
+                              }
+
+                              if (widget.goodPiceModel.likenum +
+                                      widget.goodPiceModel.unlikenum >
+                                  0) {
+                                widget.goodPiceModel.satisfactionrate =
+                                    widget.goodPiceModel.likenum /
+                                    (widget.goodPiceModel.likenum +
+                                        widget.goodPiceModel.unlikenum);
+                              } else {
+                                widget.goodPiceModel.satisfactionrate = 0;
+                              }
+                              Navigator.pop(context);
+                              setState(() {});
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 20, bottom: 20),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "不赞 ${widget.goodPiceModel.unlikenum}",
+                                style: TextStyle(
+                                  color: isUnLike ? Colors.red : Colors.black87,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
-                      )),
-                ),
-                appBar,
-                rectLeftBtn,
-                roundLeftBtn,
-                shareBtn,
-                rectshareBtn,
-                rectTitleBtn,
-              ],
+                      );
+                    },
+                  );
+                } else {
+                  Navigator.pushNamed(context, '/Login');
+                }
+              },
             ),
-          )
-        : Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
+            SizedBox(width: 30),
+            InkWell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Icon(
+                    _iscollection
+                        ? IconFont.icon_collection_b
+                        : IconFont.icon_shoucang,
+                    color: _iscollection ? Colors.blueAccent : Colors.black87,
+                    size: 17,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '${widget.goodPiceModel.collectionnum}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
               ),
-            ));
+              onTap: () async {
+                if (Global.profile.user == null) {
+                  Navigator.pushNamed(context, '/Login');
+                  return;
+                }
+                if (_isCollectEnter) {
+                  _isCollectEnter = false;
+                  if (!_iscollection) {
+                    await _gpService.updateGoodPriceCollection(
+                      widget.goodPiceModel,
+                      Global.profile.user!.uid,
+                      Global.profile.user!.token!,
+                      errorCallBack,
+                    );
+                    _isCollectEnter = true;
+                    _iscollection = true;
+                    setState(() {
+                      widget.goodPiceModel.collectionnum =
+                          widget.goodPiceModel.collectionnum + 1;
+                    });
+                  } else {
+                    await _gpService.delGoodPriceCollection(
+                      widget.goodPiceModel.goodpriceid,
+                      Global.profile.user!.uid,
+                      Global.profile.user!.token!,
+                      errorCallBack,
+                    );
+                    _isCollectEnter = true;
+                    _iscollection = false;
+                    if (mounted) {
+                      setState(() {
+                        widget.goodPiceModel.collectionnum =
+                            widget.goodPiceModel.collectionnum - 1;
+                      });
+                    }
+                  }
+                }
+              },
+            ),
+            SizedBox(width: 30),
+            InkWell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Icon(IconFont.icon_liuyan, color: Colors.black87, size: 19),
+                  SizedBox(height: 2),
+                  Text("问问商家", style: TextStyle(fontSize: 14)),
+                ],
+              ),
+              onTap: () {
+                if (Global.profile.user != null) {
+                  if (Global.profile.user != null) {
+                    _hidemessage = "问问商家";
+                    sendMessage(0, widget.goodPiceModel.uid);
+                  } else {
+                    Navigator.pushNamed(context, '/Login');
+                  }
+                } else {
+                  Navigator.pushNamed(context, '/Login').then((val) {
+                    if (Global.profile.user != null) {
+                      //_activityInfoBloc.add(GetInfo(_actid, Global.profile.user));
+                    }
+                  });
+                }
+              },
+            ),
+            SizedBox(width: 30),
+            Expanded(
+              child: InkWell(
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '一起出发',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: Global.profile.backColor,
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                ),
+                onTap: () {
+                  if (Global.profile.user != null) {
+                    Navigator.pushNamed(
+                      context,
+                      '/IssuedActivity',
+                      arguments: {
+                        "maxcost": widget.goodPiceModel.maxcost,
+                        "provinceCode": widget.goodPiceModel.province,
+                        "city": widget.goodPiceModel.city,
+                        "address": widget.goodPiceModel.address,
+                        "addresstitle": widget.goodPiceModel.addresstitle,
+                        "lat": widget.goodPiceModel.lat,
+                        "lng": widget.goodPiceModel.lng,
+                        "mincost": widget.goodPiceModel.mincost,
+                        "content": widget.goodPiceModel.title,
+                        "pic": widget.goodPiceModel.pic,
+                        "goodpriceid": widget.goodPiceModel.goodpriceid,
+                      },
+                    );
+                  } else {
+                    Navigator.pushNamed(context, '/Login');
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Stack(
+        children: <Widget>[
+          ///监听滚动
+          NotificationListener(
+            onNotification: (notification) {
+              if (notification is ScrollUpdateNotification &&
+                  notification.depth == 0) {
+                ///滑动通知
+                scrollViewDidScrolled(notification.metrics.pixels);
+              }
+
+              ///通知不再上传
+              return true;
+            },
+            child: MediaQuery.removePadding(
+              removeTop: true,
+              context: context,
+              child: ListView(
+                controller: scrollController,
+                children: [
+                  buildContentHeadImg(),
+                  buildContentHeadinfo(),
+                  SizedBox(height: 10),
+                  buildCurrentOrder(),
+                  SizedBox(height: 10),
+                  buildProductEvaluate(),
+                  SizedBox(height: 10),
+                  buildProductQuestion(),
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ),
+          appBar,
+          rectLeftBtn,
+          roundLeftBtn,
+          shareBtn,
+          rectshareBtn,
+          rectTitleBtn,
+        ],
+      ),
+    );
   }
 
   Widget buildContentHeadImg() {
@@ -627,10 +598,12 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     double temwidth = 0;
     if (imagepaths.length > 10) temwidth += 10;
 
-    if (imagepaths.length > 0) {
+    if (imagepaths.isNotEmpty) {
       for (int i = 0; i < imagepaths.length; i++) {
-        albumpicslist.add(
-            {"tag": UniqueKey().toString(), "img": imagepaths[i].toString()});
+        albumpicslist.add({
+          "tag": UniqueKey().toString(),
+          "img": imagepaths[i].toString(),
+        });
       }
     }
 
@@ -652,26 +625,28 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           showPhoto(context, albumpicslist[index], index, albumpicslist);
         },
         pagination: SwiperCustomPagination(
-            builder: (BuildContext context, SwiperPluginConfig config) {
-          return imagepaths.length > 1
-              ? Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    height: 30,
-                    width: 45 + temwidth,
-                    margin: EdgeInsets.only(right: 10, bottom: 10),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${config.activeIndex + 1}/${imagepaths.length}',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    decoration: BoxDecoration(
+          builder: (BuildContext context, SwiperPluginConfig config) {
+            return imagepaths.length > 1
+                ? Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      height: 30,
+                      width: 45 + temwidth,
+                      margin: EdgeInsets.only(right: 10, bottom: 10),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Color(0xFF7F7F7F)),
-                  ),
-                )
-              : SizedBox.shrink();
-        }),
+                        color: Color(0xFF7F7F7F),
+                      ),
+                      child: Text(
+                        '${config.activeIndex + 1}/${imagepaths.length}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink();
+          },
+        ),
         loop: false,
         itemCount: albumpicslist.length,
       ),
@@ -687,28 +662,28 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           width: 31,
           padding: EdgeInsets.only(top: 2, bottom: 2, left: 2, right: 2),
           alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular((5.0)), // 圆角度
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Global.profile.backColor!, Colors.deepOrange],
+            ),
+          ),
           child: Text(
             '${widget.goodPiceModel.brand}',
             style: TextStyle(color: Colors.white, fontSize: 10),
           ),
-          decoration: BoxDecoration(
-              borderRadius: new BorderRadius.circular((5.0)), // 圆角度
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Global.profile.backColor!, Colors.deepOrange])),
         ),
-        SizedBox(
-          width: 10,
-        ),
-        Text(
-          '￥ ',
-          style: TextStyle(color: Colors.red, fontSize: 12),
-        ),
+        SizedBox(width: 10),
+        Text('￥ ', style: TextStyle(color: Colors.red, fontSize: 12)),
         Text(
           '${widget.goodPiceModel.mincost}—${widget.goodPiceModel.maxcost}元',
           style: TextStyle(
-              color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+            color: Colors.red,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
           maxLines: 1,
         ),
       ],
@@ -717,28 +692,30 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     List<Widget> wtag = [];
     wtag.add(SizedBox.shrink());
 
-    if (widget.goodPiceModel.tag != null &&
-        widget.goodPiceModel.tag.isNotEmpty) {
+    if (widget.goodPiceModel.tag.isNotEmpty) {
       List<String> stag = widget.goodPiceModel.tag.split(",");
-      stag.forEach((e) {
-        wtag.add(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
-          child: Text(
-            e,
-            style: TextStyle(
+      for (var e in stag) {
+        wtag.add(
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            child: Text(
+              e,
+              style: TextStyle(
                 fontSize: 10,
                 color: Colors.black38,
-                fontWeight: FontWeight.bold),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ),
-        ));
+        );
 
         wtag.add(SizedBox(width: 5));
-      });
+      }
 
       tag = Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -748,35 +725,29 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     }
 
     return Container(
-        color: Colors.white,
-        padding: EdgeInsets.all(10),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              price,
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                widget.goodPiceModel.title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              tag,
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                widget.goodPiceModel.content,
-                style: TextStyle(color: Colors.black87, fontSize: 14),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-            ]));
+      color: Colors.white,
+      padding: EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          price,
+          SizedBox(height: 10),
+          Text(
+            widget.goodPiceModel.title,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          tag,
+          SizedBox(height: 15),
+          Text(
+            widget.goodPiceModel.content,
+            style: TextStyle(color: Colors.black87, fontSize: 14),
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
   }
 
   Widget buildCurrentOrder() {
@@ -791,18 +762,21 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             child: Text(
               '相关活动',
               style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold),
+                color: Colors.black87,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          (_activitys != null && _activitys.length > 0)
+          (_activitys.isNotEmpty)
               ? buildActivityList()
               : Container(
                   alignment: Alignment.center,
                   height: 50,
-                  child: Text('还没有相关活动',
-                      style: TextStyle(color: Colors.black54, fontSize: 13)),
+                  child: Text(
+                    '还没有相关活动',
+                    style: TextStyle(color: Colors.black54, fontSize: 13),
+                  ),
                 ),
         ],
       ),
@@ -811,127 +785,141 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
   Widget buildActivityList() {
     List<Widget> tem = [];
-    _activitys.forEach((v) {
-      tem.add(InkWell(
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            children: [
-              NoCacheCircleHeadImage(
+    for (var v in _activitys) {
+      tem.add(
+        InkWell(
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                NoCacheCircleHeadImage(
                   imageUrl: v.user!.profilepicture!,
                   width: 50,
-                  uid: v.user!.uid),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
+                  uid: v.user!.uid,
+                ),
+                SizedBox(width: 10),
+                Expanded(
                   child: Column(
-                children: [
-                  Row(
                     children: [
-                      Expanded(
-                          child: Text(
-                        v.content,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              v.content,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '有${v.currentpeoplenum.toString()}人参加',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Text('有${v.currentpeoplenum.toString()}人参加',
-                          style:
-                              TextStyle(fontSize: 12, color: Colors.black54)),
-                    ],
-                  )
-                ],
-              )),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Global.profile.backColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
-                child: Text(
-                  '去参加',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Global.profile.backColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                    ),
+                  ),
+                  child: Text(
+                    '去参加',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/ActivityInfo',
+                      arguments: {"actid": v.actid},
+                    );
+                  },
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/ActivityInfo',
-                      arguments: {"actid": v.actid});
-                },
-              ),
-            ],
+              ],
+            ),
           ),
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              '/ActivityInfo',
+              arguments: {"actid": v.actid},
+            );
+          },
         ),
-        onTap: () {
-          Navigator.pushNamed(context, '/ActivityInfo',
-              arguments: {"actid": v.actid});
-        },
-      ));
-    });
-    return Column(
-      children: tem,
-    );
+      );
+    }
+    return Column(children: tem);
   }
 
   //活动位置
   Widget buildLocation() {
     return InkWell(
       onTap: () {
-        LatLng latLng =
-            LatLng(widget.goodPiceModel.lat, widget.goodPiceModel.lng);
-        Navigator.pushNamed(context, '/MapLocationShowNav', arguments: {
-          "LatLng": latLng,
-          "title": widget.goodPiceModel.addresstitle,
-          "address": widget.goodPiceModel.address
-        });
+        LatLng latLng = LatLng(
+          widget.goodPiceModel.lat,
+          widget.goodPiceModel.lng,
+        );
+        Navigator.pushNamed(
+          context,
+          '/MapLocationShowNav',
+          arguments: {
+            "LatLng": latLng,
+            "title": widget.goodPiceModel.addresstitle,
+            "address": widget.goodPiceModel.address,
+          },
+        );
       },
       child: Container(
         margin: EdgeInsets.only(top: 0, bottom: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Icon(
-              Icons.location_on,
-              size: 25,
-              color: Colors.blue,
-            ),
-            SizedBox(
-              width: 5,
-            ),
+            Icon(Icons.location_on, size: 25, color: Colors.blue),
+            SizedBox(width: 5),
             Expanded(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                widget.goodPiceModel.addresstitle != null &&
-                        widget.goodPiceModel.addresstitle.isNotEmpty
-                    ? Text(
-                        "${widget.goodPiceModel.addresstitle}",
-                        style: TextStyle(color: Colors.black87, fontSize: 13),
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : Text("",
-                        style: TextStyle(color: Colors.black87, fontSize: 13)),
-                Row(
-                  children: [
-                    widget.goodPiceModel.address != null &&
-                            widget.goodPiceModel.address.isNotEmpty
-                        ? Expanded(
-                            child: Text(
-                            "(${widget.goodPiceModel.address})",
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 12,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ))
-                        : SizedBox.shrink(),
-                  ],
-                )
-              ],
-            )),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  widget.goodPiceModel.addresstitle.isNotEmpty
+                      ? Text(
+                          widget.goodPiceModel.addresstitle,
+                          style: TextStyle(color: Colors.black87, fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : Text(
+                          "",
+                          style: TextStyle(color: Colors.black87, fontSize: 13),
+                        ),
+                  Row(
+                    children: [
+                      widget.goodPiceModel.address.isNotEmpty
+                          ? Expanded(
+                              child: Text(
+                                "(${widget.goodPiceModel.address})",
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -946,19 +934,22 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      '评价 ${widget.goodPiceModel.evaluatenum == 0 ? '' : widget.goodPiceModel.evaluatenum}',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold)),
-                ],
-              )),
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '评价 ${widget.goodPiceModel.evaluatenum == 0 ? '' : widget.goodPiceModel.evaluatenum}',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
           buildEvaluateList(),
         ],
       ),
@@ -973,50 +964,49 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      '问答 ${widget.goodPiceModel.commentnum == 0 ? '' : widget.goodPiceModel.commentnum}',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold)),
-                  InkWell(
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.menu,
-                          color: Colors.black45,
-                          size: 18,
-                        ),
-                        Text(
-                          _sortname,
-                          style: TextStyle(color: Colors.black45, fontSize: 13),
-                        )
-                      ],
-                    ),
-                    onTap: () {
-                      if (_comments != null && _comments.length > 0) {
-                        if (_sortname == "按时间") {
-                          _sortname = '按热度'; //当前排序方式
-                          _ordertype = "1";
-                          sortComment(_comments, _ordertype);
-                        } else {
-                          _sortname = '按时间';
-                          _ordertype = "0";
-                          sortComment(_comments, _ordertype);
-                        }
-                        if (mounted) {
-                          setState(() {});
-                        }
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '问答 ${widget.goodPiceModel.commentnum == 0 ? '' : widget.goodPiceModel.commentnum}',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                InkWell(
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.menu, color: Colors.black45, size: 18),
+                      Text(
+                        _sortname,
+                        style: TextStyle(color: Colors.black45, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    if (_comments.isNotEmpty) {
+                      if (_sortname == "按时间") {
+                        _sortname = '按热度'; //当前排序方式
+                        _ordertype = "1";
+                        sortComment(_comments, _ordertype);
+                      } else {
+                        _sortname = '按时间';
+                        _ordertype = "0";
+                        sortComment(_comments, _ordertype);
                       }
-                    },
-                  )
-                ],
-              )),
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
           buildComment(),
         ],
       ),
@@ -1026,9 +1016,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   //获取评论内容
   Widget buildComment() {
     List<Widget> tem = [];
-    if (_comments != null && _comments.length > 0) {
+    if (_comments.isNotEmpty) {
       _comments.map((v) {
-        tem.add(Container(
+        tem.add(
+          Container(
             margin: EdgeInsets.only(bottom: 10, left: 9),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1058,13 +1049,16 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                       Text(
                                         v.user!.username,
                                         style: TextStyle(
-                                            color: Colors.black54,
-                                            fontSize: 13),
+                                          color: Colors.black54,
+                                          fontSize: 13,
+                                        ),
                                       ),
                                       Text(
                                         v.createtime!.substring(5, 10),
                                         style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1072,20 +1066,21 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 onTap: () {
                                   int uid = v.user!.uid;
                                   if (Global.profile.user == null) {
-                                    if (uid != null)
-                                      Navigator.pushNamed(
-                                          context, '/OtherProfile',
-                                          arguments: {"uid": uid});
-                                  } else if (uid != null &&
-                                      uid != Global.profile.user!.uid) {
                                     Navigator.pushNamed(
-                                        context, '/OtherProfile',
-                                        arguments: {"uid": uid});
-                                  } else if (uid != null &&
-                                      uid == Global.profile.user!.uid)
+                                      context,
+                                      '/OtherProfile',
+                                      arguments: {"uid": uid},
+                                    );
+                                  } else if (uid != Global.profile.user!.uid) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/OtherProfile',
+                                      arguments: {"uid": uid},
+                                    );
+                                  } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
-                              )
+                              ),
                             ],
                           ),
                           Row(
@@ -1100,7 +1095,8 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                       ? IconFont.icon_dianzan1
                                       : IconFont.icon_tubiaozhizuo_,
                                   size: 18,
-                                  color: (Global.profile.user == null ||
+                                  color:
+                                      (Global.profile.user == null ||
                                           v.likeuid != Global.profile.user!.uid)
                                       ? Colors.black38
                                       : Global.profile.backColor,
@@ -1108,19 +1104,22 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 onPressed: () {
                                   if (_isCommentLike) {
                                     _isCommentLike = false;
-                                    if (v.likeuid == 0)
+                                    if (v.likeuid == 0) {
                                       commentLike(
-                                          v.commentid!,
-                                          Global.profile.user!.uid,
-                                          Global.profile.user!.token!,
-                                          v.user!.uid,
-                                          widget.goodPiceModel.goodpriceid);
-                                    else
+                                        v.commentid!,
+                                        Global.profile.user!.uid,
+                                        Global.profile.user!.token!,
+                                        v.user!.uid,
+                                        widget.goodPiceModel.goodpriceid,
+                                      );
+                                    } else {
                                       delCommentLike(
-                                          v.commentid!,
-                                          Global.profile.user!.uid,
-                                          Global.profile.user!.token!,
-                                          v.user!.uid);
+                                        v.commentid!,
+                                        Global.profile.user!.uid,
+                                        Global.profile.user!.token!,
+                                        v.user!.uid,
+                                      );
+                                    }
                                   }
                                 },
                               ),
@@ -1129,7 +1128,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 style: TextStyle(color: Colors.black38),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                       Container(
@@ -1141,9 +1140,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       ),
                       (v.replys != null)
                           ? buildChildComment(v.replys!)
-                          : SizedBox(
-                              height: 0,
-                            ),
+                          : SizedBox(height: 0),
                     ],
                   ),
                   onTap: () {
@@ -1160,22 +1157,23 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   },
                 ),
               ],
-            )));
+            ),
+          ),
+        );
       }).toList();
     } else {
-      tem.add(Container(
-        height: 50,
-        width: double.infinity,
-        child: Center(
-          child: Text(
-            '还没有问题',
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 14,
+      tem.add(
+        SizedBox(
+          height: 50,
+          width: double.infinity,
+          child: Center(
+            child: Text(
+              '还没有问题',
+              style: TextStyle(color: Colors.black54, fontSize: 14),
             ),
           ),
         ),
-      ));
+      );
     }
     return Column(children: tem);
   }
@@ -1185,39 +1183,43 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     replys.sort((a, b) => (a.replycreatetime!).compareTo(b.replycreatetime!));
     List<Widget> tem = [];
     replys.map((v) {
-      tem.add(InkWell(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(5),
-              child: Row(
-                children: <Widget>[
-                  NoCacheCircleHeadImage(
-                    imageUrl: v.replyuser!.profilepicture!,
-                    width: 30,
-                    uid: v.replyuser!.uid,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          v.replyuser!.username,
-                          style: TextStyle(color: Colors.black54, fontSize: 13),
-                        ),
-                        Text(
-                          v.replycreatetime!.substring(5, 10),
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
+      tem.add(
+        InkWell(
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(5),
+                child: Row(
+                  children: <Widget>[
+                    NoCacheCircleHeadImage(
+                      imageUrl: v.replyuser!.profilepicture!,
+                      width: 30,
+                      uid: v.replyuser!.uid,
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            v.replyuser!.username,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Text(
+                            v.replycreatetime!.substring(5, 10),
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Container(
+              Container(
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 40),
                 child: RichText(
@@ -1227,52 +1229,63 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       ? TextSpan(
                           children: <TextSpan>[
                             TextSpan(
-                                text: '回复 ',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14)),
+                              text: '回复 ',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
                             TextSpan(
-                                text: '${v.touser!.username}',
-                                style: TextStyle(
-                                    color: Colors.blue, fontSize: 14)),
+                              text: v.touser!.username,
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 14,
+                              ),
+                            ),
                             TextSpan(
-                                text: ':${v.replycontent}',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14))
+                              text: ':${v.replycontent}',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
                           ],
                         )
                       : TextSpan(
                           text: '${v.replycontent}',
-                          style: TextStyle(color: Colors.black, fontSize: 14)),
-                )
+                          style: TextStyle(color: Colors.black, fontSize: 14),
+                        ),
+                ),
                 //              Text(v.user.username, style: TextStyle(color: Colors.blue, fontSize: 14),),
-//              v.touser!=null?Text(' 回复 @',style: TextStyle(fontSize: 14),):Text(''),
-//              v.touser!=null?Text(v.touser.username,style: TextStyle(fontSize: 14)):Text(''),
-//              Text(': ${v.replycontent}', style: TextStyle(color: Colors.black, fontSize: 14),),
-                )
-          ],
+                //              v.touser!=null?Text(' 回复 @',style: TextStyle(fontSize: 14),):Text(''),
+                //              v.touser!=null?Text(v.touser.username,style: TextStyle(fontSize: 14)):Text(''),
+                //              Text(': ${v.replycontent}', style: TextStyle(color: Colors.black, fontSize: 14),),
+              ),
+            ],
+          ),
+          onTap: () {
+            _hidemessage = '回复@${v.replyuser!.username}';
+            sendMessage(v.commentid!, v.replyuser!.uid, touser: v.replyuser!);
+          },
+          onLongPress: () {
+            if (v.replyuser!.uid == Global.profile.user!.uid) {
+              showReplyDel(v.replyid!);
+            } else {
+              showReplyReport(v.replyid!, v.replyuser!.uid, v.replycontent!);
+            }
+          },
         ),
-        onTap: () {
-          _hidemessage = '回复@${v.replyuser!.username}';
-          sendMessage(v.commentid!, v.replyuser!.uid, touser: v.replyuser!);
-        },
-        onLongPress: () {
-          if (v.replyuser!.uid == Global.profile.user!.uid) {
-            showReplyDel(v.replyid!);
-          } else {
-            showReplyReport(v.replyid!, v.replyuser!.uid, v.replycontent!);
-          }
-        },
-      ));
+      );
     }).toList();
     return Container(
       margin: EdgeInsets.only(left: 40, top: 10, right: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        color: Colors.black12.withAlpha(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: tem,
-      ),
-      decoration: new BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        color: Colors.black12.withAlpha(20),
       ),
     );
   }
@@ -1308,11 +1321,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                               Text(
                                 e.user!.username,
                                 style: TextStyle(
-                                    color: Colors.black87, fontSize: 12),
+                                  color: Colors.black87,
+                                  fontSize: 12,
+                                ),
                               ),
-                              SizedBox(
-                                height: 3,
-                              ),
+                              SizedBox(height: 3),
                               RatingStars(
                                 editable: true,
                                 rating: double.parse(e.liketype!.toString()),
@@ -1325,18 +1338,21 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         onTap: () {
                           int uid = e.user!.uid;
                           if (Global.profile.user == null) {
-                            if (uid != null)
-                              Navigator.pushNamed(context, '/OtherProfile',
-                                  arguments: {"uid": uid});
-                          } else if (uid != null &&
-                              uid != Global.profile.user!.uid) {
-                            Navigator.pushNamed(context, '/OtherProfile',
-                                arguments: {"uid": uid});
-                          } else if (uid != null &&
-                              uid == Global.profile.user!.uid)
+                            Navigator.pushNamed(
+                              context,
+                              '/OtherProfile',
+                              arguments: {"uid": uid},
+                            );
+                          } else if (uid != Global.profile.user!.uid) {
+                            Navigator.pushNamed(
+                              context,
+                              '/OtherProfile',
+                              arguments: {"uid": uid},
+                            );
+                          } else if (uid == Global.profile.user!.uid)
                             Navigator.pushNamed(context, '/MyProfile');
                         },
-                      )
+                      ),
                     ],
                   ),
                   Text(
@@ -1351,7 +1367,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     Container(
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.only(
-                          top: 15, left: 20, right: 20, bottom: 10),
+                        top: 15,
+                        left: 20,
+                        right: 20,
+                        bottom: 10,
+                      ),
                       child: Text(
                         e.content!,
                         style: TextStyle(color: Colors.black, fontSize: 14),
@@ -1375,8 +1395,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/EvaluateInfo',
-                      arguments: {"evaluateActivity": e}).then((val) {
+                  Navigator.pushNamed(
+                    context,
+                    '/EvaluateInfo',
+                    arguments: {"evaluateActivity": e},
+                  ).then((val) {
                     setState(() {});
                   });
                 },
@@ -1416,9 +1439,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       }
                     },
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
+                  SizedBox(width: 20),
                   IconText(
                     e.replynum.toString() == "0" ? '回复' : e.replynum.toString(),
                     padding: EdgeInsets.only(right: 2),
@@ -1429,48 +1450,46 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       size: 18,
                     ),
                     onTap: () {
-                      Navigator.pushNamed(context, '/EvaluateInfo',
-                          arguments: {"evaluateActivity": e}).then((val) {
+                      Navigator.pushNamed(
+                        context,
+                        '/EvaluateInfo',
+                        arguments: {"evaluateActivity": e},
+                      ).then((val) {
                         setState(() {});
                       });
                     },
                   ),
                 ],
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
             ],
           ),
         ),
       );
       index++;
     }).toList();
-    return evaluateContent.length == 0
+    return evaluateContent.isEmpty
         ? Center(
             child: Text(
               'Emm...就是没有评价...',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.black54, fontSize: 14),
             ),
           )
-        : Column(
-            children: evaluateContent,
-          );
+        : Column(children: evaluateContent);
   }
 
-  void showPhoto(BuildContext context, Map<String, String> img, int index,
-      List<Map<String, String>> imglist) {
+  void showPhoto(
+    BuildContext context,
+    Map<String, String> img,
+    int index,
+    List<Map<String, String>> imglist,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => GalleryPhotoViewWrapper(
           galleryItems: imglist,
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.black,
-          ),
+          backgroundDecoration: const BoxDecoration(color: Colors.black),
           initialIndex: index,
           //scrollDirection: verticalGallery ? Axis.vertical : Axis.horizontal,
         ),
@@ -1487,128 +1506,130 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           padding: MediaQuery.of(context).viewInsets,
           duration: const Duration(milliseconds: 100),
           child: Container(
-              color: Colors.white,
-              alignment: Alignment.center,
-              height: 80,
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.top), // !important
-              margin: EdgeInsets.only(right: 10),
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.keyboard_hide,
-                      color: Colors.black54,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
+            color: Colors.white,
+            alignment: Alignment.center,
+            height: 80,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.top,
+            ), // !important
+            margin: EdgeInsets.only(right: 10),
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.keyboard_hide, color: Colors.black54),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Expanded(
+                  child: TextField(
+                    maxLength: 255,
+                    maxLines: null,
+                    autofocus: true,
+                    onChanged: (val) {
+                      _message = val;
                     },
-                  ),
-                  Expanded(
-                    child: TextField(
-                        maxLength: 255,
-                        maxLines: null,
-                        autofocus: true,
-                        onChanged: (val) {
-                          _message = val;
-                        },
-                        decoration: InputDecoration(
-                            fillColor: Colors.grey,
-                            border: InputBorder.none,
-                            hintText: _hidemessage,
-                            counterText: '')),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      shape: RoundedRectangleBorder(
-                          side: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(5))),
+                    decoration: InputDecoration(
+                      fillColor: Colors.grey,
+                      border: InputBorder.none,
+                      hintText: _hidemessage,
+                      counterText: '',
                     ),
-                    child: Text(
-                      '发送',
-                      style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
                     ),
-                    onPressed: () async {
-                      if (_message.isNotEmpty) {
-                        Navigator.pop(context);
+                  ),
+                  child: Text('发送', style: TextStyle(color: Colors.white)),
+                  onPressed: () async {
+                    if (_message.isNotEmpty) {
+                      Navigator.pop(context);
 
-                        if (commentid == 0) {
-                          commentid = await _gpService.updateMessage(
-                              widget.goodPiceModel.goodpriceid,
-                              Global.profile.user!.uid,
-                              Global.profile.user!.token!,
-                              touid,
-                              _message,
-                              "",
-                              errorCallBack);
-                          if (commentid > 0) {
-                            _comments.insert(
-                                0,
-                                Comment(
-                                    commentid,
-                                    widget.goodPiceModel.goodpriceid,
-                                    Global.profile.user,
-                                    _message,
-                                    0,
-                                    CommonUtil.getTime(),
-                                    0));
-                            sortComment(_comments, _ordertype);
-                            setState(() {});
-                          } else {
-                            errorHandle(
-                                commentid == null ? 0 : commentid, touid, null);
-                          }
-                        } else {
-                          int temreplyid = await _gpService.updateCommentReply(
+                      if (commentid == 0) {
+                        commentid = await _gpService.updateMessage(
+                          widget.goodPiceModel.goodpriceid,
+                          Global.profile.user!.uid,
+                          Global.profile.user!.token!,
+                          touid,
+                          _message,
+                          "",
+                          errorCallBack,
+                        );
+                        if (commentid > 0) {
+                          _comments.insert(
+                            0,
+                            Comment(
                               commentid,
                               widget.goodPiceModel.goodpriceid,
-                              Global.profile.user!.uid,
-                              Global.profile.user!.token!,
-                              touid,
+                              Global.profile.user,
                               _message,
-                              "",
-                              errorCallBack);
-
-                          if (temreplyid > 0) {
-                            _comments.forEach((e) {
-                              if (e.commentid == commentid) {
-                                if (e.replys == null) {
-                                  e.replys = [];
-                                }
-                                e.replys!.add(CommentReply(
-                                    temreplyid,
-                                    commentid,
-                                    Global.profile.user,
-                                    touser,
-                                    _message,
-                                    DateTime.now().toString(),
-                                    false,
-                                    widget.goodPiceModel.goodpriceid,
-                                    false,
-                                    "",
-                                    "",
-                                    0,
-                                    ""));
-                              }
-                            });
-                            sortComment(_comments, _ordertype);
-
-                            setState(() {});
-                          } else {
-                            errorHandle(commentid == null ? 0 : commentid,
-                                touid, touser);
-                          }
+                              0,
+                              CommonUtil.getTime(),
+                              0,
+                            ),
+                          );
+                          sortComment(_comments, _ordertype);
+                          setState(() {});
+                        } else {
+                          errorHandle(commentid ?? 0, touid, null);
                         }
                       } else {
-                        ShowMessage.showToast('输入问题!');
+                        int temreplyid = await _gpService.updateCommentReply(
+                          commentid,
+                          widget.goodPiceModel.goodpriceid,
+                          Global.profile.user!.uid,
+                          Global.profile.user!.token!,
+                          touid,
+                          _message,
+                          "",
+                          errorCallBack,
+                        );
+
+                        if (temreplyid > 0) {
+                          for (var e in _comments) {
+                            if (e.commentid == commentid) {
+                              e.replys ??= [];
+                              e.replys!.add(
+                                CommentReply(
+                                  temreplyid,
+                                  commentid,
+                                  Global.profile.user,
+                                  touser,
+                                  _message,
+                                  DateTime.now().toString(),
+                                  false,
+                                  widget.goodPiceModel.goodpriceid,
+                                  false,
+                                  "",
+                                  "",
+                                  0,
+                                  "",
+                                ),
+                              );
+                            }
+                          }
+                          sortComment(_comments, _ordertype);
+
+                          setState(() {});
+                        } else {
+                          errorHandle(commentid ?? 0, touid, touser);
+                        }
                       }
-                    },
-                  )
-                ],
-              )),
+                    } else {
+                      ShowMessage.showToast('输入问题!');
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
         );
       },
     ).then((value) async {});
@@ -1616,39 +1637,41 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
   Future<void> evaluateLike(int evaluateid, int touid) async {
     bool ret = await _activityService.updateEvaluateLike(
-        evaluateid,
-        Global.profile.user!.uid,
-        Global.profile.user!.token!,
-        touid,
-        "",
-        errorCallBack);
+      evaluateid,
+      Global.profile.user!.uid,
+      Global.profile.user!.token!,
+      touid,
+      "",
+      errorCallBack,
+    );
 
     if (ret) {
-      _evaluates.forEach((e) {
+      for (var e in _evaluates) {
         if (e.evaluateid == evaluateid) {
           e.likeuid = Global.profile.user!.uid;
           e.likenum = e.likenum! + 1;
         }
-      });
+      }
       setState(() {});
     }
   }
 
   Future<void> delevaluateLike(int evaluateid, int touid) async {
     bool ret = await _activityService.delEvaluateLike(
-        evaluateid,
-        Global.profile.user!.uid,
-        Global.profile.user!.token!,
-        touid,
-        errorCallBack);
+      evaluateid,
+      Global.profile.user!.uid,
+      Global.profile.user!.token!,
+      touid,
+      errorCallBack,
+    );
 
     if (ret) {
-      _evaluates.forEach((e) {
+      for (var e in _evaluates) {
         if (e.evaluateid == evaluateid) {
           e.likeuid = 0;
           e.likenum = e.likenum! - 1;
         }
-      });
+      }
 
       setState(() {});
     } else {
@@ -1657,31 +1680,55 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   }
 
   Future<void> delMessage(
-      String token, int uid, int commentid, String goodpriceid) async {
+    String token,
+    int uid,
+    int commentid,
+    String goodpriceid,
+  ) async {
     bool ret = await _gpService.delMessage(
-        token, uid, commentid, goodpriceid, errorCallBack);
+      token,
+      uid,
+      commentid,
+      goodpriceid,
+      errorCallBack,
+    );
     if (ret) {
-      _comments =
-          await _gpService.getCommentList(goodpriceid, uid, errorCallBack);
+      _comments = await _gpService.getCommentList(
+        goodpriceid,
+        uid,
+        errorCallBack,
+      );
       setState(() {});
     } else {}
   }
 
-  delReplyMessage(
-      String token, int uid, int replyid, String goodpriceid) async {
+  Future<void> delReplyMessage(
+    String token,
+    int uid,
+    int replyid,
+    String goodpriceid,
+  ) async {
     bool ret = await _gpService.delMessageReply(
-        token, uid, replyid, goodpriceid, errorCallBack);
+      token,
+      uid,
+      replyid,
+      goodpriceid,
+      errorCallBack,
+    );
     if (ret) {
-      _comments =
-          await _gpService.getCommentList(goodpriceid, uid, errorCallBack);
+      _comments = await _gpService.getCommentList(
+        goodpriceid,
+        uid,
+        errorCallBack,
+      );
       setState(() {});
     } else {}
   }
 
   List<Comment> sortComment(List<Comment> comments, String ordertype) {
-    if (ordertype == "0")
+    if (ordertype == "0") {
       comments.sort((a, b) => (b.createtime!).compareTo(a.createtime!));
-    else {
+    } else {
       comments.sort((a, b) => (b.likenum!).compareTo(a.likenum!));
     }
     return comments;
@@ -1691,60 +1738,87 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     List<String> paths = imagepaths.split(',');
     List<Widget> images = [];
     paths.map((e) {
-      images.add(ClipRRectOhterHeadImageContainerByBigImg(
-        imageUrl: e.toString(),
-        pagewidth: 200,
-      ));
+      images.add(
+        ClipRRectOhterHeadImageContainerByBigImg(
+          imageUrl: e.toString(),
+          pagewidth: 200,
+        ),
+      );
     }).toList();
 
     return images;
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     error = msg;
     errorstatusCode = statusCode;
   }
 
-  errorHandle(int commentid, int touid, User? touser) {
+  void errorHandle(int commentid, int touid, User? touser) {
     if (errorstatusCode != "200") {
       if (errorstatusCode == "-1008") {
-        loadingBlockPuzzle(context,
-            commentid: commentid, touid: touid, touser: touser!);
+        loadingBlockPuzzle(
+          context,
+          commentid: commentid,
+          touid: touid,
+          touser: touser!,
+        );
       } else {
         ShowMessage.showToast(error);
       }
     }
   }
 
-  Future<void> commentLike(int commentid, int uid, String token, int touid,
-      String goodpriceid) async {
+  Future<void> commentLike(
+    int commentid,
+    int uid,
+    String token,
+    int touid,
+    String goodpriceid,
+  ) async {
     bool ret = await _gpService.updateCommentLike(
-        commentid, uid, token, touid, goodpriceid, errorCallBack);
+      commentid,
+      uid,
+      token,
+      touid,
+      goodpriceid,
+      errorCallBack,
+    );
     if (ret) {
       //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
-      _comments.forEach((e) {
+      for (var e in _comments) {
         if (e.commentid == commentid) {
           e.likeuid = uid;
           e.likenum = e.likenum! + 1;
         }
-      });
+      }
     }
     setState(() {
       _isCommentLike = true;
     });
   }
 
-  delCommentLike(int commentid, int uid, String token, int touid) async {
+  Future<void> delCommentLike(
+    int commentid,
+    int uid,
+    String token,
+    int touid,
+  ) async {
     bool ret = await _gpService.delCommentLike(
-        commentid, uid, token, touid, errorCallBack);
+      commentid,
+      uid,
+      token,
+      touid,
+      errorCallBack,
+    );
     if (ret) {
       //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
-      _comments.forEach((e) {
+      for (var e in _comments) {
         if (e.commentid == commentid) {
           e.likeuid = 0;
           e.likenum = e.likenum! - 1;
         }
-      });
+      }
 
       setState(() {
         _isCommentLike = true;
@@ -1753,81 +1827,89 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   }
 
   //滑动拼图
-  loadingBlockPuzzle(BuildContext context,
-      {barrierDismissible = true,
-      int commentid = 0,
-      int touid = 0,
-      User? touser}) {
+  void loadingBlockPuzzle(
+    BuildContext context, {
+    barrierDismissible = true,
+    int commentid = 0,
+    int touid = 0,
+    User? touser,
+  }) {
     showDialog<Null>(
-        context: context,
-        barrierDismissible: barrierDismissible,
-        builder: (BuildContext context) {
-          return BlockPuzzleCaptchaPage(
-            onSuccess: (v) async {
-              if (commentid == 0) {
-                commentid = await _gpService.updateMessage(
-                    widget.goodPiceModel.goodpriceid,
-                    Global.profile.user!.uid,
-                    Global.profile.user!.token!,
-                    touid,
-                    _message,
-                    v,
-                    errorCallBack);
-                if (commentid > 0) {
-                  _comments.insert(
-                      0,
-                      Comment(
-                          commentid,
-                          widget.goodPiceModel.goodpriceid,
-                          Global.profile.user,
-                          _message,
-                          0,
-                          CommonUtil.getTime(),
-                          0));
-                  sortComment(_comments, _ordertype);
-                  setState(() {});
-                }
-              } else {
-                int temreplyid = await _gpService.updateCommentReply(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (BuildContext context) {
+        return BlockPuzzleCaptchaPage(
+          onSuccess: (v) async {
+            if (commentid == 0) {
+              commentid = await _gpService.updateMessage(
+                widget.goodPiceModel.goodpriceid,
+                Global.profile.user!.uid,
+                Global.profile.user!.token!,
+                touid,
+                _message,
+                v,
+                errorCallBack,
+              );
+              if (commentid > 0) {
+                _comments.insert(
+                  0,
+                  Comment(
                     commentid,
                     widget.goodPiceModel.goodpriceid,
-                    Global.profile.user!.uid,
-                    Global.profile.user!.token!,
-                    touid,
+                    Global.profile.user,
                     _message,
-                    v,
-                    errorCallBack);
-
-                if (temreplyid > 0) {
-                  _comments.forEach((e) {
-                    if (e.commentid == commentid) {
-                      if (e.replys == null) {
-                        e.replys = [];
-                      }
-                      e.replys!.add(CommentReply(
-                          temreplyid,
-                          commentid,
-                          Global.profile.user,
-                          touser,
-                          _message,
-                          DateTime.now().toString(),
-                          false,
-                          widget.goodPiceModel.goodpriceid,
-                          false,
-                          "",
-                          "",
-                          0,
-                          ""));
-                    }
-                  });
-                  sortComment(_comments, _ordertype);
-                  setState(() {});
-                }
+                    0,
+                    CommonUtil.getTime(),
+                    0,
+                  ),
+                );
+                sortComment(_comments, _ordertype);
+                setState(() {});
               }
-            },
-            onFail: () {},
-          );
-        });
+            } else {
+              int temreplyid = await _gpService.updateCommentReply(
+                commentid,
+                widget.goodPiceModel.goodpriceid,
+                Global.profile.user!.uid,
+                Global.profile.user!.token!,
+                touid,
+                _message,
+                v,
+                errorCallBack,
+              );
+
+              if (temreplyid > 0) {
+                for (var e in _comments) {
+                  if (e.commentid == commentid) {
+                    e.replys ??= [];
+                    e.replys!.add(
+                      CommentReply(
+                        temreplyid,
+                        commentid,
+                        Global.profile.user,
+                        touser,
+                        _message,
+                        DateTime.now().toString(),
+                        false,
+                        widget.goodPiceModel.goodpriceid,
+                        false,
+                        "",
+                        "",
+                        0,
+                        "",
+                      ),
+                    );
+                  }
+                }
+                sortComment(_comments, _ordertype);
+                setState(() {});
+              }
+            }
+          },
+          onFail: () {},
+        );
+      },
+    );
   }
 
   void showCommentReport(int commentid, int touid, String content) {
@@ -1836,50 +1918,54 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
       return;
     }
     showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (BuildContext context) => Container(
-              height: 99,
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 99,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Row(
                 children: [
-                  Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                                child: Text(
-                                  '举 报',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  //0活动 1商品 2用户 3 单人聊天 4 活动群聊天 5社团群聊天 6活动留言 7活动回复 8好价评价 9好价回复
-                                  Navigator.pushNamed(
-                                      context, '/ReportAllMessage',
-                                      arguments: {
-                                        "sourcetype": 8,
-                                        "actid": commentid.toString(),
-                                        "touid": touid,
-                                        "content": content
-                                      });
-                                }),
-                          ),
-                        ],
-                      )),
                   Expanded(
-                    child: buildBtn(),
-                  )
+                    child: TextButton(
+                      child: Text(
+                        '举 报',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        //0活动 1商品 2用户 3 单人聊天 4 活动群聊天 5社团群聊天 6活动留言 7活动回复 8好价评价 9好价回复
+                        Navigator.pushNamed(
+                          context,
+                          '/ReportAllMessage',
+                          arguments: {
+                            "sourcetype": 8,
+                            "actid": commentid.toString(),
+                            "touid": touid,
+                            "content": content,
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
-            )).then((value) {});
+            ),
+            Expanded(child: buildBtn()),
+          ],
+        ),
+      ),
+    ).then((value) {});
   }
 
   void showReplyReport(int replyid, int touid, String content) {
@@ -1888,160 +1974,174 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
       return;
     }
     showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (BuildContext context) => Container(
-              height: 99,
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 99,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Row(
                 children: [
-                  Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                                child: Text(
-                                  '举 报',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  //0活动 1商品 2用户 3 单人聊天 4 活动群聊天 5社团群聊天 6活动留言 7活动回复 8好价评价 9好价回复
-                                  Navigator.pushNamed(
-                                      context, '/ReportAllMessage', arguments: {
-                                    "sourcetype": 9,
-                                    "actid": replyid.toString(),
-                                    "touid": touid,
-                                    "content": content
-                                  });
-                                }),
-                          ),
-                        ],
-                      )),
                   Expanded(
-                    child: buildBtn(),
-                  )
+                    child: TextButton(
+                      child: Text(
+                        '举 报',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        //0活动 1商品 2用户 3 单人聊天 4 活动群聊天 5社团群聊天 6活动留言 7活动回复 8好价评价 9好价回复
+                        Navigator.pushNamed(
+                          context,
+                          '/ReportAllMessage',
+                          arguments: {
+                            "sourcetype": 9,
+                            "actid": replyid.toString(),
+                            "touid": touid,
+                            "content": content,
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
-            )).then((value) {});
+            ),
+            Expanded(child: buildBtn()),
+          ],
+        ),
+      ),
+    ).then((value) {});
   }
 
   void showDel(int commentid) {
     showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (BuildContext context) => Container(
-              height: 99,
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 99,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Row(
                 children: [
-                  Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                                child: Text(
-                                  '删 除',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onPressed: () async {
-                                  await delMessage(
-                                      Global.profile.user!.token!,
-                                      Global.profile.user!.uid,
-                                      commentid,
-                                      widget.goodPiceModel.goodpriceid);
-                                  Navigator.pop(context);
-                                }),
-                          ),
-                        ],
-                      )),
                   Expanded(
-                    child: buildBtn(),
-                  )
+                    child: TextButton(
+                      child: Text(
+                        '删 除',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () async {
+                        await delMessage(
+                          Global.profile.user!.token!,
+                          Global.profile.user!.uid,
+                          commentid,
+                          widget.goodPiceModel.goodpriceid,
+                        );
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                 ],
               ),
-            )).then((value) {});
+            ),
+            Expanded(child: buildBtn()),
+          ],
+        ),
+      ),
+    ).then((value) {});
   }
 
   void showReplyDel(int replyid) {
     showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (BuildContext context) => Container(
-              height: 99,
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 99,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Row(
                 children: [
-                  Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                                child: Text(
-                                  '删 除',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onPressed: () {
-                                  delReplyMessage(
-                                      Global.profile.user!.token!,
-                                      Global.profile.user!.uid,
-                                      replyid,
-                                      widget.goodPiceModel.goodpriceid);
-                                  Navigator.pop(context);
-                                }),
-                          ),
-                        ],
-                      )),
                   Expanded(
-                    child: buildBtn(),
-                  )
+                    child: TextButton(
+                      child: Text(
+                        '删 除',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        delReplyMessage(
+                          Global.profile.user!.token!,
+                          Global.profile.user!.uid,
+                          replyid,
+                          widget.goodPiceModel.goodpriceid,
+                        );
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                 ],
               ),
-            )).then((value) {});
+            ),
+            Expanded(child: buildBtn()),
+          ],
+        ),
+      ),
+    ).then((value) {});
   }
 
   Widget buildBtn() {
     return Container(
-        color: Colors.white,
-        width: double.infinity,
-        alignment: Alignment.center,
-        child: Row(
-          children: [
-            Expanded(
-              child: TextButton(
-                  child: Text(
-                    '取 消',
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
+      color: Colors.white,
+      width: double.infinity,
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextButton(
+              child: Text(
+                '取 消',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

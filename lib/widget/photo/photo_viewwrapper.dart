@@ -5,6 +5,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
   GalleryPhotoViewWrapper({
+    super.key,
     this.loadingBuilder,
     required this.backgroundDecoration,
     this.minScale,
@@ -60,7 +61,8 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               builder: _buildItem,
               itemCount: widget.galleryItems.length,
               loadingBuilder: widget.loadingBuilder,
-              backgroundDecoration: widget.backgroundDecoration as BoxDecoration,
+              backgroundDecoration:
+                  widget.backgroundDecoration as BoxDecoration,
               pageController: widget.pageController,
               onPageChanged: onPageChanged,
               scrollDirection: widget.scrollDirection,
@@ -75,7 +77,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   decoration: null,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -83,28 +85,26 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    final  Map<String, String> item = widget.galleryItems[index];
+    final Map<String, String> item = widget.galleryItems[index];
     return item['img'] != null
         ? PhotoViewGalleryPageOptions.customChild(
-      child: Container(
-        width: 300,
-        height: 300,
-        child: CachedNetworkImage(
-          imageUrl: item['img']!,
-        ),
-      ),
-      childSize: const Size(300, 300),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
-    )
+            child: SizedBox(
+              width: 300,
+              height: 300,
+              child: CachedNetworkImage(imageUrl: item['img']!),
+            ),
+            childSize: const Size(300, 300),
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+            maxScale: PhotoViewComputedScale.covered * 1.1,
+            heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
+          )
         : PhotoViewGalleryPageOptions(
-      imageProvider: AssetImage(item['img']!),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
-    );
+            imageProvider: AssetImage(item['img']!),
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+            maxScale: PhotoViewComputedScale.covered * 1.1,
+            heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
+          );
   }
 }

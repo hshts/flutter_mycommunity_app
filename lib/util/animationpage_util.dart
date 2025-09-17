@@ -101,14 +101,10 @@ class AnimationPageRoute<T> extends PageRoute<T> {
     this.pageAffectedType = PageAffectedType.Both,
     this.animationType = AnimationType.SlideRightToLeft,
     this.animationDuration = const Duration(milliseconds: 230),
-    RouteSettings? settings,
+    super.settings,
     this.maintainState = true,
-    bool fullscreenDialog = false,
-  }) : assert(builder != null),
-       assert(animationType != null),
-       assert(maintainState != null),
-       assert(fullscreenDialog != null),
-       super(settings: settings, fullscreenDialog: fullscreenDialog);
+    super.fullscreenDialog,
+  }) : assert(builder != null);
 
   /// 页面构造
   final WidgetBuilder? builder;
@@ -145,14 +141,6 @@ class AnimationPageRoute<T> extends PageRoute<T> {
   ) {
     final Widget result = builder!(context);
     assert(() {
-      if (result == null) {
-        throw FlutterError.fromParts(<DiagnosticsNode>[
-          ErrorSummary(
-            'The builder for route "${settings.name}" returned null.',
-          ),
-          ErrorDescription('Route builders must never return null.'),
-        ]);
-      }
       return true;
     }());
 
@@ -174,7 +162,7 @@ class AnimationPageRoute<T> extends PageRoute<T> {
   ) {
     final Curve curve = Curves.decelerate, reverseCurve = Curves.decelerate;
     if (pageAffectedType == PageAffectedType.None) return child;
-    if (animationType == AnimationType.Fade)
+    if (animationType == AnimationType.Fade) {
       return _buildFadeTransitionAnimateWidget(
         animation,
         secondaryAnimation,
@@ -184,6 +172,7 @@ class AnimationPageRoute<T> extends PageRoute<T> {
         _secondaryTweenFade,
         child,
       );
+    }
     final TextDirection textDirection = Directionality.of(context);
     Tween<Offset> primaryTween = _primaryTweenSlideFromRightToLeft,
         secondaryTween = _secondaryTweenSlideFromRightToLeft;
@@ -294,24 +283,17 @@ class UnitaryAnimationPageRoute<T> extends PageRouteBuilder<T> {
     @required this.builder,
     this.pageAffectedType = PageAffectedType.Enter,
     this.animationType = AnimationType.SlideRightToLeft,
-    RouteSettings? settings,
+    super.settings,
     Duration animationDuration = const Duration(milliseconds: 250),
-    bool opaque = true,
-    bool barrierDismissible = false,
-    Color? barrierColor,
-    String? barrierLabel,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
+    super.opaque,
+    super.barrierDismissible,
+    super.barrierColor,
+    super.barrierLabel,
+    super.maintainState,
+    super.fullscreenDialog,
   }) : assert(builder != null),
-       assert(
-         pageAffectedType != null && pageAffectedType != PageAffectedType.Both,
-       ),
-       assert(opaque != null),
-       assert(barrierDismissible != null),
-       assert(maintainState != null),
-       assert(fullscreenDialog != null),
+       assert(pageAffectedType != PageAffectedType.Both),
        super(
-         settings: settings,
          pageBuilder: (ctx, _, __) => builder!(ctx),
          transitionsBuilder: (ctx, animation, secondaryAnimation, __) {
            Widget page = builder!(ctx);
@@ -350,12 +332,6 @@ class UnitaryAnimationPageRoute<T> extends PageRouteBuilder<T> {
            }
          },
          transitionDuration: animationDuration,
-         opaque: opaque,
-         barrierDismissible: barrierDismissible,
-         barrierColor: barrierColor,
-         barrierLabel: barrierLabel,
-         maintainState: maintainState,
-         fullscreenDialog: fullscreenDialog,
        );
 
   /// 页面构建
@@ -437,19 +413,8 @@ class UnitaryAnimationPageRoute<T> extends PageRouteBuilder<T> {
 
 //没有动画,直接切换
 class UnitaryCupertinoPageRoute<T> extends CupertinoPageRoute<T> {
-  UnitaryCupertinoPageRoute({WidgetBuilder? builder, RouteSettings? settings})
-    : super(builder: builder!, settings: settings);
-
-  @override
-  buildTransitions(context, animation, secondaryAnimation, child) {
-    return super.buildTransitions(
-      context,
-      animation,
-      secondaryAnimation,
-      child,
-    );
-    //return super.buildTransitions(context, animation, secondaryAnimation, page);原来使用的IOS动画
-  }
+  UnitaryCupertinoPageRoute({WidgetBuilder? builder, super.settings})
+    : super(builder: builder!);
 
   //修改flutter的源文件,flutter版本更新后需要添加代码
   // E:\flutter\packages\flutter\lib\src\cupertino\route.dart

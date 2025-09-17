@@ -11,7 +11,7 @@ class HttpManager {
   static const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
   static Map<String, String> optionParams = {
     "mirrorToken": "",
-    "content-Type": CONTENT_TYPE_JSON
+    "content-Type": CONTENT_TYPE_JSON,
   };
   //请求base url
   //static String baseUrl = "http://10.108.11.46:8080/api";
@@ -26,40 +26,39 @@ class HttpManager {
   ///[ noTip] 是否需要返回错误信息 默认不需要
   ///[ needSign] 是否需要Sign校验  默认需要
   ///[ needError] 是否需要错误提示
-  static requestData(url, param, Map<String, String> header,
-      {bool isNeedToken = true,
-        String optionMetod = "post",
-        noTip = false,
-        needSign = true,
-        needError = true}) async {
+  static Future requestData(
+    url,
+    param,
+    Map<String, String> header, {
+    bool isNeedToken = true,
+    String optionMetod = "post",
+    noTip = false,
+    needSign = true,
+    needError = true,
+  }) async {
     ///初始化请求类
-    Dio dio = new Dio();
+    Dio dio = Dio();
 
     ///头部
-    Map<String, String> headers = new HashMap();
-    if (header != null) {
-      headers.addAll(header);
-    }
+    Map<String, String> headers = HashMap();
+    headers.addAll(header);
 
     //请求协议 post 、get
-    Options option = new Options(method: optionMetod);
+    Options option = Options(method: optionMetod);
 
     ///设置头部
-    if (option != null) {
-      option.headers = headers;
-    }
+    option.headers = headers;
 
     option.sendTimeout = 15000;
 
     //获取token
     var mirrorToken = "";
 
-
     var params = param;
-//    if (needSign) {
-//      //获取加密的请求参数
-//      params = await SignConfig.signData(param, mirrorToken);
-//    }
+    //    if (needSign) {
+    //      //获取加密的请求参数
+    //      params = await SignConfig.signData(param, mirrorToken);
+    //    }
 
     Response? response;
     //print("$baseUrl$url");
@@ -67,15 +66,17 @@ class HttpManager {
 
     try {
       ///开始请求
-      response = await dio.request("${Global.serviceurl}$url", data: params, options: option);
-    } on DioError catch (e) {
-
+      response = await dio.request(
+        "${Global.serviceurl}$url",
+        data: params,
+        options: option,
+      );
+    } on DioException catch (e) {
       ///请求失败处理
       if (needError) {
         return e;
       }
     }
-
 
     try {
       var responseJson = response!.data;
@@ -87,8 +88,7 @@ class HttpManager {
       }
     } catch (e) {
       print(e.toString());
-      throw e;
+      rethrow;
     }
   }
-
 }

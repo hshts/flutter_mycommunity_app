@@ -9,7 +9,7 @@ import '../global.dart';
 class InterestSel extends StatefulWidget {
   List<String> interest = [];
 
-  InterestSel(this.interest) {}
+  InterestSel(this.interest, {super.key});
 
   @override
   _InterestSelState createState() => _InterestSelState();
@@ -20,6 +20,10 @@ class _InterestSelState extends State<InterestSel> {
   Widget build(BuildContext context) {
     return Container(
       height: 360,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -118,20 +122,22 @@ class _InterestSelState extends State<InterestSel> {
           ),
         ],
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
     );
   }
 
-  _buildChoiceList() {
+  List<Widget> _buildChoiceList() {
     List<Widget> choices = [];
     interestData.forEach((val, name) {
       choices.add(
         InkWell(
           child: Container(
             alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: widget.interest.contains(val)
+                  ? Global.profile.backColor
+                  : Colors.grey.shade200,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
             child: Text(
               name,
               style: TextStyle(
@@ -141,15 +147,9 @@ class _InterestSelState extends State<InterestSel> {
                     : Colors.black,
               ),
             ),
-            decoration: BoxDecoration(
-              color: widget.interest.indexOf(val) >= 0
-                  ? Global.profile.backColor
-                  : Colors.grey.shade200,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
           ),
           onTap: () {
-            if (widget.interest.indexOf(val) >= 0) {
+            if (widget.interest.contains(val)) {
               widget.interest.remove(val);
             } else {
               widget.interest.add(val);

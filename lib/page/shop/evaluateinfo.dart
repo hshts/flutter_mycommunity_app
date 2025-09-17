@@ -14,8 +14,8 @@ class EvaluateInfo extends StatefulWidget {
   Object? arguments;
   late EvaluateActivity evaluateActivity;
 
-  EvaluateInfo({this.arguments}) {
-    this.evaluateActivity = (arguments as Map)["evaluateActivity"];
+  EvaluateInfo({super.key, this.arguments}) {
+    evaluateActivity = (arguments as Map)["evaluateActivity"];
   }
 
   @override
@@ -28,11 +28,11 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
   bool _isLikeEnter = true;
   String _hidemessage = "留言问问活动细节吧~";
   List<EvaluateActivityReply> evaluateReplys = [];
-  final ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
 
   int temreplyid = -1;
 
-  getEvaluateReplys() async {
+  Future<void> getEvaluateReplys() async {
     evaluateReplys = await _activityService.getEvaluateReplyList(
       widget.evaluateActivity.evaluateid!,
       errorCallBack,
@@ -117,21 +117,18 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                             onTap: () {
                               int uid = widget.evaluateActivity.user!.uid;
                               if (Global.profile.user == null) {
-                                if (uid != null)
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/OtherProfile',
-                                    arguments: {"uid": uid},
-                                  );
-                              } else if (uid != null &&
-                                  uid != Global.profile.user!.uid) {
                                 Navigator.pushNamed(
                                   context,
                                   '/OtherProfile',
                                   arguments: {"uid": uid},
                                 );
-                              } else if (uid != null &&
-                                  uid == Global.profile.user!.uid)
+                              } else if (uid != Global.profile.user!.uid) {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/OtherProfile',
+                                  arguments: {"uid": uid},
+                                );
+                              } else if (uid == Global.profile.user!.uid)
                                 Navigator.pushNamed(context, '/MyProfile');
                             },
                           ),
@@ -159,8 +156,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
-                widget.evaluateActivity.imagepaths! != null &&
-                        widget.evaluateActivity.imagepaths!.isNotEmpty
+                widget.evaluateActivity.imagepaths!.isNotEmpty
                     ? Container(
                         padding: EdgeInsets.only(bottom: 5),
                         child: Column(
@@ -203,7 +199,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
   }
 
   Widget buildBottomButton() {
-    bool _islike = widget.evaluateActivity.likeuid == Global.profile.user!.uid;
+    bool islike = widget.evaluateActivity.likeuid == Global.profile.user!.uid;
 
     return Container(
       height: 70,
@@ -219,13 +215,13 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                 children: <Widget>[
                   IconButton(
                     icon: Icon(
-                      _islike ? IconFont.icon_zan1 : IconFont.icon_aixin,
-                      color: _islike ? Colors.redAccent : Colors.grey,
+                      islike ? IconFont.icon_zan1 : IconFont.icon_aixin,
+                      color: islike ? Colors.redAccent : Colors.grey,
                     ),
                     onPressed: () async {
                       if (_isLikeEnter) {
                         _isLikeEnter = false;
-                        if (!_islike) {
+                        if (!islike) {
                           bool ret = await _activityService.updateEvaluateLike(
                             widget.evaluateActivity.evaluateid!,
                             Global.profile.user!.uid,
@@ -434,7 +430,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
 
   Widget buildComment(List<EvaluateActivityReply> listEvaluateReplys) {
     List<Widget> tem = [];
-    if (listEvaluateReplys != null && listEvaluateReplys.length > 0) {
+    if (listEvaluateReplys.isNotEmpty) {
       listEvaluateReplys.map((v) {
         String toname = "";
         if (v.touser!.uid != widget.evaluateActivity.user!.uid) {
@@ -489,21 +485,18 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                                 onTap: () {
                                   int uid = v.replyuser!.uid;
                                   if (Global.profile.user == null) {
-                                    if (uid != null)
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/OtherProfile',
-                                        arguments: {"uid": uid},
-                                      );
-                                  } else if (uid != null &&
-                                      uid != Global.profile.user!.uid) {
                                     Navigator.pushNamed(
                                       context,
                                       '/OtherProfile',
                                       arguments: {"uid": uid},
                                     );
-                                  } else if (uid != null &&
-                                      uid == Global.profile.user!.uid)
+                                  } else if (uid != Global.profile.user!.uid) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/OtherProfile',
+                                      arguments: {"uid": uid},
+                                    );
+                                  } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
                               ),
@@ -514,7 +507,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                       Container(
                         margin: EdgeInsets.only(left: 30, top: 5),
                         child: Text(
-                          '${toname}${v.replycontent}',
+                          '$toname${v.replycontent}',
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                       ),
@@ -532,7 +525,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
       }).toList();
     } else {
       tem.add(
-        Container(
+        SizedBox(
           height: 50,
           width: double.infinity,
           child: Center(child: Text('还没有任何留言')),
@@ -542,7 +535,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
     return Column(children: tem);
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }

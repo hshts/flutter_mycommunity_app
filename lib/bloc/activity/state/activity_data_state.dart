@@ -29,23 +29,23 @@ class PostLoaded extends ActivityDataState {
     this.isRebuild = true, //2次的状态不同才会rebuild
   }) {
     List<Activity> emptyList = [];
-    activitys!.forEach((e) {
+    for (var e in activitys!) {
       emptyList.add(e);
-    });
+    }
 
-    emptyList.forEach((e) {
+    for (var e in emptyList) {
       if (notinteresteduids != null &&
           notinteresteduids!.contains(e.user!.uid)) {
         activitys!.remove(e);
       }
-    });
+    }
   }
 
   PostLoaded copyWith({List<Activity>? activitys, bool? hasReachedMax}) {
     return PostLoaded(
       activitys: activitys ?? this.activitys,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-      error: error ?? this.error,
+      error: error ?? error,
     );
   }
 
@@ -59,14 +59,14 @@ class PostLoaded extends ActivityDataState {
 
   @override
   String toString() =>
-      'PostLoaded { posts: ${activitys}, hasReachedMax: $hasReachedMax, error: $error } }';
+      'PostLoaded { posts: $activitys, hasReachedMax: $hasReachedMax, error: $error } }';
 }
 
 ///获取数据异常初始化
 class PostUninitedError extends ActivityDataState {
   final String error;
   final String errorstatusCode;
-  PostUninitedError({this.error = "", this.errorstatusCode = ""});
+  const PostUninitedError({this.error = "", this.errorstatusCode = ""});
 
   @override
   List<Object> get props => [error, errorstatusCode];
@@ -74,5 +74,5 @@ class PostUninitedError extends ActivityDataState {
 
 ///更新首页
 class UpdateHome extends ActivityDataState {
-  UpdateHome();
+  const UpdateHome();
 }

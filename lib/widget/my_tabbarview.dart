@@ -1,21 +1,17 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 
 class MyTabBarView extends StatefulWidget {
   /// Creates a page view with one child per tab.
   ///
   /// The length of [children] must be the same as the [controller]'s length.
   const MyTabBarView({
-    Key? key,
+    super.key,
     @required this.children,
     this.controller,
     this.physics,
     this.dragStartBehavior = DragStartBehavior.start,
-  }) : assert(children != null),
-        assert(dragStartBehavior != null),
-        super(key: key);
+  }) : assert(children != null);
 
   /// This widget's selection and animation state.
   ///
@@ -47,8 +43,9 @@ class MyTabBarView extends StatefulWidget {
   _MyTabBarViewState createState() => _MyTabBarViewState();
 }
 
-final PageScrollPhysics _kTabBarViewPhysics = const PageScrollPhysics().applyTo(const ClampingScrollPhysics());
-
+final PageScrollPhysics _kTabBarViewPhysics = const PageScrollPhysics().applyTo(
+  const ClampingScrollPhysics(),
+);
 
 class _MyTabBarViewState extends State<MyTabBarView> {
   TabController? _controller;
@@ -58,35 +55,28 @@ class _MyTabBarViewState extends State<MyTabBarView> {
   int _currentIndex = 0;
   int _warpUnderwayCount = 0;
 
-
   // If the TabBarView is rebuilt with a new tab controller, the caller should
   // dispose the old one. In that case the old controller's animation will be
   // null and should not be accessed.
   bool get _controllerIsValid => _controller?.animation != null;
 
   void _updateTabController() {
-    final TabController newController = widget.controller! ;
+    final TabController newController = widget.controller!;
     assert(() {
-      if (newController == null) {
-        throw FlutterError(
-            'No TabController for ${widget.runtimeType}.\n'
-                'When creating a ${widget.runtimeType}, you must either provide an explicit '
-                'TabController using the "controller" property, or you must ensure that there '
-                'is a DefaultTabController above the ${widget.runtimeType}.\n'
-                'In this case, there was neither an explicit controller nor a default controller.'
-        );
-      }
       return true;
     }());
 
-    if (newController == _controller)
+    if (newController == _controller) {
       return;
+    }
 
-    if (_controllerIsValid)
+    if (_controllerIsValid) {
       _controller!.animation!.removeListener(_handleTabControllerAnimationTick);
+    }
     _controller = newController;
-    if (_controller != null)
+    if (_controller != null) {
       _controller!.animation!.addListener(_handleTabControllerAnimationTick);
+    }
   }
 
   @override
@@ -100,22 +90,25 @@ class _MyTabBarViewState extends State<MyTabBarView> {
     super.didChangeDependencies();
     _updateTabController();
     _currentIndex = _controller!.index;
-    _pageController = PageController(initialPage: _currentIndex );
+    _pageController = PageController(initialPage: _currentIndex);
   }
 
   @override
   void didUpdateWidget(MyTabBarView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller)
+    if (widget.controller != oldWidget.controller) {
       _updateTabController();
-    if (widget.children != oldWidget.children && _warpUnderwayCount == 0)
+    }
+    if (widget.children != oldWidget.children && _warpUnderwayCount == 0) {
       _updateChildren();
+    }
   }
 
   @override
   void dispose() {
-    if (_controllerIsValid)
+    if (_controllerIsValid) {
       _controller!.animation!.removeListener(_handleTabControllerAnimationTick);
+    }
     _controller = null;
     // We don't own the _controller Animation, so it's not disposed here.
     super.dispose();
@@ -127,8 +120,9 @@ class _MyTabBarViewState extends State<MyTabBarView> {
   }
 
   void _handleTabControllerAnimationTick() {
-    if (_warpUnderwayCount > 0 || !_controller!.indexIsChanging)
+    if (_warpUnderwayCount > 0 || !_controller!.indexIsChanging) {
       return; // This widget is driving the controller's animation.
+    }
 
     if (_controller!.index != _currentIndex) {
       _currentIndex = _controller!.index;
@@ -137,15 +131,22 @@ class _MyTabBarViewState extends State<MyTabBarView> {
   }
 
   Future<void> _warpToCurrentIndex() async {
-    if (!mounted)
+    if (!mounted) {
       return Future<void>.value();
+    }
 
-    if (_pageController!.page == _currentIndex.toDouble())
+    if (_pageController!.page == _currentIndex.toDouble()) {
       return Future<void>.value();
+    }
 
     final int previousIndex = _controller!.previousIndex;
-    if ((_currentIndex - previousIndex).abs() == 1)
-      return _pageController!.animateToPage(_currentIndex, duration: kTabScrollDuration, curve: Curves.ease);
+    if ((_currentIndex - previousIndex).abs() == 1) {
+      return _pageController!.animateToPage(
+        _currentIndex,
+        duration: kTabScrollDuration,
+        curve: Curves.ease,
+      );
+    }
 
     assert((_currentIndex - previousIndex).abs() > 1);
     final int initialPage = _currentIndex > previousIndex
@@ -162,9 +163,14 @@ class _MyTabBarViewState extends State<MyTabBarView> {
     });
     _pageController!.jumpToPage(initialPage);
 
-    await _pageController!.animateToPage(_currentIndex, duration: kTabScrollDuration, curve: Curves.ease);
-    if (!mounted)
+    await _pageController!.animateToPage(
+      _currentIndex,
+      duration: kTabScrollDuration,
+      curve: Curves.ease,
+    );
+    if (!mounted) {
       return Future<void>.value();
+    }
     setState(() {
       _warpUnderwayCount -= 1;
       if (widget.children != _children) {
@@ -177,11 +183,13 @@ class _MyTabBarViewState extends State<MyTabBarView> {
 
   // Called when the PageView scrolls
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (_warpUnderwayCount > 0)
+    if (_warpUnderwayCount > 0) {
       return false;
+    }
 
-    if (notification.depth != 0)
+    if (notification.depth != 0) {
       return false;
+    }
 
     _warpUnderwayCount += 1;
     int currentPage = _pageController!.page!.round();
@@ -200,8 +208,8 @@ class _MyTabBarViewState extends State<MyTabBarView> {
     assert(() {
       if (_controller!.length != widget.children!.length) {
         throw FlutterError(
-            'Controller\'s length property (${_controller!.length}) does not match the \n'
-                'number of tabs (${widget.children!.length}) present in TabBar\'s tabs property.'
+          'Controller\'s length property (${_controller!.length}) does not match the \n'
+          'number of tabs (${widget.children!.length}) present in TabBar\'s tabs property.',
         );
       }
       return true;
@@ -211,7 +219,9 @@ class _MyTabBarViewState extends State<MyTabBarView> {
       child: PageView(
         dragStartBehavior: widget.dragStartBehavior,
         controller: _pageController,
-        physics: widget.physics == null ? _kTabBarViewPhysics : _kTabBarViewPhysics.applyTo(widget.physics),
+        physics: widget.physics == null
+            ? _kTabBarViewPhysics
+            : _kTabBarViewPhysics.applyTo(widget.physics),
         children: _childrenWithKey!,
       ),
     );

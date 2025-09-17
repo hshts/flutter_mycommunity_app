@@ -15,7 +15,7 @@ class CreateOrder extends StatefulWidget {
   late GoodPiceModel goodPiceModel;
   late String actid;
 
-  CreateOrder({required this.arguments}) {
+  CreateOrder({super.key, required this.arguments}) {
     if (arguments != null) {
       goodPiceModel = (arguments as Map)["goodprice"];
       actid = (arguments as Map)["actid"];
@@ -30,7 +30,7 @@ class _CreateOrderPageState extends State<CreateOrder> {
   int _selectIndexSpeace2 = -1; //规格2的选中
   String _selectIndexValue1 = ""; //选定的值规格1
   String _selectIndexValue2 = ""; //选定的值规格2
-  GPService _gpService = new GPService();
+  final GPService _gpService = GPService();
 
   int _productNum = 1;
   String _speace1Name = "";
@@ -45,23 +45,23 @@ class _CreateOrderPageState extends State<CreateOrder> {
   String _specsid = "";
   List _responseJson = [];
 
-  _getGoodPriceSpecsList() async {
+  Future<void> _getGoodPriceSpecsList() async {
     skuSpecsList = await _gpService.getProductSpecsList(
       widget.goodPiceModel.goodpriceid,
     );
-    if (skuSpecsList != null && skuSpecsList.length > 0) {
+    if (skuSpecsList.isNotEmpty) {
       _responseJson = json.decode(skuSpecsList[0].spdata);
       _speaceCount = _responseJson.length;
 
-      if (skuSpecsList != null && skuSpecsList.length > 0) {
+      if (skuSpecsList.isNotEmpty) {
         skuSpecsList.sort((l, r) => l.cost.compareTo(r.cost));
         num min = skuSpecsList[0].cost;
         num max = skuSpecsList[skuSpecsList.length - 1].cost;
 
         if (min != max) {
-          _priceinfo = '${min}~${max}';
+          _priceinfo = '$min~$max';
         } else {
-          _priceinfo = '${min}';
+          _priceinfo = '$min';
         }
       }
 
@@ -83,14 +83,16 @@ class _CreateOrderPageState extends State<CreateOrder> {
     //处理规格种类
 
     List<Widget> specsContent = []; //活动内容
-    if (_responseJson.length == 1)
+    if (_responseJson.length == 1) {
       _speace1Name = _responseJson[0]["key"].toString();
+    }
 
-    if (_responseJson.length > 1)
+    if (_responseJson.length > 1) {
       _speace2Name = _responseJson[1]["key"].toString();
+    }
 
     if (_seltext.isEmpty) {
-      _seltext = '请选择 ${_speace1Name}  ${_speace2Name}';
+      _seltext = '请选择 $_speace1Name  $_speace2Name';
     }
     //keys规格
     for (int i = 0; i < _responseJson.length; i++) {
@@ -234,14 +236,12 @@ class _CreateOrderPageState extends State<CreateOrder> {
           List temJson = json.decode(skuSpecsList[i].spdata);
           if (_selectIndexValue1 == temJson[0]["value"].toString()) {
             _selprice = skuSpecsList[i].cost * _productNum;
-            ;
             _saleprice =
                 skuSpecsList[i].cost *
                 widget.goodPiceModel.discount *
                 _productNum;
-            ;
             _saleprice = num.parse(_saleprice.toStringAsFixed(2));
-            _seltext = '已选择： ${_selectIndexValue1}';
+            _seltext = '已选择： $_selectIndexValue1';
             _selectIndexValue2 = "";
           }
         }
@@ -251,11 +251,11 @@ class _CreateOrderPageState extends State<CreateOrder> {
     //有两种规格
     if (_speaceCount == 2) {
       if (_selectIndexValue1 != "") {
-        _seltext = '请选择： ${_speace2Name}';
+        _seltext = '请选择： $_speace2Name';
       }
 
       if (_selectIndexValue2 != "") {
-        _seltext = '请选择： ${_speace1Name}';
+        _seltext = '请选择： $_speace1Name';
       }
 
       if (_selectIndexValue1.isNotEmpty && _selectIndexValue2.isNotEmpty) {
@@ -273,7 +273,7 @@ class _CreateOrderPageState extends State<CreateOrder> {
           }
         }
 
-        _seltext = '已选择： ${_selectIndexValue1} ${_selectIndexValue2}';
+        _seltext = '已选择： $_selectIndexValue1 $_selectIndexValue2';
       }
     }
   }
@@ -282,24 +282,24 @@ class _CreateOrderPageState extends State<CreateOrder> {
     Widget price;
     if (_selprice == -1) {
       price = Text(
-        '￥${_priceinfo}',
+        '￥$_priceinfo',
         style: TextStyle(color: Global.profile.backColor, fontSize: 15),
       );
     } else if (_selprice == _saleprice) {
       price = Text(
-        '￥${_selprice}',
+        '￥$_selprice',
         style: TextStyle(color: Global.profile.backColor, fontSize: 15),
       );
     } else {
       price = Row(
         children: [
           Text(
-            '￥${_selprice}',
+            '￥$_selprice',
             style: TextStyle(color: Global.profile.backColor, fontSize: 16),
           ),
           SizedBox(width: 10),
           Text(
-            '折后 ￥${_saleprice}',
+            '折后 ￥$_saleprice',
             style: TextStyle(color: Global.profile.backColor, fontSize: 14),
           ),
         ],
@@ -352,21 +352,11 @@ class _CreateOrderPageState extends State<CreateOrder> {
         children: [
           Expanded(
             child: TextButton(
-              child: Text(
-                '确定选择',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               style: ButtonStyle(
                 backgroundColor: _specsid == ""
-                    ? MaterialStateProperty.all(
-                        Global.defredcolor.withAlpha(119),
-                      )
-                    : MaterialStateProperty.all(Global.defredcolor),
-                shape: MaterialStateProperty.all(
+                    ? WidgetStateProperty.all(Global.defredcolor.withAlpha(119))
+                    : WidgetStateProperty.all(Global.defredcolor),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(9),
                   ),
@@ -380,11 +370,11 @@ class _CreateOrderPageState extends State<CreateOrder> {
                 String speaceName = "";
 
                 if (_speace1Name != "") {
-                  speaceName += _speace1Name + "|";
+                  speaceName += "$_speace1Name|";
                 }
 
                 if (_speace2Name != "") {
-                  speaceName += _speace2Name + "|";
+                  speaceName += "$_speace2Name|";
                 }
                 if (speaceName != "") {
                   speaceName = speaceName.substring(0, speaceName.length - 1);
@@ -402,6 +392,14 @@ class _CreateOrderPageState extends State<CreateOrder> {
                   },
                 );
               },
+              child: Text(
+                '确定选择',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],

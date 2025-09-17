@@ -4,7 +4,7 @@ import '../../common/json/city_json.dart';
 class ListViewCity extends StatefulWidget {
   final Object? arguments;
   final String _provinceCode;
-  ListViewCity({this.arguments})
+  ListViewCity({super.key, this.arguments})
     : _provinceCode = (arguments as Map)["code"].toString();
 
   @override
@@ -57,6 +57,9 @@ class _ListViewCity extends State<ListViewCity> {
 
   Widget _buildItemWidget(BuildContext context, int index) {
     return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(width: 1, color: Color(0xffe5e5e5))),
+      ),
       child: ListTile(
         onTap: () async {
           Map<String, dynamic> map = {
@@ -68,9 +71,6 @@ class _ListViewCity extends State<ListViewCity> {
         },
         title: Text(_citydata[_citykey[index]]["name"]),
         trailing: new Icon(Icons.keyboard_arrow_right),
-      ),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(width: 1, color: Color(0xffe5e5e5))),
       ),
     );
   }

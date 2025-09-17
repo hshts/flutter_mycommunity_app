@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SoundCircleProcess extends StatefulWidget {
+  const SoundCircleProcess({super.key});
+
   @override
   _SoundCircleProcessState createState() => _SoundCircleProcessState();
 }
 
-class _SoundCircleProcessState extends State<SoundCircleProcess> with SingleTickerProviderStateMixin {
+class _SoundCircleProcessState extends State<SoundCircleProcess>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
   //doubler类型动画
@@ -16,11 +19,12 @@ class _SoundCircleProcessState extends State<SoundCircleProcess> with SingleTick
     // TODO: implement initState
     super.initState();
     //创建AnimationController
-    controller = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500));
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
     //animation第一种创建方式：
-    doubleAnimation =
-    new Tween<double>(begin: 55.0, end: 50.0).animate(controller)
+    doubleAnimation = Tween<double>(begin: 55.0, end: 50.0).animate(controller)
       ..addListener(() {
         if (mounted) {
           setState(() {});
@@ -42,13 +46,10 @@ class _SoundCircleProcessState extends State<SoundCircleProcess> with SingleTick
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return  Container(
+    return Container(
       width: doubleAnimation.value,
       height: doubleAnimation.value,
-      decoration: BoxDecoration(
-          color: Colors.cyan,
-          shape: BoxShape.circle
-      ),
+      decoration: BoxDecoration(color: Colors.cyan, shape: BoxShape.circle),
     );
   }
 

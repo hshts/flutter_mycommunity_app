@@ -9,9 +9,9 @@ export 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 export 'package:flutter_datetime_picker/src/date_model.dart';
 export 'package:flutter_datetime_picker/src/i18n_model.dart';
 
-typedef DateChangedCallback(List<int> years);
-typedef DateCancelledCallback();
-typedef String? StringAtIndexCallBack(int index);
+typedef DateChangedCallback = Function(List<int> years);
+typedef DateCancelledCallback = Function();
+typedef StringAtIndexCallBack = String? Function(int index);
 
 class DatePicker {
   ///
@@ -19,7 +19,7 @@ class DatePicker {
   ///
   static Future<List<int>?> showDatePicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateTime? minTime,
     DateTime? maxTime,
     DateChangedCallback? onChanged,
@@ -55,12 +55,12 @@ class DatePicker {
   ///
   static Future<DateTime?> showTimePicker(
     BuildContext context, {
-    bool showTitleActions: true,
-    bool showSecondsColumn: true,
+    bool showTitleActions = true,
+    bool showSecondsColumn = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -89,11 +89,11 @@ class DatePicker {
   ///
   static Future<DateTime?> showTime12hPicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -121,13 +121,13 @@ class DatePicker {
   ///
   static Future<DateTime?> showDateTimePicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateTime? minTime,
     DateTime? maxTime,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -157,11 +157,11 @@ class DatePicker {
   ///
   static Future<DateTime?> showPicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     BasePickerModel? pickerModel,
     DatePickerTheme? theme,
   }) async {
@@ -193,8 +193,8 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.locale,
     RouteSettings? settings,
     BasePickerModel? pickerModel,
-  })  : this.pickerModel = pickerModel ?? DatePickerModel(),
-        this.theme = theme ?? DatePickerTheme(),
+  })  : pickerModel = pickerModel ?? DatePickerModel(),
+        theme = theme ?? DatePickerTheme(),
         super(settings: settings);
 
   final bool? showTitleActions;
@@ -235,7 +235,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       removeTop: true,
       child: _DatePickerComponent(
         onChanged: onChanged,
-        locale: this.locale,
+        locale: locale,
         route: this,
         pickerModel: pickerModel,
       ),
@@ -245,7 +245,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
 }
 
 class _DatePickerComponent extends StatefulWidget {
-  _DatePickerComponent({
+  const _DatePickerComponent({
     Key? key,
     required this.route,
     required this.pickerModel,
@@ -451,13 +451,13 @@ class _DatePickerState extends State<_DatePickerComponent> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
+          SizedBox(
             height: theme.titleHeight,
             child: CupertinoButton(
               pressedOpacity: 0.3,
               padding: EdgeInsets.only(left: 16, top: 0),
               child: Text(
-                '$cancel',
+                cancel,
                 style: theme.cancelStyle,
               ),
               onPressed: () {
@@ -468,13 +468,13 @@ class _DatePickerState extends State<_DatePickerComponent> {
               },
             ),
           ),
-          Container(
+          SizedBox(
             height: theme.titleHeight,
             child: CupertinoButton(
               pressedOpacity: 0.3,
               padding: EdgeInsets.only(right: 16, top: 0),
               child: Text(
-                '$done',
+                done,
                 style: theme.doneStyle,
               ),
               onPressed: () {
@@ -503,7 +503,6 @@ class _BottomPickerLayout extends SingleChildLayoutDelegate {
   _BottomPickerLayout(
     this.progress,
     this.theme, {
-    this.itemCount,
     this.showTitleActions,
     this.bottomPadding = 0,
   });

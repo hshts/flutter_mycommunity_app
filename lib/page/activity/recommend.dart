@@ -17,26 +17,25 @@ class Recommend extends StatefulWidget {
   bool isPop; //是否从其他页面pop回来
   final Function? parentJumpShop;
 
-  Recommend({Key? key, this.isPop = false, this.parentJumpShop})
-    : super(key: key);
+  Recommend({super.key, this.isPop = false, this.parentJumpShop});
   @override
   _RecommendState createState() => _RecommendState();
 }
 
 class _RecommendState extends State<Recommend>
     with AutomaticKeepAliveClientMixin {
-  ScrollController _scrollControllerContent = new ScrollController(
+  final ScrollController _scrollControllerContent = ScrollController(
     initialScrollOffset: 0,
   );
-  final ImHelper _imHelper = new ImHelper();
-  var _loadstate = 0;
+  final ImHelper _imHelper = ImHelper();
+  final _loadstate = 0;
   double _activityContentHeight = 1.0; //瀑布组件高度
-  double _categoryBarHeight = 50.0;
+  final double _categoryBarHeight = 50.0;
   double _pageWidth = 0;
   double _leftHeight = 0; //左边列的高度
   double _rigthHeight = 0; //右边列的高度
-  double _contentText = 88; //图片下面的文字描述与间距
-  double _scrollThreshold = 100;
+  final double _contentText = 88; //图片下面的文字描述与间距
+  final double _scrollThreshold = 100;
   bool _lock = false; //防止滚动条多次执行加载更多
   double _lastScroll = 0.0;
   bool _isTop = false;
@@ -61,8 +60,9 @@ class _RecommendState extends State<Recommend>
           setState(() {
             if (currentScroll == 0) {
               _isTop = false;
-            } else
+            } else {
               _isTop = true;
+            }
           });
         }
       } else {
@@ -125,12 +125,13 @@ class _RecommendState extends State<Recommend>
             : SizedBox.shrink(),
         body: BlocBuilder<ActivityDataBloc, ActivityDataState>(
           builder: (context, state) {
-            if (state is PostLoading)
+            if (state is PostLoading) {
               return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
                 ),
               );
+            }
             if (state is PostUninitedError) {
               ShowMessage.showToast("请检查网络，再试一下!");
               return reLoadData();
@@ -162,7 +163,7 @@ class _RecommendState extends State<Recommend>
               }
 
               if (state.error != null && state.error!) {
-                this._lock = false; //加载完;毕后解锁，允许再次加载
+                _lock = false; //加载完;毕后解锁，允许再次加载
                 ShowMessage.showToast("网络不给力，请再试一下!");
               }
 
@@ -242,7 +243,7 @@ class _RecommendState extends State<Recommend>
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      Container(
+                      SizedBox(
                         height: _activityContentHeight,
                         child: buildActivityContent(activitys, state),
                       ),
@@ -260,8 +261,9 @@ class _RecommendState extends State<Recommend>
 
   //Activitycontent
   Widget buildActivityContent(List<Activity> activitys, PostLoaded state) {
-    if (activitys.length == 0)
+    if (activitys.isEmpty) {
       return Center(child: Image.asset('images/26074001_bzCh.gif'));
+    }
 
     return StaggeredGridView.countBuilder(
       physics: NeverScrollableScrollPhysics(),
@@ -277,7 +279,7 @@ class _RecommendState extends State<Recommend>
           : state.activitys!.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == activitys.length) {
-          this._lock = false; //加载完毕后解锁，允许再次加载
+          _lock = false; //加载完毕后解锁，允许再次加载
         }
         return index > activitys.length
             ? buildLoading()
@@ -316,15 +318,15 @@ class _RecommendState extends State<Recommend>
             Global.profile.user!.uid,
           );
           List<Activity> emptyList = [];
-          temActivitys.forEach((e) {
+          for (var e in temActivitys) {
             emptyList.add(e);
-          });
+          }
 
-          emptyList.forEach((e) {
+          for (var e in emptyList) {
             if (notinteresteduids.contains(e.user!.uid)) {
               temActivitys.remove(e);
             }
-          });
+          }
 
           setState(() {});
         }
@@ -350,6 +352,13 @@ class _RecommendState extends State<Recommend>
             Container(
               width: _pageWidth,
               height: getImageWH(activity),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5),
+                  topRight: Radius.circular(5),
+                ),
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(5),
@@ -359,13 +368,6 @@ class _RecommendState extends State<Recommend>
                   imageUrl:
                       '${activity.coverimg}?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80', //缩放压缩
                   fit: BoxFit.cover,
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
                 ),
               ),
             ),

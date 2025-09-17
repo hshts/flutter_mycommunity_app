@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ShowMessage {
-  static showToast(String msg) {
+  static void showToast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
@@ -13,7 +13,7 @@ class ShowMessage {
     );
   }
 
-  static showCenterToast(String msg) {
+  static void showCenterToast(String msg) {
     Widget toast = Container(
       alignment: Alignment.center,
       height: 130,
@@ -41,7 +41,7 @@ class ShowMessage {
     );
   }
 
-  static cancel() {
+  static void cancel() {
     Fluttertoast.cancel();
     FToast().removeCustomToast();
   }

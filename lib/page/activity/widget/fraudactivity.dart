@@ -18,7 +18,7 @@ class FraudActivity extends StatefulWidget {
   Object? arguments;
   int touid = 0;
 
-  FraudActivity({this.arguments}) {
+  FraudActivity({super.key, this.arguments}) {
     if (arguments != null) {
       actid = (arguments as Map)["actid"];
       sourcetype = (arguments as Map)["sourcetype"];
@@ -31,14 +31,14 @@ class FraudActivity extends StatefulWidget {
 }
 
 class _FraudActivityState extends State<FraudActivity> {
-  TextEditingController _textEditingController = new TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
   List<AssetEntity> _images = [];
-  int _imageMax = 8; //最多上传9张图
-  AliyunService _aliyunService = new AliyunService();
-  ActivityService _activityService = new ActivityService();
-  List<String> _imagesUrl = [];
+  final int _imageMax = 8; //最多上传9张图
+  final AliyunService _aliyunService = AliyunService();
+  final ActivityService _activityService = ActivityService();
+  final List<String> _imagesUrl = [];
   SecurityToken? _securityToken;
-  FocusNode _contentfocusNode = FocusNode();
+  final FocusNode _contentfocusNode = FocusNode();
 
   @override
   void dispose() {
@@ -150,6 +150,10 @@ class _FraudActivityState extends State<FraudActivity> {
         children: List.generate(_images.length + 1, (index) {
           if (index == _images.length && index < _imageMax) {
             return Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
               child: Center(
                 child: IconButton(
                   alignment: Alignment.center,
@@ -163,10 +167,6 @@ class _FraudActivityState extends State<FraudActivity> {
                   },
                 ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.all(new Radius.circular(5.0)),
-              ),
             );
           } else if (index == _imageMax) {
             return Container();
@@ -175,34 +175,30 @@ class _FraudActivityState extends State<FraudActivity> {
             return Stack(
               children: <Widget>[
                 ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                   child: ExtendedImage(
                     image: AssetEntityImageProvider(asset),
                     width: 300,
                     height: 300,
                     fit: BoxFit.fill,
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
                 Positioned(
                   right: 0.08,
                   top: 0.08,
-                  child: new GestureDetector(
+                  child: GestureDetector(
                     onTap: () {
                       _images.removeAt(index);
                       _imagesUrl.removeAt(index);
 
                       setState(() {});
                     },
-                    child: new Container(
-                      decoration: new BoxDecoration(
+                    child: Container(
+                      decoration: BoxDecoration(
                         color: Colors.black45,
                         shape: BoxShape.circle,
                       ),
-                      child: new Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20.0,
-                      ),
+                      child: Icon(Icons.close, color: Colors.white, size: 20.0),
                     ),
                   ),
                 ),
@@ -227,10 +223,10 @@ class _FraudActivityState extends State<FraudActivity> {
         onPressed: () async {
           if (Global.profile.user != null) {
             String temimages = "";
-            _imagesUrl.forEach((element) {
-              temimages += element + ",";
-            });
-            if (_images.length > 0) {
+            for (var element in _imagesUrl) {
+              temimages += "$element,";
+            }
+            if (_images.isNotEmpty) {
               temimages = temimages.substring(0, temimages.length - 1);
             }
 
@@ -263,7 +259,7 @@ class _FraudActivityState extends State<FraudActivity> {
                 }
               },
             );
-            if (reportid != null && reportid != "") {
+            if (reportid != "") {
               Navigator.pushReplacementNamed(
                 context,
                 '/MyReportInfo',
@@ -288,14 +284,16 @@ class _FraudActivityState extends State<FraudActivity> {
     try {
       resultList = await AssetPicker.pickAssets(
         context,
-        maxAssets: _imageMax,
-        selectedAssets: _images,
-        requestType: RequestType.image,
+        pickerConfig: AssetPickerConfig(
+          maxAssets: _imageMax,
+          selectedAssets: _images,
+          requestType: RequestType.image,
+        ),
       );
     } on Exception catch (e) {
       print(e.toString());
     }
-    if (resultList != null && resultList.length != 0) {
+    if (resultList != null && resultList.isNotEmpty) {
       //添加图片并上传oss 1.申请oss临时token，1000s后过期
       _securityToken = await _aliyunService.getActivitySecurityToken(
         Global.profile.user!.token!,
@@ -315,13 +313,13 @@ class _FraudActivityState extends State<FraudActivity> {
 
         if (!mounted) return;
         setState(() {
-          if (resultList!.length != 0) _images = resultList;
+          if (resultList!.isNotEmpty) _images = resultList;
         });
       }
     }
   }
 
-  loadingBlockPuzzle(
+  void loadingBlockPuzzle(
     BuildContext context, {
     barrierDismissible = true,
     String temimages = "",
@@ -345,7 +343,7 @@ class _FraudActivityState extends State<FraudActivity> {
               v,
               (code, error) {},
             );
-            if (reportid != null && reportid != "") {
+            if (reportid != "") {
               Navigator.pushReplacementNamed(
                 context,
                 '/MyReportInfo',

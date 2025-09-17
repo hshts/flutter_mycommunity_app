@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
+// import 'dart:isolate'; // 未使用，已移除
 import 'dart:ui';
 
 import 'package:badges/badges.dart' as badges;
@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart'; // 未使用，已移除
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -30,14 +30,10 @@ import 'shop/grouppurchase.dart';
 import 'user/userhome.dart';
 
 class IndexPage extends StatefulWidget {
-  Object? arguments;
-  bool isPop = false;
+  final Object? arguments;
+  final bool isPop;
 
-  IndexPage({this.arguments}) {
-    if (arguments != null) {
-      isPop = true;
-    }
-  }
+  IndexPage({super.key, this.arguments}) : isPop = arguments != null;
 
   @override
   _IndexPageState createState() => _IndexPageState();
@@ -45,17 +41,17 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   late List _pages;
-  var _pageController = PageController();
-  CommonJSONService _commonJSONService = new CommonJSONService();
-  UserService _userService = new UserService();
-  ReceivePort _port = ReceivePort();
+  final _pageController = PageController();
+  final CommonJSONService _commonJSONService = CommonJSONService();
+  final UserService _userService = UserService();
+  // final ReceivePort _port = ReceivePort(); // 未使用，已移除
   AppInfo? _appInfo;
   int _currentIndex = 0;
 
   Widget _drawer = SizedBox.shrink();
-  List<String> _categorytypes = [];
+  final List<String> _categorytypes = [];
   List<String> _selectList = [];
-  GlobalKey<ScaffoldState> indexkey = new GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> indexkey = GlobalKey<ScaffoldState>();
   AuthenticationBloc? _authenticationBloc;
 
   @override
@@ -83,7 +79,7 @@ class _IndexPageState extends State<IndexPage> {
       RelationList(),
       MyHome(),
     ];
-    WidgetsBinding.instance!.addPostFrameCallback((data) {
+    WidgetsBinding.instance.addPostFrameCallback((data) {
       _pageJump(0);
     });
   }
@@ -107,7 +103,7 @@ class _IndexPageState extends State<IndexPage> {
     }
   }
 
-  _isshowUpdate(String appurl) {
+  void _isshowUpdate(String appurl) {
     double pagewidth = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
@@ -119,6 +115,10 @@ class _IndexPageState extends State<IndexPage> {
             padding: EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
             width: pagewidth * 0.9,
             alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(6.0)),
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,10 +182,6 @@ class _IndexPageState extends State<IndexPage> {
                 ),
               ],
             ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-            ),
           ),
         );
       },
@@ -241,7 +237,7 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   Widget _buildDarw() {
-    if (_categorytypes.length > 0) {
+    if (_categorytypes.isNotEmpty) {
       if (Global.profile.user != null) {
         if (!indexkey.currentState!.isEndDrawerOpen) {
           print(Global.profile.user!.subject);
@@ -255,7 +251,7 @@ class _IndexPageState extends State<IndexPage> {
           ListTile(
             title: Row(
               children: [
-                RoundCheckBox(value: _selectList.indexOf(type) >= 0),
+                RoundCheckBox(value: _selectList.contains(type)),
                 SizedBox(width: 10),
                 Text(
                   type,
@@ -264,7 +260,7 @@ class _IndexPageState extends State<IndexPage> {
               ],
             ),
             onTap: () {
-              if (!(_selectList.indexOf(type) >= 0)) {
+              if (!(_selectList.contains(type))) {
                 _selectList.add(type);
               } else {
                 _selectList.remove(type);
@@ -281,6 +277,7 @@ class _IndexPageState extends State<IndexPage> {
           children: [
             Container(
               alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(top: 50, left: 15),
               child: Text(
                 _selectList.length > 0
                     ? '选择几个你感兴趣的话题(${_selectList.length}/5)'
@@ -291,7 +288,6 @@ class _IndexPageState extends State<IndexPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              margin: EdgeInsets.only(top: 50, left: 15),
             ),
             Expanded(child: ListView(children: drawerchildren)),
             Container(
@@ -305,7 +301,7 @@ class _IndexPageState extends State<IndexPage> {
                       if (Global.profile.user != null) {
                         String subject = "";
                         for (String s in _selectList) {
-                          subject += s + ",";
+                          subject += "$s,";
                         }
                         if (subject != "") {
                           subject = subject.substring(0, subject.length - 1);
@@ -322,10 +318,8 @@ class _IndexPageState extends State<IndexPage> {
                         if (ret) {
                           Global.profile.user!.subject = subject;
                           Global.saveProfile();
-                          if (_authenticationBloc == null) {
-                            _authenticationBloc =
-                                BlocProvider.of<AuthenticationBloc>(context);
-                          }
+                          _authenticationBloc ??=
+                              BlocProvider.of<AuthenticationBloc>(context);
                           _authenticationBloc!.add(Refresh());
                           Navigator.pop(context, true);
                         }
@@ -334,10 +328,10 @@ class _IndexPageState extends State<IndexPage> {
                       }
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(
                         Global.defredcolor,
                       ),
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(9),
                         ),
@@ -353,19 +347,19 @@ class _IndexPageState extends State<IndexPage> {
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    child: Text(
-                      '取消',
-                      style: TextStyle(fontSize: 14, color: Colors.black45),
-                    ),
                     style: ButtonStyle(
-                      side: MaterialStateProperty.all(
+                      side: WidgetStateProperty.all(
                         BorderSide(color: Colors.black45, width: 0.67),
                       ),
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(9),
                         ),
                       ),
+                    ),
+                    child: Text(
+                      '取消',
+                      style: TextStyle(fontSize: 14, color: Colors.black45),
                     ),
                   ),
                 ],
@@ -446,7 +440,6 @@ class _IndexPageState extends State<IndexPage> {
               BottomNavigationBarItem(
                 icon: newImMode > 0 && Global.profile.user != null
                     ? badges.Badge(
-                        toAnimate: false,
                         badgeContent: Text(
                           newImMode > 99 ? '...' : newImMode.toString(),
                           style: TextStyle(fontSize: 9, color: Colors.white),
@@ -472,7 +465,6 @@ class _IndexPageState extends State<IndexPage> {
               BottomNavigationBarItem(
                 icon: newActivity > 0 && Global.profile.user != null
                     ? badges.Badge(
-                        toAnimate: false,
                         badgeContent: Text(
                           newActivity > 99 ? '...' : newActivity.toString(),
                           style: TextStyle(fontSize: 9, color: Colors.white),
@@ -517,7 +509,7 @@ class _IndexPageState extends State<IndexPage> {
 }
 
 class IssuedActivityButton extends StatelessWidget {
-  const IssuedActivityButton({Key? key}) : super(key: key);
+  const IssuedActivityButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -552,10 +544,11 @@ class IssuedActivityButton extends StatelessWidget {
                 onPressed: () {},
               ),
               onPressed: () {
-                if (Global.profile.user == null)
+                if (Global.profile.user == null) {
                   Navigator.pushNamed(context, '/Login');
-                else
+                } else {
                   Navigator.pushNamed(context, '/IssuedActivity');
+                }
               },
             ),
             Container(
@@ -585,19 +578,17 @@ class IssuedActivityButton extends StatelessWidget {
   }
 }
 
-class _TaskInfo {
-  String? name;
-  String? link;
-
-  String? taskId;
-  int? progress = 0;
-  DownloadTaskStatus? status = DownloadTaskStatus.undefined;
-
-  _TaskInfo({this.name, this.link});
-}
+// class _TaskInfo { // 未使用的类，已移除
+//   String? name;
+//   String? link;
+//   String? taskId;
+//   int? progress = 0;
+//   DownloadTaskStatus? status = DownloadTaskStatus.undefined;
+//   _TaskInfo({this.link});
+// }
 
 class RoundCheckBox extends StatefulWidget {
-  RoundCheckBox({Key? key, required this.value}) : super(key: key);
+  const RoundCheckBox({super.key, required this.value});
 
   final bool value;
   @override
@@ -607,6 +598,7 @@ class RoundCheckBox extends StatefulWidget {
 }
 
 class RoundCheckBoxWidgetBuilder extends State<RoundCheckBox> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 24,

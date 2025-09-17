@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 ///按钮
 // ignore: must_be_immutable
 class PositionedBtnWidget extends StatefulWidget {
@@ -16,15 +17,17 @@ class PositionedBtnWidget extends StatefulWidget {
   ///要触发的事件
   Function actionFunction;
 
-  PositionedBtnWidget(
-      {this.btnTop ,
-        this.right ,
-        this.left ,
-        this.opacity ,
-        this.image ,
-        this.size ,
-        this.content,
-        required this.actionFunction});
+  PositionedBtnWidget({
+    super.key,
+    this.btnTop,
+    this.right,
+    this.left,
+    this.opacity,
+    this.image,
+    this.size,
+    this.content,
+    required this.actionFunction,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -43,20 +46,18 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget != null) {
-      btnTop = widget.btnTop != null ? widget.btnTop : null;
-      right = widget.right != null ? widget.right : null;
-      left = widget.left != null ? widget.left : null;
-      image = widget.image != null ? widget.image : null;
-      btnOpacity = widget.opacity != null ? widget.opacity : null;
-      size = widget.size != null?widget.size : 20;
-    }
+    btnTop = widget.btnTop != null ? widget.btnTop : null;
+    right = widget.right != null ? widget.right : null;
+    left = widget.left != null ? widget.left : null;
+    image = widget.image != null ? widget.image : null;
+    btnOpacity = widget.opacity != null ? widget.opacity : null;
+    size = widget.size != null ? widget.size : 20;
   }
 
   @override
   Widget build(BuildContext context) {
     ///更新透明度
-    if (widget != null && widget.updateOpacity == null) {
+    if (widget.updateOpacity == null) {
       widget.updateOpacity = (double opacity) {
         setState(() {
           btnOpacity = opacity;
@@ -70,15 +71,17 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
       left: left,
       child: Opacity(
         opacity: btnOpacity!,
-        child: widget.content != null ? widget.content : IconButton(
-          iconSize: size!,
-          icon: Image.asset(image!),
-          onPressed: () {
-            if (widget != null && widget.actionFunction != null) {
-              widget.actionFunction();
-            }
-          },
-        ),
+        child:
+            widget.content ??
+            IconButton(
+              iconSize: size!,
+              icon: Image.asset(image!),
+              onPressed: () {
+                if (widget != null && widget.actionFunction != null) {
+                  widget.actionFunction();
+                }
+              },
+            ),
       ),
     );
   }
@@ -87,6 +90,8 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
 ///app barb
 class AppBarWidget extends StatefulWidget {
   Function? updateAppBarOpacity;
+
+  AppBarWidget({super.key});
 
   @override
   State<StatefulWidget> createState() => AppBarState();
@@ -97,15 +102,13 @@ class AppBarState extends State<AppBarWidget> {
 
   @override
   void initState() {
-    if (widget != null) {
-      widget.updateAppBarOpacity = (double op) {
-        if (mounted) {
-          setState(() {
-            opacity = op;
-          });
-        }
-      };
-    }
+    widget.updateAppBarOpacity = (double op) {
+      if (mounted) {
+        setState(() {
+          opacity = op;
+        });
+      }
+    };
 
     super.initState();
   }
@@ -117,11 +120,9 @@ class AppBarState extends State<AppBarWidget> {
 
     return Opacity(
       opacity: opacity,
-      child: Container(
+      child: SizedBox(
         height: appBarHeight,
-        child: AppBar(
-          backgroundColor: Colors.white,
-        ),
+        child: AppBar(backgroundColor: Colors.white),
       ),
     );
   }

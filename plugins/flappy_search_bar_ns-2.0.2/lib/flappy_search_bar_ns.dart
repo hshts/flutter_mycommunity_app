@@ -32,13 +32,13 @@ class SearchBarController<T> {
   late int minimumChars;
 
   void setTextController(
-      TextEditingController _searchQueryController, minimunChars) {
-    this._searchQueryController = _searchQueryController;
-    this.minimumChars = minimunChars;
+      TextEditingController searchQueryController, minimunChars) {
+    this._searchQueryController = searchQueryController;
+    minimumChars = minimunChars;
   }
 
-  void setListener(_ControllerListener _controllerListener) {
-    this._controllerListener = _controllerListener;
+  void setListener(_ControllerListener controllerListener) {
+    this._controllerListener = controllerListener;
   }
 
   void clear() {
@@ -75,7 +75,7 @@ class SearchBarController<T> {
 
   void injectSearch(
       String searchText, Future<List<T>> Function(String? text) onSearch) {
-    if (searchText != null && searchText.length >= minimumChars) {
+    if (searchText.length >= minimumChars) {
       _searchQueryController.text = searchText;
       _search(searchText, onSearch);
     }
@@ -125,7 +125,7 @@ class SearchBarController<T> {
 }
 
 /// Signature for a function that creates [ScaledTile] for a given index.
-typedef ScaledTile IndexedScaledTileBuilder(int index);
+typedef IndexedScaledTileBuilder = ScaledTile Function(int index);
 
 class SearchBar<T> extends StatefulWidget {
   /// Future returning searched items
@@ -220,42 +220,42 @@ class SearchBar<T> extends StatefulWidget {
   final bool isCustList;
   final TextInputType textInputType;
 
-  SearchBar({
-    Key? key,
-    required this.onSearch,
-    required this.onItemFound,
-    this.searchBarController,
-    this.minimumChars = 3,
-    this.debounceDuration = const Duration(milliseconds: 500),
-    this.loader = const Center(child: CircularProgressIndicator()),
-    this.onError,
-    this.emptyWidget = const SizedBox.shrink(),
-    this.header,
-    this.placeHolder,
-    this.icon = const Icon(Icons.search),
-    this.hintText = "",
-    this.hintStyle = const TextStyle(color: Color.fromRGBO(142, 142, 147, 1)),
-    this.iconActiveColor = Colors.black,
-    this.textStyle = const TextStyle(color: Colors.black),
-    this.cancellationWidget = const Text("Cancel"),
-    this.onCancelled,
-    this.suggestions = const [],
-    this.buildSuggestion,
-    this.searchBarStyle = const SearchBarStyle(),
-    this.crossAxisCount = 1,
-    this.shrinkWrap = false,
-    this.indexedScaledTileBuilder,
-    this.scrollDirection = Axis.vertical,
-    this.mainAxisSpacing = 0.0,
-    this.crossAxisSpacing = 0.0,
-    this.listPadding = const EdgeInsets.all(0),
-    this.searchBarPadding = const EdgeInsets.all(0),
-    this.headerPadding = const EdgeInsets.all(0),
-    this.text = "",
-    this.isShowSearch = false,
-    this.isCustList = false,
-    @required this.textInputType = TextInputType.text
-  }) : super(key: key);
+  const SearchBar(
+      {Key? key,
+      required this.onSearch,
+      required this.onItemFound,
+      this.searchBarController,
+      this.minimumChars = 3,
+      this.debounceDuration = const Duration(milliseconds: 500),
+      this.loader = const Center(child: CircularProgressIndicator()),
+      this.onError,
+      this.emptyWidget = const SizedBox.shrink(),
+      this.header,
+      this.placeHolder,
+      this.icon = const Icon(Icons.search),
+      this.hintText = "",
+      this.hintStyle = const TextStyle(color: Color.fromRGBO(142, 142, 147, 1)),
+      this.iconActiveColor = Colors.black,
+      this.textStyle = const TextStyle(color: Colors.black),
+      this.cancellationWidget = const Text("Cancel"),
+      this.onCancelled,
+      this.suggestions = const [],
+      this.buildSuggestion,
+      this.searchBarStyle = const SearchBarStyle(),
+      this.crossAxisCount = 1,
+      this.shrinkWrap = false,
+      this.indexedScaledTileBuilder,
+      this.scrollDirection = Axis.vertical,
+      this.mainAxisSpacing = 0.0,
+      this.crossAxisSpacing = 0.0,
+      this.listPadding = const EdgeInsets.all(0),
+      this.searchBarPadding = const EdgeInsets.all(0),
+      this.headerPadding = const EdgeInsets.all(0),
+      this.text = "",
+      this.isShowSearch = false,
+      this.isCustList = false,
+      @required this.textInputType = TextInputType.text})
+      : super(key: key);
 
   @override
   _SearchBarState createState() => _SearchBarState<T>();
@@ -274,7 +274,7 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
   @override
   void initState() {
     super.initState();
-    if(widget.isShowSearch){
+    if (widget.isShowSearch) {
       _animate = true;
     }
     searchBarController =
@@ -314,13 +314,13 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
     });
   }
 
-  _onTextChanged(String newText) async {
+  Future<void> _onTextChanged(String newText) async {
     if (_debounce?.isActive ?? false) {
       _debounce!.cancel();
     }
 
     _debounce = Timer(widget.debounceDuration, () async {
-      if (newText.length >= widget.minimumChars && widget.onSearch != null) {
+      if (newText.length >= widget.minimumChars) {
         searchBarController._search(newText, widget.onSearch);
       } else {
         setState(() {
@@ -368,14 +368,15 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
     );
   }
 
-  Widget _buildCustListView(List<T?> items, Widget Function(T item, int index) builder){
+  Widget _buildCustListView(
+      List<T?> items, Widget Function(T item, int index) builder) {
     return ListView.builder(
       scrollDirection: widget.scrollDirection,
       shrinkWrap: widget.shrinkWrap,
       addAutomaticKeepAlives: true,
       itemCount: items.length,
       itemBuilder: (BuildContext context, int index) {
-        return builder(items[index]!, index);
+        return builder(items[index] as T, index);
       },
     );
   }
@@ -390,7 +391,9 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
       return _buildListView(
           widget.suggestions, widget.buildSuggestion ?? widget.onItemFound);
     } else if (_list.isNotEmpty) {
-      return widget.isCustList ? _buildCustListView(_list, widget.onItemFound) : _buildListView(_list, widget.onItemFound);
+      return widget.isCustList
+          ? _buildCustListView(_list, widget.onItemFound)
+          : _buildListView(_list, widget.onItemFound);
     } else {
       return widget.emptyWidget;
     }
@@ -404,7 +407,7 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
       children: <Widget>[
         Padding(
           padding: widget.searchBarPadding,
-          child: Container(
+          child: SizedBox(
             height: 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -420,6 +423,9 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
                     child: Padding(
                       padding: widget.searchBarStyle.padding,
                       child: Theme(
+                        data: Theme.of(context).copyWith(
+                          primaryColor: widget.iconActiveColor,
+                        ),
                         child: TextField(
                           keyboardType: widget.textInputType,
                           controller: _searchQueryController,
@@ -431,9 +437,6 @@ class _SearchBarState<T> extends State<SearchBar<T?>>
                             hintText: widget.hintText,
                             hintStyle: widget.hintStyle,
                           ),
-                        ),
-                        data: Theme.of(context).copyWith(
-                          primaryColor: widget.iconActiveColor,
                         ),
                       ),
                     ),

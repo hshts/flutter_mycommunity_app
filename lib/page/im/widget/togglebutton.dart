@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ToggleButton extends StatefulWidget {
-  const ToggleButton(
-      {required this.activeWidget,
-        required this.unActiveWidget,
-        required this.activeChanged,
-        this.active = false});
+  const ToggleButton({
+    super.key,
+    required this.activeWidget,
+    required this.unActiveWidget,
+    required this.activeChanged,
+    this.active = false,
+  });
   final Widget activeWidget;
   final Widget unActiveWidget;
   final bool active;
@@ -40,7 +42,12 @@ class _ToggleButtonState extends State<ToggleButton> {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.only(left: 6.0, right: 6, top: 10.0, bottom: 10.0),
+        padding: const EdgeInsets.only(
+          left: 6.0,
+          right: 6,
+          top: 10.0,
+          bottom: 10.0,
+        ),
         child: widget.active ? widget.activeWidget : widget.unActiveWidget,
       ),
     );

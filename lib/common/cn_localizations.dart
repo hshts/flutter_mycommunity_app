@@ -46,7 +46,8 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String datePickerHourSemanticsLabel(int hour) {
-    return "$hour" + "时";
+    return "$hour"
+        "时";
   }
 
   @override
@@ -61,7 +62,8 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String datePickerMinuteSemanticsLabel(int minute) {
-    return "$minute" + "分";
+    return "$minute"
+        "分";
   }
 
   @override
@@ -90,7 +92,7 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String timerPickerHourLabel(int hour) {
-    return "$hour".toString().padLeft(2, "0") + "时";
+    return "${"$hour".toString().padLeft(2, "0")}时";
   }
 
   @override
@@ -100,7 +102,7 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String timerPickerMinuteLabel(int minute) {
-    return minute.toString().padLeft(2, "0") + "分";
+    return "${minute.toString().padLeft(2, "0")}分";
   }
 
   @override
@@ -110,7 +112,7 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String timerPickerSecondLabel(int second) {
-    return second.toString().padLeft(2, "0") + "秒";
+    return "${second.toString().padLeft(2, "0")}秒";
   }
 
   static const LocalizationsDelegate<CupertinoLocalizations> delegate =

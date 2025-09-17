@@ -12,6 +12,8 @@ import '../../model/user.dart';
 import '../../global.dart';
 
 class MyUpdateMobile extends StatefulWidget {
+  const MyUpdateMobile({super.key});
+
   @override
   _MyUpdateMobileState createState() => _MyUpdateMobileState();
 }
@@ -22,7 +24,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
   bool _isvButtonEnable = true; //验证码按钮
   String _newmobile = "";
   String _myCountry = "86";
-  final UserService _userService = new UserService();
+  final UserService _userService = UserService();
   Timer? _timer;
   String _buttonText = '获取验证码'; //初始文本
   bool _isShowAccountClean = false;
@@ -43,7 +45,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
         SizedBox(height: 10.0),
         buildVerificationcode(),
         SizedBox(height: 19.0),
-        buildUpdateBtn()
+        buildUpdateBtn(),
       ],
     );
 
@@ -56,8 +58,10 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
             Navigator.pop(context);
           },
         ),
-        title:
-            Text('绑定手机', style: TextStyle(color: Colors.black, fontSize: 16)),
+        title: Text(
+          '绑定手机',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -84,18 +88,20 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(6)
+                  LengthLimitingTextInputFormatter(6),
                 ],
-                controller: TextEditingController.fromValue(TextEditingValue(
-                  text: _vcode,
-                  selection: TextSelection.fromPosition(
-                    //保持光标在最后面
-                    TextPosition(
-                      affinity: TextAffinity.downstream,
-                      offset: _vcode.length,
+                controller: TextEditingController.fromValue(
+                  TextEditingValue(
+                    text: _vcode,
+                    selection: TextSelection.fromPosition(
+                      //保持光标在最后面
+                      TextPosition(
+                        affinity: TextAffinity.downstream,
+                        offset: _vcode.length,
+                      ),
                     ),
                   ),
-                )),
+                ),
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   hintStyle: TextStyle(fontSize: 14),
@@ -113,24 +119,20 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
             ),
           ),
           Padding(
-              padding: EdgeInsets.only(top: 13, right: 16),
-              child: Container(
-                width: 1,
-                height: 30.0,
-                color: Colors.grey,
-              )),
+            padding: EdgeInsets.only(top: 13, right: 16),
+            child: Container(width: 1, height: 30.0, color: Colors.grey),
+          ),
           Container(
             child: TextButton(
               style: TextButton.styleFrom(
-                disabledBackgroundColor:
-                    Colors.grey.withOpacity(0.1), //按钮禁用时的颜色
+                disabledBackgroundColor: Colors.grey.withOpacity(
+                  0.1,
+                ), //按钮禁用时的颜色
                 foregroundColor: (_isvButtonEnable && _newmobile != "")
                     ? Global.profile.fontColor
                     : Colors.black.withOpacity(0.2), //文本颜色
                 overlayColor: Colors.transparent,
-                shape: StadiumBorder(
-                  side: BorderSide.none,
-                ),
+                shape: StadiumBorder(side: BorderSide.none),
               ),
               onPressed: () {
                 if (_isvButtonEnable && _newmobile != "") {
@@ -153,8 +155,9 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                   if (_isvButtonEnable && _newmobile != "") {
                     //当按钮可点击时
                     _isvButtonEnable = false; //按钮状态标记
-                    _timer =
-                        new Timer.periodic(Duration(seconds: 1), (Timer timer) {
+                    _timer = Timer.periodic(Duration(seconds: 1), (
+                      Timer timer,
+                    ) {
                       _count--;
                       setState(() {
                         if (_count == 0) {
@@ -171,10 +174,11 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                 });
               },
               child: Text(
-                '$_buttonText',
+                _buttonText,
                 style: TextStyle(
-                    fontSize: 15,
-                    color: _isvButtonEnable ? Colors.blue : Colors.grey),
+                  fontSize: 15,
+                  color: _isvButtonEnable ? Colors.blue : Colors.grey,
+                ),
               ),
             ),
           ),
@@ -193,19 +197,23 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
               flex: 5,
               child: InkWell(
                 child: Container(
-                    child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text("+ ${_myCountry}",
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          "+ $_myCountry",
                           style: TextStyle(color: Colors.black, fontSize: 16),
-                          overflow: TextOverflow.ellipsis),
-                    ),
-                    Icon(Icons.keyboard_arrow_down),
-                  ],
-                )),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down),
+                    ],
+                  ),
+                ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/PhoneCountryCodeView')
-                      .then((val) {
+                  Navigator.pushNamed(context, '/PhoneCountryCodeView').then((
+                    val,
+                  ) {
                     if (val != null && val != "") {
                       setState(() {
                         _myCountry = val.toString();
@@ -215,10 +223,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                 },
               ),
             ),
-            Expanded(
-              flex: 13,
-              child: buildAccountTextField(),
-            )
+            Expanded(flex: 13, child: buildAccountTextField()),
           ],
         ),
         MyDivider(),
@@ -229,9 +234,10 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
   ///手机号
   TextFormField buildAccountTextField() {
     return TextFormField(
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        controller: TextEditingController.fromValue(TextEditingValue(
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      controller: TextEditingController.fromValue(
+        TextEditingValue(
           text: _newmobile,
           selection: TextSelection.fromPosition(
             //保持光标在最后面
@@ -240,33 +246,35 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
               offset: _newmobile.length,
             ),
           ),
-        )),
-        decoration: InputDecoration(
-          hintStyle: TextStyle(fontSize: 14),
-          counterText: '',
-          hintText: "请输入手机号",
-          labelStyle: TextStyle(fontSize: 14),
-          border: InputBorder.none,
-          suffixIcon: this._isShowAccountClean == true
-              ? IconButton(
-                  icon: Icon(Icons.cancel, color: Colors.grey),
-                  onPressed: () {
-                    setState(() {
-                      _newmobile = "";
-                      _isShowAccountClean = false;
-                    });
-                  },
-                )
-              : Text(""),
         ),
-        onChanged: (v) {
-          setState(() {
-            _isShowAccountClean = true;
-            if (v.length < 12) {
-              _newmobile = v;
-            }
-          });
+      ),
+      decoration: InputDecoration(
+        hintStyle: TextStyle(fontSize: 14),
+        counterText: '',
+        hintText: "请输入手机号",
+        labelStyle: TextStyle(fontSize: 14),
+        border: InputBorder.none,
+        suffixIcon: _isShowAccountClean == true
+            ? IconButton(
+                icon: Icon(Icons.cancel, color: Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    _newmobile = "";
+                    _isShowAccountClean = false;
+                  });
+                },
+              )
+            : Text(""),
+      ),
+      onChanged: (v) {
+        setState(() {
+          _isShowAccountClean = true;
+          if (v.length < 12) {
+            _newmobile = v;
+          }
         });
+      },
+    );
   }
 
   ///更新
@@ -274,26 +282,28 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
     return Container(
       height: 39,
       width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(19)),
+      ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Global.profile.backColor,
         ),
-        child: Text(
-          '提交',
-          style: TextStyle(color: Global.profile.fontColor),
-        ),
+        child: Text('提交', style: TextStyle(color: Global.profile.fontColor)),
         onPressed: () async {
           if (_vcode.length > 1) {
             if (_newmobile != null && _newmobile.length > 0) {
               User? user = await _userService.updateMobile(
-                  Global.profile.user!.uid,
-                  Global.profile.user!.token!,
-                  _vcode,
-                  _newmobile,
-                  _myCountry,
-                  false, (code, msg) {
-                ShowMessage.showToast(msg);
-              });
+                Global.profile.user!.uid,
+                Global.profile.user!.token!,
+                _vcode,
+                _newmobile,
+                _myCountry,
+                false,
+                (code, msg) {
+                  ShowMessage.showToast(msg);
+                },
+              );
 
               if (user != null) {
                 if (user.uid == Global.profile.user!.uid) {
@@ -302,13 +312,17 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                   Navigator.pop(context);
                 } else {
                   //已经注册成新用户需要换绑定
-                  Navigator.pushNamed(context, '/BindUser', arguments: {
-                    "sourceuser": user,
-                    "bindtype": "手机号",
-                    "vcode": _vcode,
-                    "mobile": _newmobile,
-                    "myCountry": _myCountry
-                  }).then((value) {
+                  Navigator.pushNamed(
+                    context,
+                    '/BindUser',
+                    arguments: {
+                      "sourceuser": user,
+                      "bindtype": "手机号",
+                      "vcode": _vcode,
+                      "mobile": _newmobile,
+                      "myCountry": _myCountry,
+                    },
+                  ).then((value) {
                     if (value == true) {
                       Navigator.pop(context);
                     }
@@ -322,9 +336,6 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
             ShowMessage.showToast("请输入验证码");
           }
         },
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(19)),
       ),
     );
   }

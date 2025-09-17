@@ -9,11 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 class AppupdateUtil {
-  static ReceivePort _port = ReceivePort();
+  static final ReceivePort _port = ReceivePort();
   static int _downloaderrowcount = 0; //下载失败尝试次数
-  static _TaskInfo _downloadinfo = new _TaskInfo();
+  static final _TaskInfo _downloadinfo = _TaskInfo();
 
-  static launcherApp(String appurl) async {
+  static Future<void> launcherApp(String appurl) async {
     if (Platform.isAndroid) {
       //直接下载更新
       if (_downloaderrowcount == 0) {
@@ -69,7 +69,7 @@ class AppupdateUtil {
         _downloadinfo.name = "android_apk";
         _downloadinfo.link = appurl;
 
-        if (tasks != null && tasks.length > 0) {
+        if (tasks != null && tasks.isNotEmpty) {
           tasks.forEach((task) async {
             if (_downloadinfo.link == task.url) {
               await FlutterDownloader.remove(
@@ -121,7 +121,7 @@ class AppupdateUtil {
     final directory = Platform.isAndroid
         ? await getExternalStorageDirectory()
         : await getApplicationSupportDirectory();
-    String localPath = directory!.path + '/Download';
+    String localPath = '${directory!.path}/Download';
     final savedDir = Directory(localPath);
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) {
@@ -138,8 +138,9 @@ class AppupdateUtil {
     final SendPort? send = IsolateNameServer.lookupPortByName(
       'flutter_mycommunity_app',
     );
-    if (send != null)
+    if (send != null) {
       send.send([id, DownloadTaskStatus.values[status], progress]);
+    }
   }
 
   static void _delete(taskId) async {
@@ -191,5 +192,5 @@ class _TaskInfo {
   int? progress = 0;
   DownloadTaskStatus? status = DownloadTaskStatus.undefined;
 
-  _TaskInfo({this.name, this.link});
+  _TaskInfo({this.link});
 }

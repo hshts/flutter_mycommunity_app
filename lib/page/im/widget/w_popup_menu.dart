@@ -13,7 +13,8 @@ const List<String> wPopupMenuActions = [
 ];
 
 class WPopupMenu extends StatefulWidget {
-  WPopupMenu({
+  const WPopupMenu({
+    super.key,
     Key? key,
     required this.onValueChanged,
     required this.actions,
@@ -50,17 +51,16 @@ class _WPopupMenuState extends State<WPopupMenu> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((call) {
+    WidgetsBinding.instance.addPostFrameCallback((call) {
       width = context.size!.width;
       height = context.size!.height;
       button = context.findRenderObject() as RenderBox;
-      overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+      overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () {
         if (entry != null) {
@@ -101,16 +101,18 @@ class _WPopupMenuState extends State<WPopupMenu> {
       widget.menuHeight,
       button!,
       overlay!,
-          (index) {
+      (index) {
         if (index != -1) widget.onValueChanged(index);
         removeOverlay();
       },
     );
 
-    entry = OverlayEntry(builder: (context) {
-      return menuWidget;
-    });
-    Overlay.of(this.context)!.insert(entry!);
+    entry = OverlayEntry(
+      builder: (context) {
+        return menuWidget;
+      },
+    );
+    Overlay.of(context).insert(entry!);
   }
 
   void removeOverlay() {
@@ -136,31 +138,31 @@ class _MenuPopWidget extends StatefulWidget {
   final double menuWidth;
   final double menuHeight;
   final double _height;
-  final int leftorright;//0 左  1右
+  final int leftorright; //0 左  1右
   final RenderBox button;
   final RenderBox overlay;
   final ValueChanged<int> onValueChanged;
 
-  _MenuPopWidget(
-      this.btnContext,
-      this._height,
-      this.leftorright,
-      this.actions,
-      this._pageMaxChildCount,
-      this.backgroundColor,
-      this.menuWidth,
-      this.menuHeight,
-      this.button,
-      this.overlay,
-      this.onValueChanged,
-      );
+  const _MenuPopWidget(
+    this.btnContext,
+    this._height,
+    this.leftorright,
+    this.actions,
+    this._pageMaxChildCount,
+    this.backgroundColor,
+    this.menuWidth,
+    this.menuHeight,
+    this.button,
+    this.overlay,
+    this.onValueChanged,
+  );
 
   @override
   _MenuPopWidgetState createState() => _MenuPopWidgetState();
 }
 
 class _MenuPopWidgetState extends State<_MenuPopWidget> {
-  int _curPage = 0;
+  final int _curPage = 0;
   final double _arrowWidth = 40;
   final double _separatorWidth = 1;
   final double _triangleHeight = 10;
@@ -183,31 +185,35 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
   @override
   Widget build(BuildContext context) {
     // 这里计算出来 当前页的 child 一共有多少个
-    int _curPageChildCount = (_curPage + 1) * widget._pageMaxChildCount > widget.actions.length
+    int curPageChildCount =
+        (_curPage + 1) * widget._pageMaxChildCount > widget.actions.length
         ? widget.actions.length % widget._pageMaxChildCount
         : widget._pageMaxChildCount;
 
-    double _curArrowWidth = 0;
-    int _curArrowCount = 0; // 一共几个箭头
+    double curArrowWidth = 0;
+    int curArrowCount = 0; // 一共几个箭头
 
     if (widget.actions.length > widget._pageMaxChildCount) {
       // 数据长度大于 widget._pageMaxChildCount
       if (_curPage == 0) {
         // 如果是第一页
-        _curArrowWidth = _arrowWidth;
-        _curArrowCount = 1;
-      } else if ((_curPage + 1) * widget._pageMaxChildCount >= widget.actions.length) {
+        curArrowWidth = _arrowWidth;
+        curArrowCount = 1;
+      } else if ((_curPage + 1) * widget._pageMaxChildCount >=
+          widget.actions.length) {
         // 如果不是第一页 则需要也显示左箭头
-        _curArrowWidth = _arrowWidth;
-        _curArrowCount = 2;
+        curArrowWidth = _arrowWidth;
+        curArrowCount = 2;
       } else {
-        _curArrowWidth = _arrowWidth * 2;
-        _curArrowCount = 2;
+        curArrowWidth = _arrowWidth * 2;
+        curArrowCount = 2;
       }
     }
 
-    double _curPageWidth =
-        widget.menuWidth + (_curPageChildCount - 1 + _curArrowCount) * _separatorWidth + _curArrowWidth;
+    double curPageWidth =
+        widget.menuWidth +
+        (curPageChildCount - 1 + curArrowCount) * _separatorWidth +
+        curArrowWidth;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -224,8 +230,14 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
           builder: (BuildContext context) {
             var isInverted = position!.top <= (50) * 2;
             return CustomSingleChildLayout(
-              delegate: _PopupMenuRouteLayout(position!, widget.menuHeight + _triangleHeight,
-                  Directionality.of(widget.btnContext),  widget.menuWidth, widget._height, widget.leftorright),
+              delegate: _PopupMenuRouteLayout(
+                position!,
+                widget.menuHeight + _triangleHeight,
+                Directionality.of(widget.btnContext),
+                widget.menuWidth,
+                widget._height,
+                widget.leftorright,
+              ),
               child: SizedBox(
                 height: widget.menuHeight + _triangleHeight,
                 width: 150,
@@ -235,21 +247,29 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       isInverted
-                          ? Padding(padding: EdgeInsets.only(top: 6), child: CustomPaint(
-                        size: Size(_curPageWidth, _triangleHeight),
-                        painter: TrianglePainter(
-                          color: widget.backgroundColor,
-                          position: position!,
-                          isInverted: true,
-                          size: widget.button.size,
-                          screenWidth: MediaQuery.of(context).size.width,
-                        ),
-                      )) : Container(),
+                          ? Padding(
+                              padding: EdgeInsets.only(top: 6),
+                              child: CustomPaint(
+                                size: Size(curPageWidth, _triangleHeight),
+                                painter: TrianglePainter(
+                                  color: widget.backgroundColor,
+                                  position: position!,
+                                  isInverted: true,
+                                  size: widget.button.size,
+                                  screenWidth: MediaQuery.of(
+                                    context,
+                                  ).size.width,
+                                ),
+                              ),
+                            )
+                          : Container(),
                       Expanded(
                         child: Stack(
                           children: <Widget>[
                             ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
                               child: Container(
                                 color: widget.backgroundColor,
                                 height: widget.menuHeight,
@@ -258,7 +278,12 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                _buildList(_curPageChildCount, _curPageWidth, _curArrowWidth, _curArrowCount),
+                                _buildList(
+                                  curPageChildCount,
+                                  curPageWidth,
+                                  curArrowWidth,
+                                  curArrowCount,
+                                ),
                               ],
                             ),
                           ],
@@ -266,15 +291,20 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
                       ),
                       isInverted
                           ? Container()
-                          : Padding(padding: EdgeInsets.only(bottom: 6), child: CustomPaint(
-                          size: Size(_curPageWidth, _triangleHeight),
-                          painter: TrianglePainter(
-                            color: widget.backgroundColor,
-                            position: position!,
-                            size: widget.button.size,
-                            screenWidth: MediaQuery.of(context).size.width,
-                          ),)
-                      ),
+                          : Padding(
+                              padding: EdgeInsets.only(bottom: 6),
+                              child: CustomPaint(
+                                size: Size(curPageWidth, _triangleHeight),
+                                painter: TrianglePainter(
+                                  color: widget.backgroundColor,
+                                  position: position!,
+                                  size: widget.button.size,
+                                  screenWidth: MediaQuery.of(
+                                    context,
+                                  ).size.width,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -286,39 +316,52 @@ class _MenuPopWidgetState extends State<_MenuPopWidget> {
     );
   }
 
-  Widget _buildList(int _curPageChildCount, double _curPageWidth, double _curArrowWidth, int _curArrowCount) {
+  Widget _buildList(
+    int curPageChildCount,
+    double curPageWidth,
+    double curArrowWidth,
+    int curArrowCount,
+  ) {
     List<Widget> lists = [];
     int index = 0;
-    widget.actions.forEach((element) {
-      lists.add(GestureDetector(
-        onTap: () {
-          widget.onValueChanged(_curPage * widget._pageMaxChildCount + widget.actions.indexOf(element));
-        },
-        child: SizedBox(
-          width: 50,
-          height: widget.menuHeight,
-          child: Center(
-            child: Text(
-              widget.actions[_curPage * widget._pageMaxChildCount + index],
-              style: TextStyle(color: Colors.white, fontSize: 14),
+    for (var element in widget.actions) {
+      lists.add(
+        GestureDetector(
+          onTap: () {
+            widget.onValueChanged(
+              _curPage * widget._pageMaxChildCount +
+                  widget.actions.indexOf(element),
+            );
+          },
+          child: SizedBox(
+            width: 50,
+            height: widget.menuHeight,
+            child: Center(
+              child: Text(
+                widget.actions[_curPage * widget._pageMaxChildCount + index],
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
             ),
           ),
         ),
-      ));
+      );
       index++;
-    });
+    }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: lists,
-    );
+    return Row(mainAxisAlignment: MainAxisAlignment.start, children: lists);
   }
 }
 
 // Positioning of the menu on the screen.
 class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   _PopupMenuRouteLayout(
-      this.position, this.selectedItemOffset, this.textDirection, this.menuWidth, this.height, this.leftorright);
+    this.position,
+    this.selectedItemOffset,
+    this.textDirection,
+    this.menuWidth,
+    this.height,
+    this.leftorright,
+  );
 
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
@@ -343,7 +386,10 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // The menu can be at most the size of the overlay minus 8.0 pixels in each
     // direction.
     return BoxConstraints.loose(
-        constraints.biggest - const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0) as Size);
+      constraints.biggest -
+              const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0)
+          as Size,
+    );
   }
 
   @override
@@ -352,43 +398,40 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // childSize: The size of the menu, when fully open, as determined by
     // getConstraintsForChild.
     // Find the ideal vertical position.
-    double  y = position.top;
+    double y = position.top;
     // Find the ideal horizontal position.
-    double   x = position.left + position.right - 150 - 10;
+    double x = position.left + position.right - 150 - 10;
 
-    if(leftorright == 1) {
+    if (leftorright == 1) {
       if (position.right >= 150) {
         x = (position.left + (position.right - 10) / 2) - (150 / 2) - 10;
-      }
-      else {
+      } else {
         x = position.left + position.right - 150 - 10;
       }
       y = position.top;
 
       if (y <= 50 * 2) {
         y = position.top + 23;
-      }
-      else
+      } else {
         y = position.top - 50;
+      }
       return Offset(x, y);
     }
 
-    if(leftorright == 0){
+    if (leftorright == 0) {
       print(position);
 
       y = position.top;
 
       if (y <= 50 * 2) {
         y = position.top + 23;
-      }
-      else
+      } else {
         y = position.top - 50;
+      }
       return Offset(position.left, y);
-
     }
 
     return Offset(x, y);
-
   }
 
   @override
@@ -396,7 +439,6 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     return position != oldDelegate.position;
   }
 }
-
 
 class TrianglePainter extends CustomPainter {
   Paint? _paint;
@@ -407,13 +449,14 @@ class TrianglePainter extends CustomPainter {
   final bool isInverted;
   double screenWidth = 0;
 
-  TrianglePainter(
-      {required this.color,
-        required this.position,
-        required this.size,
-        this.radius = 9,
-        this.isInverted = false,
-        this.screenWidth = 0}) {
+  TrianglePainter({
+    required this.color,
+    required this.position,
+    required this.size,
+    this.radius = 9,
+    this.isInverted = false,
+    this.screenWidth = 0,
+  }) {
     _paint = Paint()
       ..style = PaintingStyle.fill
       ..color = color
@@ -430,50 +473,67 @@ class TrianglePainter extends CustomPainter {
     if (size.width > this.size.width) {
       // 靠右
       if (position.left + this.size.width / 2 > position.right) {
-        if (screenWidth - (position.left + this.size.width) > size.width / 2 + _kMenuScreenPadding) {
-          path.moveTo(size.width / 2 -5, isInverted ? 6 : size.height - 6);
-          path.lineTo(size.width / 2 - radius / 2 -5, isInverted ? size.height : 0);
-          path.lineTo(size.width / 2 + radius / 2 -5, isInverted ? size.height : 0);
-        }else {
-          path.moveTo(size.width - this.size.width + this.size.width / 2 -5, isInverted ? 6 : size.height - 6);
+        if (screenWidth - (position.left + this.size.width) >
+            size.width / 2 + _kMenuScreenPadding) {
+          path.moveTo(size.width / 2 - 5, isInverted ? 6 : size.height - 6);
           path.lineTo(
-              size.width - this.size.width + this.size.width / 2 - radius / 2 -5,
-              isInverted ? size.height : 0);
+            size.width / 2 - radius / 2 - 5,
+            isInverted ? size.height : 0,
+          );
           path.lineTo(
-              size.width - this.size.width + this.size.width / 2 + radius / 2 -5,
-              isInverted ? size.height : 0);
+            size.width / 2 + radius / 2 - 5,
+            isInverted ? size.height : 0,
+          );
+        } else {
+          path.moveTo(
+            size.width - this.size.width + this.size.width / 2 - 5,
+            isInverted ? 6 : size.height - 6,
+          );
+          path.lineTo(
+            size.width - this.size.width + this.size.width / 2 - radius / 2 - 5,
+            isInverted ? size.height : 0,
+          );
+          path.lineTo(
+            size.width - this.size.width + this.size.width / 2 + radius / 2 - 5,
+            isInverted ? size.height : 0,
+          );
+        }
+      } else {
+        // 靠左
+        if (position.left > size.width / 2 + _kMenuScreenPadding) {
+          path.moveTo(size.width / 2 + 5, isInverted ? 6 : size.height - 6);
+          path.lineTo(
+            size.width / 2 - radius / 2 + 5,
+            isInverted ? size.height : 0,
+          );
+          path.lineTo(
+            size.width / 2 + radius / 2 + 5,
+            isInverted ? size.height : 0,
+          );
+        } else {
+          path.moveTo(
+            this.size.width / 2 + 5,
+            isInverted ? 6 : size.height - 6,
+          );
+          path.lineTo(
+            this.size.width / 2 - radius / 2 + 5,
+            isInverted ? size.height : 0,
+          );
+          path.lineTo(
+            this.size.width / 2 + radius / 2 + 5,
+            isInverted ? size.height : 0,
+          );
         }
       }
-      else{// 靠左
-        if(position.left > size.width / 2 + _kMenuScreenPadding){
-            path.moveTo(size.width / 2 +5 , isInverted ? 6 : size.height - 6);
-            path.lineTo(size.width / 2 - radius / 2+5, isInverted ? size.height : 0);
-            path.lineTo(size.width / 2 + radius / 2+5, isInverted ? size.height : 0);
-        }
-        else {
-            path.moveTo(this.size.width / 2 +5, isInverted ? 6: size.height - 6);
-            path.lineTo(
-                this.size.width / 2 - radius / 2+5, isInverted ? size.height : 0);
-            path.lineTo(
-                this.size.width / 2 + radius / 2+5, isInverted ? size.height : 0);
-
-          }
-        }
-    }
-    else {
+    } else {
       path.moveTo(size.width / 2, isInverted ? 6 : size.height - 6);
-      path.lineTo(
-          size.width / 2 - radius / 2, isInverted ? size.height : 0);
-      path.lineTo(
-          size.width / 2 + radius / 2, isInverted ? size.height : 0);
+      path.lineTo(size.width / 2 - radius / 2, isInverted ? size.height : 0);
+      path.lineTo(size.width / 2 + radius / 2, isInverted ? size.height : 0);
     }
 
     path.close();
 
-    canvas.drawPath(
-      path,
-      _paint!,
-    );
+    canvas.drawPath(path, _paint!);
   }
 
   @override
@@ -481,4 +541,3 @@ class TrianglePainter extends CustomPainter {
     return true;
   }
 }
-

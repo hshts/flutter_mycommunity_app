@@ -67,10 +67,11 @@ class MyMessage extends StatefulWidget {
   String sharedcontent = "";
   String localsharedcontent = "";
 
-  MyMessage({this.arguments}) {
+  MyMessage({super.key, this.arguments}) {
     groupRelation = (arguments as Map)["GroupRelation"];
-    if ((arguments as Map)["sharedcontent"] != null)
+    if ((arguments as Map)["sharedcontent"] != null) {
       sharedcontent = (arguments as Map)["sharedcontent"];
+    }
 
     if ((arguments as Map)["localsharedcontent"] != null) {
       localsharedcontent = (arguments as Map)["localsharedcontent"];
@@ -84,14 +85,14 @@ class MyMessage extends StatefulWidget {
 class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   List<AssetEntity> _images = [];
   SecurityToken? _securityToken;
-  AliyunService _aliyunService = new AliyunService();
-  ActivityService _activityService = ActivityService();
-  ImService _imService = ImService();
+  final AliyunService _aliyunService = AliyunService();
+  final ActivityService _activityService = ActivityService();
+  final ImService _imService = ImService();
   final List<String> _leftactions = ['复制', '删除', '举报'];
   final List<String> _rightactions = ['复制', '删除', '撤回'];
   final TextEditingController _textEditingController = TextEditingController();
   StreamSubscription? _playerSubscription;
-  final ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   Timer? _recordtimer;
   late GroupRelation _groupRelation;
   final ImagePicker _picker = ImagePicker();
@@ -105,9 +106,9 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   bool _sendEnter = true; //避免重复发送多条消息
   double _keyboardHeight = 0.0;
   double _initkeyboardHeight = 0;
-  double _scrollThreshold = 200.0;
+  final double _scrollThreshold = 200.0;
   double _isPercent = 0;
-  int _soundTime = 60; //录音时长60秒；
+  final int _soundTime = 60; //录音时长60秒；
   int _currentTime = 0; //当前录音时间；
   int _recorderTime = 0; //最后录音时间
   int _showTime = 0; //显示录音时间
@@ -115,20 +116,22 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   bool _recordercomplete =
       false; //是否录制完成，//是否在录音中，注意：不要用recorderModule中的isrecordering等判断状态，因为所有event都在一个按钮上无法判断实时状态
   String _recordFilepath = "";
-  ScrollController _scrollController = ScrollController(initialScrollOffset: 0);
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 0,
+  );
   List<TimeLineSync> timeLineSyncs = [];
   late AudioSession _audioSession;
-  FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  FlutterSoundPlayer _player = FlutterSoundPlayer();
+  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
+  final FlutterSoundPlayer _player = FlutterSoundPlayer();
 
   Directory? _tempDir;
   // late AudioPlayer _player;
   double _pageWidth_2 = 0;
   double _pageWidth = 0;
   double _pagestatus = 0;
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   int _relationStatus = 1; //1正常 2拉黑
-  bool _btnActivityLocked = true; //活动开始、取消开始重复点击判断
+  final bool _btnActivityLocked = true; //活动开始、取消开始重复点击判断
   GoodPiceModel? _goodprice;
   Widget _activityinfo = Column(
     children: [
@@ -146,9 +149,9 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   String _localpath = ""; //本地url
   int _contenttype = 0; //消息内容类型 文本 图片
   StreamSubscription<Map<String, Object>>? _locationListener;
-  AMapFlutterLocation _locationPlugin = new AMapFlutterLocation();
+  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
 
-  _MyMessageState() {}
+  _MyMessageState();
 
   Future<void> _initializePlayExample() async {
     //录音按钮播放倒计时
@@ -210,107 +213,101 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   }
 
   void _setLocationOption() {
-    if (null != _locationPlugin) {
-      AMapLocationOption locationOption = new AMapLocationOption();
+    AMapLocationOption locationOption = new AMapLocationOption();
 
-      ///是否单次定位
-      locationOption.onceLocation = true;
+    ///是否单次定位
+    locationOption.onceLocation = true;
 
-      ///是否需要返回逆地理信息
-      locationOption.needAddress = true;
+    ///是否需要返回逆地理信息
+    locationOption.needAddress = true;
 
-      ///逆地理信息的语言类型
-      locationOption.geoLanguage = GeoLanguage.DEFAULT;
+    ///逆地理信息的语言类型
+    locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-      locationOption.desiredLocationAccuracyAuthorizationMode =
-          AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+    locationOption.desiredLocationAccuracyAuthorizationMode =
+        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-      locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-      ///设置Android端连续定位的定位间隔
-      locationOption.locationInterval = 2000;
+    ///设置Android端连续定位的定位间隔
+    locationOption.locationInterval = 2000;
 
-      ///设置Android端的定位模式<br>
-      ///可选值：<br>
-      ///<li>[AMapLocationMode.Battery_Saving]</li>
-      ///<li>[AMapLocationMode.Device_Sensors]</li>
-      ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-      locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+    ///设置Android端的定位模式<br>
+    ///可选值：<br>
+    ///<li>[AMapLocationMode.Battery_Saving]</li>
+    ///<li>[AMapLocationMode.Device_Sensors]</li>
+    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-      ///设置iOS端的定位最小更新距离<br>
-      locationOption.distanceFilter = -1;
+    ///设置iOS端的定位最小更新距离<br>
+    locationOption.distanceFilter = -1;
 
-      ///设置iOS端期望的定位精度
-      /// 可选值：<br>
-      /// <li>[DesiredAccuracy.Best] 最高精度</li>
-      /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-      /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-      /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-      /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-      locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+    ///设置iOS端期望的定位精度
+    /// 可选值：<br>
+    /// <li>[DesiredAccuracy.Best] 最高精度</li>
+    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-      ///设置iOS端是否允许系统暂停定位
-      locationOption.pausesLocationUpdatesAutomatically = false;
+    ///设置iOS端是否允许系统暂停定位
+    locationOption.pausesLocationUpdatesAutomatically = false;
 
-      ///将定位参数设置给定位插件
-      _locationPlugin.setLocationOption(locationOption);
-    }
+    ///将定位参数设置给定位插件
+    _locationPlugin.setLocationOption(locationOption);
   }
 
   ///开始定位
   void _startLocation() {
-    if (null != _locationPlugin) {
-      ///开始定位之前设置定位参数
-      _setLocationOption();
-      _locationPlugin.startLocation();
-    }
+    ///开始定位之前设置定位参数
+    _setLocationOption();
+    _locationPlugin.startLocation();
   }
 
   Future<bool> _initlocation() async {
     bool ret = await PermissionUtil.requestLocationPermisson();
 
     if (ret) {
-      if (_locationListener == null) {
-        _locationListener = _locationPlugin.onLocationChanged().listen((
-          Map<String, Object> result,
-        ) {
-          Map<String, Object>? _locationResult = result;
-          if (_locationResult != null) {
-            if (result["longitude"] != "" && result["adCode"] != "") {
-              Navigator.pushNamed(
-                context,
-                '/MapLocationPicker',
-                arguments: {
-                  "lat": double.parse(result["latitude"].toString()),
-                  "lng": double.parse(result["longitude"].toString()),
-                  "citycode": CommonUtil.getCityNameByGaoDe(
-                    result["adCode"].toString(),
-                  ),
-                  "isMapImage": true,
-                },
-              ).then((dynamic value) {
-                if (value != null) {
-                  if (value["image"] == null) {
-                    ShowMessage.showToast("获取地图失败,请重试");
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    return;
-                  }
-                  locationImage(
-                    value["image"],
-                    value["address"],
-                    value["title"],
-                    value["latitude"].toString(),
-                    value["longitude"].toString(),
-                  );
-                }
-                setState(() {
+      _locationListener ??= _locationPlugin.onLocationChanged().listen((
+        Map<String, Object> result,
+      ) {
+        Map<String, Object>? _locationResult = result;
+        if (_locationResult != null) {
+          if (result["longitude"] != "" && result["adCode"] != "") {
+            Navigator.pushNamed(
+              context,
+              '/MapLocationPicker',
+              arguments: {
+                "lat": double.parse(result["latitude"].toString()),
+                "lng": double.parse(result["longitude"].toString()),
+                "citycode": CommonUtil.getCityNameByGaoDe(
+                  result["adCode"].toString(),
+                ),
+                "isMapImage": true,
+              },
+            ).then((dynamic value) {
+              if (value != null) {
+                if (value["image"] == null) {
+                  ShowMessage.showToast("获取地图失败,请重试");
                   FocusScope.of(context).requestFocus(FocusNode());
-                });
+                  return;
+                }
+                locationImage(
+                  value["image"],
+                  value["address"],
+                  value["title"],
+                  value["latitude"].toString(),
+                  value["longitude"].toString(),
+                );
+              }
+              setState(() {
+                FocusScope.of(context).requestFocus(FocusNode());
               });
-            }
+            });
           }
-        });
-      }
+        }
+      });
     }
 
     return false;
@@ -320,7 +317,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     try {
       await _audioSession.setActive(true);
       String uuid = Uuid().v1().toString().replaceAll('-', '');
-      _recordFilepath = '${_tempDir!.path}/${uuid}.mp4';
+      _recordFilepath = '${_tempDir!.path}/$uuid.mp4';
       _recorder
           .startRecorder(
             toFile: _recordFilepath,
@@ -333,8 +330,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       setState(() {
         _isPercent = 1;
       });
-      const tick = const Duration(milliseconds: 1000);
-      _recordtimer = new Timer.periodic(tick, (Timer t) async {
+      const tick = Duration(milliseconds: 1000);
+      _recordtimer = Timer.periodic(tick, (Timer t) async {
         if (_recorder.isStopped) {
           t.cancel();
         }
@@ -443,21 +440,21 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
     _getImMsgInit();
 
-    if (widget.sharedcontent != null && widget.sharedcontent.isNotEmpty) {
+    if (widget.sharedcontent.isNotEmpty) {
       _sendShared();
     }
 
     _initMember();
   }
 
-  _getImMsgInit() async {
+  Future<void> _getImMsgInit() async {
     timeLineSyncs = await _imHelper.getTimeLineSync(
       Global.profile.user!.uid,
       0,
       30,
       _groupRelation.timeline_id,
     );
-    if (timeLineSyncs.length == 0 || timeLineSyncs.length == 1) {
+    if (timeLineSyncs.isEmpty || timeLineSyncs.length == 1) {
       if ((_groupRelation.relationtype == 0 ||
           _groupRelation.relationtype == 3)) {
         //付费拼玩活动插入一条安全活动规范
@@ -467,14 +464,14 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  _getImMsgFetch() async {
+  Future<void> _getImMsgFetch() async {
     List<TimeLineSync> tem = await _imHelper.getTimeLineSync(
       Global.profile.user!.uid,
       timeLineSyncs.length,
       timeLineSyncs.length + 30,
       _groupRelation.timeline_id,
     );
-    if (tem.length > 0) {
+    if (tem.isNotEmpty) {
       setState(() {
         timeLineSyncs = timeLineSyncs + tem;
       });
@@ -483,7 +480,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
   Future<void> _initGoodPrice() async {
     if (_groupRelation.relationtype == 3) {
-      GPService gpservice = new GPService();
+      GPService gpservice = GPService();
       _goodprice = await gpservice.getGoodPriceInfo(_groupRelation.goodpriceid);
       if (_goodprice != null) {
         setState(() {});
@@ -498,10 +495,10 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     String localpath,
     String captchaVerification,
   ) async {
-    this._msgcontent = content;
-    this._contenttype = type;
-    this._localmsgcontent = localmsg;
-    this._localpath = localpath;
+    _msgcontent = content;
+    _contenttype = type;
+    _localmsgcontent = localmsg;
+    _localpath = localpath;
     User user = Global.profile.user!;
     List<TimeLineSync> temLine = [];
     String time = "";
@@ -510,14 +507,14 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       _groupRelation.timeline_id,
       Global.profile.user!.token!,
       Global.profile.user!.uid,
-      this._msgcontent,
-      this._contenttype,
+      _msgcontent,
+      _contenttype,
       _groupRelation.relationtype!,
       captchaVerification,
       errorCallBack,
     );
 
-    if (serviceData != null && serviceData != "") {
+    if (serviceData != "") {
       time = serviceData.split(",")[0];
       String sourceid = serviceData.split(",")[1];
       temLine.add(
@@ -527,14 +524,14 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           user.uid,
           time,
           user,
-          this._localmsgcontent,
-          this._contenttype,
+          _localmsgcontent,
+          _contenttype,
           localpath,
           sourceid,
         ),
       );
     }
-    if (time != null && time != "") {
+    if (time != "") {
       temLine[0].send_time = time;
       if (await _imHelper.saveSelfMessage(temLine[0]) > 0) {
         timeLineSyncs = temLine + timeLineSyncs;
@@ -544,7 +541,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  _sendShared() async {
+  Future<void> _sendShared() async {
     bool isQuit = await _isQuitActivity();
     if (!isQuit) {
       await sendMessage(
@@ -557,7 +554,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  _sendMsg() async {
+  Future<void> _sendMsg() async {
     await sendMessage(
       _textEditingController.text,
       0,
@@ -570,7 +567,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     });
   }
 
-  _sendSound() async {
+  Future<void> _sendSound() async {
     String msg = "";
     _recordercomplete = false;
     SecurityToken? securityToken = await _aliyunService.getSoundSecurityToken(
@@ -581,27 +578,25 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String soundUrl = await _aliyunService.uploadSound(
         securityToken,
         _recordFilepath,
-        md5.convert(_recordFilepath.codeUnits).toString() + ".mp4",
+        "${md5.convert(_recordFilepath.codeUnits)}.mp4",
         Global.profile.user!.uid,
       );
-      if (soundUrl != null) {
-        msg = "|sound: ${_recorderTime}#${soundUrl}|";
-        String localmsg =
-            "|sound: ${_recorderTime}#${securityToken.host + "/" + soundUrl}|"; //本地保存的url
-        _recorderTime = 0;
-        await sendMessage(msg, 3, localmsg, _recordFilepath, "");
-      }
+      msg = "|sound: ${_recorderTime}#${soundUrl}|";
+      String localmsg =
+          "|sound: ${_recorderTime}#${securityToken.host + "/" + soundUrl}|"; //本地保存的url
+      _recorderTime = 0;
+      await sendMessage(msg, 3, localmsg, _recordFilepath, "");
     }
   }
 
-  _sendImg(String localurl, String imgwh, String imgFile) async {
+  Future<void> _sendImg(String localurl, String imgwh, String imgFile) async {
     String imgurl = imgFile;
-    String msg = "|img: ${imgurl}#${imgwh}|";
-    String localmsg = "|img: ${localurl}#${imgwh}|";
+    String msg = "|img: $imgurl#$imgwh|";
+    String localmsg = "|img: $localurl#$imgwh|";
     await sendMessage(msg, 2, localmsg, imgurl, "");
   }
 
-  _sendLocal(
+  Future<void> _sendLocal(
     String imgFile,
     String imgwh,
     String address,
@@ -612,13 +607,13 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   ) async {
     String imgurl = imgFile;
     String msg =
-        "|location: ${imgurl}#${imgwh}#address:${address}#title:${title}#latitude:${latitude}#longitude:${longitude}|";
+        "|location: $imgurl#$imgwh#address:$address#title:$title#latitude:$latitude#longitude:$longitude|";
     String localmsg =
-        "|location: ${localurl}#${imgwh}#address:${address}#title:${title}#latitude:${latitude}#longitude:${longitude}|";
+        "|location: $localurl#$imgwh#address:$address#title:$title#latitude:$latitude#longitude:$longitude|";
     await sendMessage(msg, 4, localmsg, imgurl, "");
   }
 
-  _sendRedPacket(String msg) async {
+  Future<void> _sendRedPacket(String msg) async {
     String sendtime = DateTime.now().toString().substring(0, 19);
 
     List<TimeLineSync> temLine = [];
@@ -643,7 +638,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  _sendDrawRedPacket(String content, String msg) async {
+  Future<void> _sendDrawRedPacket(String content, String msg) async {
     String sendtime = DateTime.now().toString().substring(0, 19);
 
     List<TimeLineSync> temLine = [];
@@ -675,7 +670,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  _blockUser(int status) async {
+  Future<void> _blockUser(int status) async {
     bool ret = false;
     if (status == 2) {
       ret = await _imService.updateBlockUser(
@@ -740,14 +735,14 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  _getGroupMember() async {
+  Future<void> _getGroupMember() async {
     if (_groupRelation.relationtype == 0 || _groupRelation.relationtype == 3) {
       Activity? activity = await _activityService.getActivityMember(
         _groupRelation.timeline_id,
         errorCallBack,
       );
       if (activity != null) {
-        if (activity.members != null && activity.members!.length > 0) {
+        if (activity.members != null && activity.members!.isNotEmpty) {
           _imHelper.saveGroupMemberRelation(
             activity.members!,
             _groupRelation.timeline_id,
@@ -761,7 +756,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         _groupRelation.timeline_id,
         0,
       );
-      if (users != null && users.length > 0) {
+      if (users.isNotEmpty) {
         _imHelper.saveGroupMemberRelation(users, _groupRelation.timeline_id);
       }
     }
@@ -772,7 +767,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     );
   }
 
-  _initMember() async {
+  Future<void> _initMember() async {
     if (_groupRelation.memberupdatetime != null &&
         _groupRelation.memberupdatetime!.isNotEmpty) {
       var newUpdatetime = DateTime.parse(_groupRelation.memberupdatetime!);
@@ -786,19 +781,19 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         _groupRelation.timeline_id,
       );
 
-      if (users == null || users.length <= 0) {
+      if (users == null || users.isEmpty) {
         await _getGroupMember();
       }
     }
   }
 
-  _delImMsg(TimeLineSync timeLineSync) async {
+  Future<void> _delImMsg(TimeLineSync timeLineSync) async {
     await _imHelper.delMessage(timeLineSync);
     timeLineSyncs.remove(timeLineSync);
     setState(() {});
   }
 
-  _recallImMsg(TimeLineSync timeLineSync, int relationtype) async {
+  Future<void> _recallImMsg(TimeLineSync timeLineSync, int relationtype) async {
     bool ret = await _imService.recallMessage(
       timeLineSync.timeline_id!,
       Global.profile.user!.token!,
@@ -834,9 +829,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
 
     ///销毁定位
-    if (null != _locationPlugin) {
-      _locationPlugin.destroy();
-    }
+    _locationPlugin.destroy();
 
     if (_recordtimer != null) _recordtimer!.cancel();
 
@@ -897,7 +890,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Row(
                           children: [
-                            _goodprice!.pic != null && _goodprice!.pic != ""
+                            _goodprice!.pic != ""
                                 ? ClipRRectOhterHeadImageContainer(
                                     imageUrl: _goodprice!.pic,
                                     width: 59,
@@ -908,7 +901,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      _goodprice!.pic != null && _goodprice!.pic != ""
+                      _goodprice!.pic != ""
                           ? SizedBox(width: 9)
                           : SizedBox.shrink(),
                       Expanded(
@@ -956,7 +949,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                               ],
                             ),
                             Text(
-                              '${_goodprice!.title}',
+                              _goodprice!.title,
                               style: TextStyle(
                                 color: Colors.black45,
                                 fontSize: 14,
@@ -1034,11 +1027,11 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           bottom: _groupRelation.relationtype != 3
               ? null
               : PreferredSize(
+                  preferredSize: Size.fromHeight(50),
                   child: Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: _activityinfo,
                   ),
-                  preferredSize: Size.fromHeight(50),
                 ),
           backgroundColor: Colors.grey.shade100,
           leading: IconButton(
@@ -1157,21 +1150,20 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   _imBloc.add(
                     Already(Global.profile.user!, _groupRelation.timeline_id),
                   );
-                  if (state.msgMessage.length > 0) {
+                  if (state.msgMessage.isNotEmpty) {
                     timeLineSyncs = state.msgMessage;
                     ret = true;
                   }
                 }
               }
               return ret;
-            } else
+            } else {
               return false;
+            }
           },
           builder: (context, state) {
             List<Widget> list = [];
-            timeLineSyncs != null
-                ? list = buildMsgContent(timeLineSyncs)
-                : list.add(SizedBox.shrink());
+            list = buildMsgContent(timeLineSyncs);
             return InkWell(
               focusColor: Colors.grey.shade100,
               highlightColor: Colors.grey.shade100,
@@ -1184,8 +1176,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                       child: ListView(
                         controller: _scrollController,
                         reverse: true,
-                        children: list,
                         shrinkWrap: true,
+                        children: list,
                       ),
                       //                        child: ExtendedListView(
                       //                          controller: _scrollController,
@@ -1199,7 +1191,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   AnimatedSize(
                     curve: Curves.ease,
                     duration: Duration(milliseconds: 200),
-                    child: Container(
+                    child: SizedBox(
                       height: MediaQuery.of(context).viewInsets.bottom > 0
                           ? MediaQuery.of(context).viewInsets.bottom
                           : _keyboardHeight,
@@ -1232,7 +1224,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
       if (timeLineSyncs[i].sender == 0) {
         rows.add(buildSysMsg(timeLineSyncs[i]));
-        if (timeLineSyncs[i].content!.indexOf("@安全活动规范@") < 0) {
+        if (!timeLineSyncs[i].content!.contains("@安全活动规范@")) {
           rows.add(buildMsgTime(timeLineSyncs[i]));
         }
       } else if (timeLineSyncs[i].sender == Global.profile.user!.uid) {
@@ -1247,8 +1239,9 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             i == timeLineSyncs.length - 1)) {
           rows.add(buildMyContent(timeLineSyncs[i]));
           rows.add(buildMsgTime(timeLineSyncs[i]));
-        } else
+        } else {
           rows.add(buildMyContent(timeLineSyncs[i]));
+        }
       } else {
         if (((i + 1 < timeLineSyncs.length &&
                 DateTime.parse(timeLineSyncs[i].send_time!)
@@ -1261,19 +1254,20 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             i == timeLineSyncs.length - 1)) {
           rows.add(buildHerContent(timeLineSyncs[i]));
           rows.add(buildMsgTime(timeLineSyncs[i]));
-        } else
+        } else {
           rows.add(buildHerContent(timeLineSyncs[i]));
+        }
       }
     }
     return rows;
   }
 
   Widget buildSysMsg(TimeLineSync timeLineSync) {
-    if (timeLineSync.content!.indexOf("@安全活动规范@") >= 0) {
+    if (timeLineSync.content!.contains("@安全活动规范@")) {
       return Container(
         margin: EdgeInsets.all(10),
         padding: EdgeInsets.all(10),
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(4.0)),
         ),
@@ -1329,7 +1323,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           ],
         ),
       );
-    } else if (timeLineSync.content!.indexOf("|sysactivitynotice:") >= 0) {
+    } else if (timeLineSync.content!.contains("|sysactivitynotice:")) {
       String temNotice = timeLineSync.content!.replaceAll(
         "|sysactivitynotice:",
         '',
@@ -1337,7 +1331,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       return Container(
         margin: EdgeInsets.all(10),
         padding: EdgeInsets.all(10),
-        decoration: new BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(4.0)),
         ),
@@ -1374,7 +1368,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           ],
         ),
       );
-    } else if (timeLineSync.content!.indexOf("@|你领取了") >= 0) {
+    } else if (timeLineSync.content!.contains("@|你领取了")) {
       String temNotice = timeLineSync.content!.replaceAll("@|", '');
       temNotice = temNotice.replaceAll("红包", '');
       return Row(
@@ -1385,6 +1379,10 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             margin: EdgeInsets.only(bottom: 10),
             padding: EdgeInsets.all(10),
             alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(9.0)),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1396,10 +1394,6 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 ),
                 Text('红包', style: TextStyle(fontSize: 14, color: Colors.red)),
               ],
-            ),
-            decoration: new BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(9.0)),
             ),
           ),
         ],
@@ -1417,13 +1411,13 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   }
 
   Widget buildMsgTime(TimeLineSync timeLineSync) {
-    DateTime send_time = DateTime.parse(timeLineSync.send_time!);
+    DateTime sendTime = DateTime.parse(timeLineSync.send_time!);
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 5),
       alignment: Alignment.center,
       child: Text(
-        '${send_time.month}月${send_time.day}日 '
-        '${send_time.hour}:${send_time.minute < 10 ? ('0' + send_time.minute.toString()) : send_time.minute}',
+        '${sendTime.month}月${sendTime.day}日 '
+        '${sendTime.hour}:${sendTime.minute < 10 ? ('0' + sendTime.minute.toString()) : sendTime.minute}',
         style: TextStyle(color: Colors.black45, fontSize: 13),
       ),
     );
@@ -1440,7 +1434,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .replaceAll('|', '');
       List<String> soundinfo = key.split('#');
       contentwidth = double.parse(soundinfo[0]);
-      widContent = Container(
+      widContent = SizedBox(
         width: contentwidth * 2 + 70,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1475,7 +1469,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String imgurl = imginfo[0];
       isImg = true;
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -1514,7 +1508,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String title = locatoninfo[3].split(":")[1];
       String address = locatoninfo[2].split(":")[1];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20.0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -1558,7 +1552,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String content = sharedinfo[2];
       String image = sharedinfo[3];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -1598,7 +1592,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         ),
       );
     } else if (timeLineSync.content != null &&
-        timeLineSync.content!.indexOf("|sendredpacket:") >= 0) {
+        timeLineSync.content!.contains("|sendredpacket:")) {
       isImg = true;
 
       String redpacketinfo = timeLineSync.content!
@@ -1607,110 +1601,108 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .trim();
       String redpacketid = redpacketinfo.split("#")[1];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             InkWell(
               onTap: () async {
-                if (redpacketid != null) {
-                  RedPacketModel? redpacket = await _imService.getRedPacket(
-                    Global.profile.user!.uid,
-                    Global.profile.user!.token!,
-                    redpacketid,
-                    (code, msg) {
-                      ShowMessage.showToast(msg);
+                RedPacketModel? redpacket = await _imService.getRedPacket(
+                  Global.profile.user!.uid,
+                  Global.profile.user!.token!,
+                  redpacketid,
+                  (code, msg) {
+                    ShowMessage.showToast(msg);
+                  },
+                );
+
+                if (redpacket == null) return;
+                //弹出红包三种状态  1已经领取  2红包过期 3还没有领
+                if (redpacket.touid != null && redpacket.touid > 0) {
+                  //1已经领取
+                  _imHelper.updateReceiveRedPacket(
+                    timeLineSync.content!,
+                    timeLineSync.timeline_id!,
+                  );
+                  Navigator.pushNamed(
+                    context,
+                    '/RedPacketList',
+                    arguments: {
+                      "redPacketModel": redpacket,
+                      "receiveMoney": redpacket.tofund,
                     },
                   );
-
-                  if (redpacket == null) return;
-                  //弹出红包三种状态  1已经领取  2红包过期 3还没有领
-                  if (redpacket.touid != null && redpacket.touid > 0) {
-                    //1已经领取
-                    _imHelper.updateReceiveRedPacket(
-                      timeLineSync.content!,
-                      timeLineSync.timeline_id!,
-                    );
-                    Navigator.pushNamed(
-                      context,
-                      '/RedPacketList',
-                      arguments: {
-                        "redPacketModel": redpacket,
-                        "receiveMoney": redpacket.tofund,
-                      },
-                    );
-                  } else if (redpacket.uid == Global.profile.user!.uid &&
-                      redpacket.redpacketnum == redpacket.currentnum) {
-                    //红包已经被领完
-                    _imHelper.updateReceiveRedPacket(
-                      timeLineSync.content!,
-                      timeLineSync.timeline_id!,
-                    );
-                    Navigator.pushNamed(
-                      context,
-                      '/RedPacketList',
-                      arguments: {
-                        "redPacketModel": redpacket,
-                        "receiveMoney": 0.0,
-                      },
-                    );
-                  } else if (redpacket.isexpire) {
-                    //已经过期
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
+                } else if (redpacket.uid == Global.profile.user!.uid &&
+                    redpacket.redpacketnum == redpacket.currentnum) {
+                  //红包已经被领完
+                  _imHelper.updateReceiveRedPacket(
+                    timeLineSync.content!,
+                    timeLineSync.timeline_id!,
+                  );
+                  Navigator.pushNamed(
+                    context,
+                    '/RedPacketList',
+                    arguments: {
+                      "redPacketModel": redpacket,
+                      "receiveMoney": 0.0,
+                    },
+                  );
+                } else if (redpacket.isexpire) {
+                  //已经过期
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Container(
                           alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: new BoxDecoration(
-                              color: Colors.red.shade400,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(9.0),
-                              ),
-                            ),
-                            width: 290,
-                            height: 410,
-                            child: ListView(
-                              children: buildRedInfo(
-                                redpacket,
-                                timeLineSync.content!,
-                                timeLineSync.timeline_id!,
-                              ),
+                          decoration: new BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(9.0),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
-                          alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: new BoxDecoration(
-                              color: Colors.red.shade400,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(9.0),
-                              ),
-                            ),
-                            width: 290,
-                            height: 410,
-                            child: ListView(
-                              children: buildRedInfo(
-                                redpacket,
-                                timeLineSync.content!,
-                                timeLineSync.timeline_id!,
-                              ),
+                          width: 290,
+                          height: 410,
+                          child: ListView(
+                            children: buildRedInfo(
+                              redpacket,
+                              timeLineSync.content!,
+                              timeLineSync.timeline_id!,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: new BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(9.0),
+                            ),
+                          ),
+                          width: 290,
+                          height: 410,
+                          child: ListView(
+                            children: buildRedInfo(
+                              redpacket,
+                              timeLineSync.content!,
+                              timeLineSync.timeline_id!,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 }
               },
               child: ExtendedText(
@@ -1776,6 +1768,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           child: Container(
             margin: EdgeInsets.only(bottom: 10, right: 10),
             alignment: Alignment.centerRight,
+            decoration: BoxDecoration(color: Colors.grey.shade100),
             child: InkWell(
               child: Container(
                 decoration: new BoxDecoration(
@@ -1802,7 +1795,6 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 }
               },
             ),
-            decoration: new BoxDecoration(color: Colors.grey.shade100),
           ),
         ),
       ],
@@ -1819,7 +1811,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .replaceAll('|', '');
       List<String> soundinfo = key.split('#');
       contentwidth = double.parse(soundinfo[0]);
-      widContent = Container(
+      widContent = SizedBox(
         width: contentwidth * 2 + 75,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1854,7 +1846,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String imgurl = imginfo[0];
       isImg = true;
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1893,7 +1885,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String title = locatoninfo[3].split(":")[1];
       String address = locatoninfo[2].split(":")[1];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20.0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1937,7 +1929,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       String content = sharedinfo[2];
       String image = sharedinfo[3];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1976,7 +1968,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           ],
         ),
       );
-    } else if (timeLineSync.content!.indexOf("|sendredpacket:") >= 0) {
+    } else if (timeLineSync.content!.contains("|sendredpacket:")) {
       isImg = true;
       String redpacketinfo = timeLineSync.content!
           .replaceAll('|sendredpacket:', '')
@@ -1984,124 +1976,122 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .trim();
       String redpacketid = redpacketinfo.split("#")[1];
 
-      widContent = Container(
+      widContent = SizedBox(
         width: _pageWidth - 20,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             InkWell(
               onTap: () async {
-                if (redpacketid != null) {
-                  RedPacketModel? redpacket = await _imService.getRedPacket(
-                    Global.profile.user!.uid,
-                    Global.profile.user!.token!,
-                    redpacketid,
-                    (code, msg) {
-                      ShowMessage.showToast(msg);
-                    },
+                RedPacketModel? redpacket = await _imService.getRedPacket(
+                  Global.profile.user!.uid,
+                  Global.profile.user!.token!,
+                  redpacketid,
+                  (code, msg) {
+                    ShowMessage.showToast(msg);
+                  },
+                );
+
+                if (redpacket == null) return;
+                //弹出红包三种状态  1已经领取  2红包过期 3还没有领
+                if (redpacket.touid != null && redpacket.touid > 0) {
+                  //1已经领取
+                  _imHelper.updateReceiveRedPacket(
+                    timeLineSync.content!,
+                    timeLineSync.timeline_id!,
                   );
 
-                  if (redpacket == null) return;
-                  //弹出红包三种状态  1已经领取  2红包过期 3还没有领
-                  if (redpacket.touid != null && redpacket.touid > 0) {
-                    //1已经领取
-                    _imHelper.updateReceiveRedPacket(
-                      timeLineSync.content!,
-                      timeLineSync.timeline_id!,
-                    );
-
-                    Navigator.pushNamed(
-                      context,
-                      '/RedPacketList',
-                      arguments: {
-                        "redPacketModel": redpacket,
-                        "receiveMoney": redpacket.tofund,
-                      },
-                    );
-                  } else if (redpacket.isexpire) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
+                  Navigator.pushNamed(
+                    context,
+                    '/RedPacketList',
+                    arguments: {
+                      "redPacketModel": redpacket,
+                      "receiveMoney": redpacket.tofund,
+                    },
+                  );
+                } else if (redpacket.isexpire) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Container(
                           alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: new BoxDecoration(
-                              color: Colors.red.shade400,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(9.0),
-                              ),
-                            ),
-                            width: 290,
-                            height: 410,
-                            child: ListView(
-                              children: buildRedInfo(
-                                redpacket,
-                                timeLineSync.content!,
-                                timeLineSync.timeline_id!,
-                              ),
+                          decoration: new BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(9.0),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  } else if (redpacket.redpacketnum == redpacket.currentnum) {
-                    //已经被领完
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
-                          alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: new BoxDecoration(
-                              color: Colors.red.shade400,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(9.0),
-                              ),
-                            ),
-                            width: 290,
-                            height: 410,
-                            child: ListView(
-                              children: buildRedInfo(
-                                redpacket,
-                                timeLineSync.content!,
-                                timeLineSync.timeline_id!,
-                              ),
+                          width: 290,
+                          height: 410,
+                          child: ListView(
+                            children: buildRedInfo(
+                              redpacket,
+                              timeLineSync.content!,
+                              timeLineSync.timeline_id!,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  } else {
-                    //还没有领
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
+                        ),
+                      );
+                    },
+                  );
+                } else if (redpacket.redpacketnum == redpacket.currentnum) {
+                  //已经被领完
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Container(
                           alignment: Alignment.center,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: new BoxDecoration(
-                              color: Colors.red.shade400,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(9.0),
-                              ),
-                            ),
-                            width: 290,
-                            height: 410,
-                            child: ListView(
-                              children: buildRedInfo(
-                                redpacket,
-                                timeLineSync.content!,
-                                timeLineSync.timeline_id!,
-                              ),
+                          decoration: new BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(9.0),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
+                          width: 290,
+                          height: 410,
+                          child: ListView(
+                            children: buildRedInfo(
+                              redpacket,
+                              timeLineSync.content!,
+                              timeLineSync.timeline_id!,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  //还没有领
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: new BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(9.0),
+                            ),
+                          ),
+                          width: 290,
+                          height: 410,
+                          child: ListView(
+                            children: buildRedInfo(
+                              redpacket,
+                              timeLineSync.content!,
+                              timeLineSync.timeline_id!,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 }
               },
               child: ExtendedText(
@@ -2207,10 +2197,10 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           child: Container(
             margin: EdgeInsets.only(bottom: 10),
             alignment: Alignment.centerLeft,
-            decoration: new BoxDecoration(color: Colors.grey.shade100),
+            decoration: BoxDecoration(color: Colors.grey.shade100),
             child: InkWell(
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   color: isImg ? null : Colors.white,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(15.0),
@@ -2248,7 +2238,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             activeWidget: Icon(IconFont.icon_jianpan),
             unActiveWidget: Icon(IconFont.icon_jianpan),
             activeChanged: (bool active) {
-              final Function change = () {
+              void change() {
                 setState(() {
                   if (active) {
                     _activeMoreGrid = false;
@@ -2257,7 +2247,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   }
                   _activeSayingGrid = active;
                 });
-              };
+              }
+
               update(change);
             },
             active: _activeSayingGrid,
@@ -2269,8 +2260,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               margin: EdgeInsets.only(bottom: 5, top: 5, left: 10),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: new Border.all(color: Colors.black26, width: 0.1),
-                borderRadius: new BorderRadius.circular((5.0)),
+                border: Border.all(color: Colors.black26, width: 0.1),
+                borderRadius: BorderRadius.circular((5.0)),
               ),
               child: ExtendedTextField(
                 onTap: () {
@@ -2313,7 +2304,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             activeWidget: Icon(IconFont.icon_jianpan2),
             unActiveWidget: Icon(IconFont.icon_biaoqing),
             activeChanged: (bool active) {
-              final Function change = () {
+              void change() {
                 setState(() {
                   if (active) {
                     _activeMoreGrid = false;
@@ -2322,7 +2313,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   }
                   _activeEmojiGird = active;
                 });
-              };
+              }
+
               update(change);
             },
             active: _activeEmojiGird,
@@ -2333,7 +2325,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   activeWidget: Icon(IconFont.icon_guanbi1),
                   unActiveWidget: Icon(IconFont.icon_tianjiayuan),
                   activeChanged: (bool active) {
-                    final Function change = () {
+                    void change() {
                       setState(() {
                         if (active) {
                           _activeEmojiGird = false;
@@ -2342,7 +2334,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         }
                         _activeMoreGrid = active;
                       });
-                    };
+                    }
+
                     update(change);
                   },
                   active: _activeMoreGrid,
@@ -2413,11 +2406,11 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 child: Container(
                   height: 35,
                   width: 40,
-                  child: Icon(Icons.delete, color: Colors.white),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
+                  child: Icon(Icons.delete, color: Colors.white),
                 ),
                 onTap: () async {
                   await recoderDel();
@@ -2497,11 +2490,11 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 child: Container(
                   height: 35,
                   width: 40,
-                  child: Icon(Icons.check, color: Colors.white),
                   decoration: BoxDecoration(
                     color: Colors.cyan,
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
+                  child: Icon(Icons.check, color: Colors.white),
                 ),
                 onTap: () async {
                   if (_sendEnter) {
@@ -2560,6 +2553,13 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       ratio = ((_pageWidth / 4 - 50) / 70);
     }
     return GridView(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        childAspectRatio: ratio,
+        crossAxisCount: 4,
+        crossAxisSpacing: 1.0,
+        mainAxisSpacing: 1.0,
+      ),
+      padding: const EdgeInsets.all(1.0),
       children: [
         GestureDetector(
           child: Column(
@@ -2735,71 +2735,58 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           },
         ),
       ],
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        childAspectRatio: ratio,
-        crossAxisCount: 4,
-        crossAxisSpacing: 1.0,
-        mainAxisSpacing: 1.0,
-      ),
-      padding: const EdgeInsets.all(1.0),
     );
   }
 
   List<Widget> buildRedInfo(
     RedPacketModel redPacketModel,
     String content,
-    String timeline_id,
+    String timelineId,
   ) {
     List<Widget> redInfo = [];
     redInfo.add(SizedBox.shrink());
 
-    if (redPacketModel.profilepicture != null) {
-      redInfo.add(
-        Container(
-          margin: EdgeInsets.only(top: 30, bottom: 10),
-          alignment: Alignment.center,
-          child: NoCacheClipRRectOhterHeadImage(
-            imageUrl: redPacketModel.profilepicture,
-            uid: redPacketModel.uid,
-            width: 50,
-          ),
+    redInfo.add(
+      Container(
+        margin: EdgeInsets.only(top: 30, bottom: 10),
+        alignment: Alignment.center,
+        child: NoCacheClipRRectOhterHeadImage(
+          imageUrl: redPacketModel.profilepicture,
+          uid: redPacketModel.uid,
+          width: 50,
         ),
-      );
-    }
+      ),
+    );
 
-    if (redPacketModel.username != null) {
-      redInfo.add(
-        Container(
-          alignment: Alignment.center,
-          child: Text(
-            redPacketModel.username,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              decoration: TextDecoration.none,
-              fontWeight: FontWeight.w500,
-            ),
+    redInfo.add(
+      Container(
+        alignment: Alignment.center,
+        child: Text(
+          redPacketModel.username,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+            decoration: TextDecoration.none,
+            fontWeight: FontWeight.w500,
           ),
         ),
-      );
-    }
+      ),
+    );
 
-    if (redPacketModel.redpackettype != null) {
-      redInfo.add(
-        Container(
-          alignment: Alignment.center,
-          child: Text(
-            redPacketModel.redpackettype == 0 ? '拼手气红包' : '普通红包',
-            style: TextStyle(
-              decoration: TextDecoration.none,
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-              color: Colors.grey.shade200,
-            ),
+    redInfo.add(
+      Container(
+        alignment: Alignment.center,
+        child: Text(
+          redPacketModel.redpackettype == 0 ? '拼手气红包' : '普通红包',
+          style: TextStyle(
+            decoration: TextDecoration.none,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: Colors.grey.shade200,
           ),
         ),
-      );
-    }
+      ),
+    );
 
     redInfo.add(
       Container(
@@ -2862,7 +2849,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           ),
         ),
       );
-      _imHelper.updateReceiveRedPacket(content, timeline_id);
+      _imHelper.updateReceiveRedPacket(content, timelineId);
     } else if (redPacketModel.currentnum != redPacketModel.redpacketnum) {
       redInfo.add(
         GestureDetector(
@@ -2891,7 +2878,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 ShowMessage.showToast(msg);
               },
             );
-            if (receiveMoney != null && receiveMoney > 0) {
+            if (receiveMoney > 0) {
               String temstr = "";
               if (redPacketModel.uid == Global.profile.user!.uid) {
                 temstr = "@|你领取了自己发的红包";
@@ -2916,7 +2903,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               //print("领取成功");
             } else {
               Navigator.pop(context);
-              _imHelper.updateReceiveRedPacket(content, timeline_id);
+              _imHelper.updateReceiveRedPacket(content, timelineId);
             }
           },
         ),
@@ -2965,7 +2952,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           ),
         ),
       );
-      _imHelper.updateReceiveRedPacket(content, timeline_id);
+      _imHelper.updateReceiveRedPacket(content, timelineId);
     }
     return redInfo;
   }
@@ -3009,7 +2996,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   void update(Function change) {
     if (showCustomKeyBoard) {
       change();
-      if (!showCustomKeyBoard)
+      if (!showCustomKeyBoard) {
         SystemChannels.textInput
             .invokeMethod<void>('TextInput.show')
             .whenComplete(() {
@@ -3017,6 +3004,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 const Duration(milliseconds: 200),
               ).whenComplete(() {});
             });
+      }
     } else {
       SystemChannels.textInput
           .invokeMethod<void>('TextInput.hide')
@@ -3078,12 +3066,11 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         .split('#')[1];
     Directory directory = await getTemporaryDirectory();
 
-    Directory soundsDirectory = await new Directory(
+    Directory soundsDirectory = await Directory(
       '${directory.path}/im/sounds/',
     ).create(recursive: true);
     String localPath = soundsDirectory.path;
-    localPath =
-        localPath + DateTime.now().millisecondsSinceEpoch.toString() + ".mp4";
+    localPath = "$localPath${DateTime.now().millisecondsSinceEpoch}.mp4";
     await NetUtil.getInstance().download(
       url,
       localPath,
@@ -3107,24 +3094,26 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   }
 
   Future<void> loadAssets() async {
-    User _user = Global.profile.user!;
+    User user = Global.profile.user!;
     List<AssetEntity>? resultList;
 
     try {
       resultList = await AssetPicker.pickAssets(
         context,
-        maxAssets: 4,
-        selectedAssets: _images,
-        requestType: RequestType.image,
+        pickerConfig: AssetPickerConfig(
+          maxAssets: 4,
+          selectedAssets: _images,
+          requestType: RequestType.image,
+        ),
       );
     } on Exception catch (e) {
       print(e.toString());
     }
     //添加图片并上传oss 1.申请oss临时token，1000s后过期
-    if (resultList != null && resultList.length != 0) {
+    if (resultList != null && resultList.isNotEmpty) {
       _securityToken = await _aliyunService.getActivitySecurityToken(
-        _user.token!,
-        _user.uid,
+        user.token!,
+        user.uid,
       );
       if (_securityToken != null) {
         for (int i = 0; i < resultList.length; i++) {
@@ -3136,12 +3125,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             _securityToken!,
             _aliyunService,
           );
-          if (url != null && url.isNotEmpty) {
-            _sendImg(
-              _securityToken!.host + "/" + url,
-              "${width},${height}",
-              url,
-            );
+          if (url.isNotEmpty) {
+            _sendImg("${_securityToken!.host}/$url", "$width,$height", url);
           }
         }
         _images = [];
@@ -3153,8 +3138,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   }
 
   Future<void> pickImage() async {
-    User _user = Global.profile.user!;
-    final pickedFile = await _picker.getImage(
+    User user = Global.profile.user!;
+    final pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
       maxWidth: 1024,
       maxHeight: 1024,
@@ -3163,33 +3148,33 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
     if (pickedFile != null) {
       _securityToken = await _aliyunService.getActivitySecurityToken(
-        _user.token!,
-        _user.uid,
+        user.token!,
+        user.uid,
       );
       if (_securityToken != null) {
         Uint8List imageData = await pickedFile.readAsBytes();
         String md5name = md5.convert(imageData).toString();
-        final Directory _directory = await getTemporaryDirectory();
-        final Directory _imageDirectory = await new Directory(
-          '${_directory.path}/activity/images/',
+        final Directory directory = await getTemporaryDirectory();
+        final Directory imageDirectory = await Directory(
+          '${directory.path}/activity/images/',
         ).create(recursive: true);
-        String _path = _imageDirectory.path;
-        File imageFile = new File('${_path}originalImage_$md5name.png')
+        String path = imageDirectory.path;
+        File imageFile = File('${path}originalImage_$md5name.png')
           ..writeAsBytesSync(imageData);
         Image image = Image.file(File(pickedFile.path));
         image.image
-            .resolve(new ImageConfiguration())
+            .resolve(ImageConfiguration())
             .addListener(
-              new ImageStreamListener((ImageInfo info, bool _) async {
+              ImageStreamListener((ImageInfo info, bool _) async {
                 String url = await _aliyunService.uploadImage(
                   _securityToken!,
                   imageFile.path,
-                  '${md5name}.png',
-                  _user.uid,
+                  '$md5name.png',
+                  user.uid,
                 );
-                if (url != null && url.isNotEmpty) {
+                if (url.isNotEmpty) {
                   _sendImg(
-                    _securityToken!.host + "/" + url,
+                    "${_securityToken!.host}/$url",
                     "${info.image.width},${info.image.height}",
                     url,
                   );
@@ -3208,34 +3193,34 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     String latitude,
     String longitude,
   ) async {
-    User _user = Global.profile.user!;
+    User user = Global.profile.user!;
     _securityToken = await _aliyunService.getActivitySecurityToken(
-      _user.token!,
-      _user.uid,
+      user.token!,
+      user.uid,
     );
 
     if (_securityToken != null) {
       String md5name = Uuid().v1().toString().replaceAll('-', '');
-      final Directory _directory = await getTemporaryDirectory();
-      final Directory _imageDirectory = await new Directory(
-        '${_directory.path}/activity/images/',
+      final Directory directory = await getTemporaryDirectory();
+      final Directory imageDirectory = await Directory(
+        '${directory.path}/activity/images/',
       ).create(recursive: true);
-      String _path = _imageDirectory.path;
+      String path = imageDirectory.path;
 
-      File imageFile = new File('${_path}originalImage_$md5name.png')
+      File imageFile = File('${path}originalImage_$md5name.png')
         ..writeAsBytesSync(imgData);
       Image image = Image.memory(imgData);
       image.image
-          .resolve(new ImageConfiguration())
+          .resolve(ImageConfiguration())
           .addListener(
-            new ImageStreamListener((ImageInfo info, bool _) async {
+            ImageStreamListener((ImageInfo info, bool _) async {
               String url = await _aliyunService.uploadImage(
                 _securityToken!,
                 imageFile.path,
-                '${md5name}.png',
-                _user.uid,
+                '$md5name.png',
+                user.uid,
               );
-              if (url != null && url.isNotEmpty) {
+              if (url.isNotEmpty) {
                 _sendLocal(
                   url,
                   "${info.image.width},${info.image.height}",
@@ -3243,7 +3228,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                   title,
                   longitude,
                   latitude,
-                  _securityToken!.host + "/" + url,
+                  "${_securityToken!.host}/$url",
                 );
               }
             }),
@@ -3251,20 +3236,20 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  selectMember() async {
+  Future<void> selectMember() async {
     List<User>? users = await _imHelper.getGroupMemberRelation(
       _groupRelation.timeline_id,
     );
-    if (users == null || users.length == 0) {
+    if (users == null || users.isEmpty) {
       return;
     }
 
     ///编辑控制器
-    TextEditingController _controller = TextEditingController();
+    TextEditingController controller = TextEditingController();
     print(_pagestatus);
 
     ///是否显示删除按钮
-    bool _hasDeleteIcon = false;
+    bool hasDeleteIcon = false;
     List<User> newArr = users;
     showModalBottomSheet<String>(
       isScrollControlled: true, //一：设为true，此时为全屏展示
@@ -3296,7 +3281,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                     Padding(
                       padding: EdgeInsets.only(left: 15, right: 5, top: 10),
                       child: TextField(
-                        controller: _controller,
+                        controller: controller,
                         textInputAction: TextInputAction.search,
                         keyboardType: TextInputType.text,
                         maxLines: 1,
@@ -3326,7 +3311,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                           border: InputBorder.none,
                           //无边框
                           hintText: " 搜索",
-                          hintStyle: new TextStyle(
+                          hintStyle: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
                           ),
@@ -3334,15 +3319,15 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                           suffixIcon: Container(
                             padding: EdgeInsetsDirectional.only(
                               start: 2.0,
-                              end: _hasDeleteIcon ? 0.0 : 0,
+                              end: hasDeleteIcon ? 0.0 : 0,
                             ),
-                            child: _hasDeleteIcon
-                                ? new InkWell(
+                            child: hasDeleteIcon
+                                ? InkWell(
                                     onTap: (() {
                                       setState(() {
                                         /// 保证在组件build的第一帧时才去触发取消清空内容
-                                        _controller.clear();
-                                        _hasDeleteIcon = false;
+                                        controller.clear();
+                                        hasDeleteIcon = false;
                                       });
                                     }),
                                     child: Icon(
@@ -3351,19 +3336,19 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                                       color: Colors.grey,
                                     ),
                                   )
-                                : new Text(''),
+                                : Text(''),
                           ),
                         ),
                         onChanged: (value) {
                           if (value.isEmpty) {
-                            _hasDeleteIcon = false;
+                            hasDeleteIcon = false;
                           } else {
-                            _hasDeleteIcon = true;
+                            hasDeleteIcon = true;
                           }
 
                           newArr = users
                               .where(
-                                (input) => (input.username.indexOf(value) >= 0
+                                (input) => (input.username.contains(value)
                                     ? true
                                     : false),
                               )
@@ -3371,7 +3356,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                           setState(() {});
                         },
                         onEditingComplete: () {},
-                        style: new TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                     ),
                     Expanded(
@@ -3389,7 +3374,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       },
     ).then((value) {
       if (value != null) {
-        _textEditingController.text = _textEditingController.text + value + " ";
+        _textEditingController.text = "${_textEditingController.text}$value ";
       }
     });
   }
@@ -3398,7 +3383,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     List<Widget> widgets = [];
 
     widgets.add(SizedBox(height: 10));
-    members.forEach((element) {
+    for (var element in members) {
       widgets.add(
         Padding(
           padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 5),
@@ -3430,13 +3415,13 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         ),
       );
       widgets.add(SizedBox(height: 5));
-    });
+    }
     return widgets;
   }
 
   //goodprice分享
   Future<void> _gotoGoodPrice(String goodpriceid) async {
-    GPService gpservice = new GPService();
+    GPService gpservice = GPService();
     GoodPiceModel? goodprice = await gpservice.getGoodPriceInfo(goodpriceid);
     if (goodprice != null) {
       Navigator.pushNamed(
@@ -3460,7 +3445,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     return false;
   }
 
-  loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
+  void loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
     showDialog<Null>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -3468,10 +3453,10 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         return BlockPuzzleCaptchaPage(
           onSuccess: (v) {
             sendMessage(
-              this._msgcontent,
-              this._contenttype,
-              this._localmsgcontent,
-              this._localpath,
+              _msgcontent,
+              _contenttype,
+              _localmsgcontent,
+              _localpath,
               v,
             );
           },
@@ -3481,7 +3466,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     );
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }

@@ -16,7 +16,7 @@ class PostSuccess extends CityActivityState {
   final List<Activity>? activitys;
   final bool hasReachedMax;
   final bool isRefreshed;
-  PostSuccess({
+  const PostSuccess({
     this.activitys,
     this.hasReachedMax = false,
     this.isRefreshed = false,
@@ -28,7 +28,7 @@ class PostSuccess extends CityActivityState {
     bool isRefreshed = false,
   }) {
     return PostSuccess(
-      activitys: activitys ?? this.activitys,
+      activitys: activitys ?? activitys,
       hasReachedMax: hasReachedMax,
       isRefreshed: isRefreshed,
     );
@@ -39,7 +39,7 @@ class PostSuccess extends CityActivityState {
 
   @override
   String toString() =>
-      'PostSuccess { posts: ${activitys}, hasReachedMax: $hasReachedMax }';
+      'PostSuccess { posts: $activitys, hasReachedMax: $hasReachedMax }';
 }
 
 class PostLoading extends CityActivityState {}

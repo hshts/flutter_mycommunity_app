@@ -13,19 +13,19 @@ import '../../../util/imhelper_util.dart';
 import '../../../global.dart';
 
 class MyOrderPending extends StatefulWidget {
-  MyOrderPending();
+  const MyOrderPending({super.key});
 
   @override
   _MyOrderPendingState createState() => _MyOrderPendingState();
 }
 
 class _MyOrderPendingState extends State<MyOrderPending> {
-  UserService _userService = UserService();
-  ActivityService _activityService = ActivityService();
+  final UserService _userService = UserService();
+  final ActivityService _activityService = ActivityService();
   List<Order> _orderList = [];
   int _pagestatus = 0; //简单处理载入状态
-  ImHelper _imhelper = new ImHelper();
-  GPService _gpservice = new GPService();
+  final ImHelper _imhelper = ImHelper();
+  final GPService _gpservice = GPService();
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
     _getMyOrder();
   }
 
-  _getMyOrder() async {
+  Future<void> _getMyOrder() async {
     _orderList = await _userService.getMyOrder(
       Global.profile.user!.token!,
       Global.profile.user!.uid,
@@ -80,8 +80,8 @@ class _MyOrderPendingState extends State<MyOrderPending> {
     Widget ret = SizedBox.shrink();
     List<Widget> lists = [];
 
-    if (_orderList != null && _orderList.length > 0) {
-      _orderList.forEach((e) {
+    if (_orderList.isNotEmpty) {
+      for (var e in _orderList) {
         String time = "已过期";
         if (e.ordertype == 3) {
           //团购付款时间30分钟
@@ -89,7 +89,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
           endDate = endDate.add(Duration(minutes: 30)); //团购订单30分钟后过期
           int min = endDate.difference(DateTime.now()).inMinutes;
           if (min > 0) {
-            time = min.toString() + "分钟";
+            time = "$min分钟";
           }
         }
 
@@ -101,10 +101,10 @@ class _MyOrderPendingState extends State<MyOrderPending> {
           int hour = (min / 60).toInt();
           min = (min % 60).toInt();
           if (hour > 0) {
-            time = hour.toString() + "小时" + min.toString() + "分钟";
+            time = "$hour小时$min分钟";
           }
           if (min > 0 && hour <= 0) {
-            time = min.toString() + "分钟";
+            time = "$min分钟";
           }
 
           if (min == 0 && hour == 0) {
@@ -114,6 +114,12 @@ class _MyOrderPendingState extends State<MyOrderPending> {
         lists.add(
           Container(
             padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            decoration: BoxDecoration(
+              //背景
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              //设置四周边框
+            ),
             child: Column(
               children: [
                 SizedBox(height: 12),
@@ -276,16 +282,10 @@ class _MyOrderPendingState extends State<MyOrderPending> {
                 SizedBox(height: 9),
               ],
             ),
-            decoration: new BoxDecoration(
-              //背景
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
-            ),
           ),
         );
         lists.add(Container(height: 6, color: Colors.grey.shade200));
-      });
+      }
 
       lists.add(SizedBox(height: 10));
 
@@ -348,11 +348,11 @@ class _MyOrderPendingState extends State<MyOrderPending> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text('确定取消订单吗?', style: new TextStyle(fontSize: 17.0)),
+        return AlertDialog(
+          title: Text('确定取消订单吗?', style: TextStyle(fontSize: 17.0)),
           actions: <Widget>[
-            new TextButton(
-              child: new Text('确定'),
+            TextButton(
+              child: Text('确定'),
               onPressed: () async {
                 Navigator.of(context).pop();
                 bool ret = await _activityService.delActivityOrder(
@@ -369,8 +369,8 @@ class _MyOrderPendingState extends State<MyOrderPending> {
                 }
               },
             ),
-            new TextButton(
-              child: new Text('取消'),
+            TextButton(
+              child: Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -382,7 +382,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
   }
 
   Future<void> _telCustomerCare(String vcode, int touid) async {
-    String timeline_id = "";
+    String timelineId = "";
     //获取客服
     int uid = Global.profile.user!.uid;
     if (uid == touid) {
@@ -391,17 +391,17 @@ class _MyOrderPendingState extends State<MyOrderPending> {
     }
 
     if (uid > touid) {
-      timeline_id = touid.toString() + uid.toString();
+      timelineId = touid.toString() + uid.toString();
     } else {
-      timeline_id = uid.toString() + touid.toString();
+      timelineId = uid.toString() + touid.toString();
     }
     GroupRelation? groupRelation = await _imhelper.getGroupRelationByGroupid(
       uid,
-      timeline_id,
+      timelineId,
     );
     if (groupRelation == null) {
       groupRelation = await _userService.joinSingleCustomer(
-        timeline_id,
+        timelineId,
         uid,
         touid,
         Global.profile.user!.token!,
@@ -428,7 +428,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
       }
       if (ret > 0) {
         Navigator.pushNamed(
-          this.context,
+          context,
           '/MyMessage',
           arguments: {"GroupRelation": groupRelation},
         );
@@ -437,7 +437,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
   }
 
   //滑动拼图
-  _loadingBlockPuzzle(
+  void _loadingBlockPuzzle(
     BuildContext context, {
     barrierDismissible = true,
     required int touid,
@@ -456,7 +456,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
     );
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }

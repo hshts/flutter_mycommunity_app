@@ -6,10 +6,10 @@ import 'package:flutter/cupertino.dart';
 import '../../global.dart';
 
 class ScanView extends StatefulWidget {
-  ScanView({Key? key}) : super(key: key);
+  const ScanView({super.key});
 
   @override
-  _ScanViewState createState() => new _ScanViewState();
+  _ScanViewState createState() => _ScanViewState();
 }
 
 class _ScanViewState extends State<ScanView> {
@@ -50,16 +50,17 @@ class _ScanViewState extends State<ScanView> {
   Future onScan(String data) async {
     //_key.currentState.startScan();
     String uid = "";
-    if (data.indexOf("userinfo") >= 0) {
+    if (data.contains("userinfo")) {
       uid = data.split("?")[1].split('=')[1];
       if (uid == Global.profile.user!.uid.toString()) {
         Navigator.pushReplacementNamed(context, '/MyProfile');
-      } else
+      } else {
         Navigator.pushReplacementNamed(
           context,
           '/UserProfile',
           arguments: {"uid": uid},
         );
+      }
     } else {
       showCupertinoDialog(
         context: context,

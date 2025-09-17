@@ -12,8 +12,8 @@ export 'event/myfollow_event.dart';
 export 'state/myfollow_state.dart';
 
 class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
-  final UserService _userService = new UserService();
-  final ActivityService _activityService = new ActivityService();
+  final UserService _userService = UserService();
+  final ActivityService _activityService = ActivityService();
 
   MyFollowBloc() : super(PostInitial());
 
@@ -39,7 +39,7 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
             event.user!.uid,
             event.user!.token!,
           );
-          if (users.length > 0) {
+          if (users.isNotEmpty) {
             activitys = await _activityService.getActivityListByFollow(
               0,
               users,
@@ -61,15 +61,15 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
             !currentState.hasReachedActivityMax) {
           int currentindex = 0;
           currentindex += currentState.activitys.length;
-          if (currentState.users.length > 0) {
+          if (currentState.users.isNotEmpty) {
             activitys = await _activityService.getActivityListByFollow(
               currentindex,
               currentState.users,
             );
           }
 
-          if (activitys.length > 0) currentState.activitys.addAll(activitys);
-          yield activitys.length == 0
+          if (activitys.isNotEmpty) currentState.activitys.addAll(activitys);
+          yield activitys.isEmpty
               ? currentState.copyWith(hasReachedActivityMax: true)
               : PostSuccess(
                   users: currentState.users,
@@ -91,7 +91,7 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
             event.user.uid,
             event.user.token!,
           );
-          if (users.length > 0) {
+          if (users.isNotEmpty) {
             currentState.users.addAll(users);
             activitys = await _activityService.getActivityListByFollow(
               0,
@@ -100,7 +100,7 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
             currentState.activitys.clear();
             currentState.activitys.addAll(activitys);
           }
-          yield users.length == 0
+          yield users.isEmpty
               ? currentState.copyWith(hasReachedUserMax: true)
               : PostSuccess(
                   users: currentState.users,
@@ -119,7 +119,7 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
           event.user.uid,
           event.user.token!,
         );
-        if (users.length > 0) {
+        if (users.isNotEmpty) {
           activitys = await _activityService.getActivityListByFollow(0, users);
         }
         yield PostSuccess(
@@ -142,18 +142,15 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
 }
 
 Map<String, List<Dynamic>> groupData(List<Dynamic> myDynamics) {
-  Map<String, List<Dynamic>> map = new Map.fromIterable(
-    myDynamics,
-    key: (key) => key.createtime.substring(0, 10),
-    value: (value) {
-      return myDynamics
+  Map<String, List<Dynamic>> map = {
+    for (var e in myDynamics)
+      e.createtime.substring(0, 10): myDynamics
           .where(
             (item) =>
                 (item.createtime.substring(0, 10) ==
-                value.createtime.substring(0, 10)),
+                e.createtime.substring(0, 10)),
           )
-          .toList();
-    },
-  );
+          .toList(),
+  };
   return map;
 }

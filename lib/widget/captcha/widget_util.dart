@@ -23,18 +23,21 @@ class WidgetUtil {
   /// isOnce: true,Continuous monitoring  false,Listen only once.
   /// onCallBack: Widget Rect CallBack.
   void asyncPrepare(
-      BuildContext context, bool isOnce, ValueChanged<Rect> onCallBack) {
+    BuildContext context,
+    bool isOnce,
+    ValueChanged<Rect> onCallBack,
+  ) {
     if (_hasMeasured) return;
-    WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       var box = context.findRenderObject() as RenderParagraph;
-      if (box != null && box.semanticBounds != null) {
+      if (box.semanticBounds != null) {
         if (isOnce) _hasMeasured = true;
         double width = box.semanticBounds.width;
         double height = box.semanticBounds.height;
         if (_width != width || _height != height) {
           _width = width;
           _height = height;
-          if (onCallBack != null) onCallBack(box.semanticBounds);
+          onCallBack(box.semanticBounds);
         }
       }
     });
@@ -43,9 +46,9 @@ class WidgetUtil {
   /// Widget渲染监听.
   void asyncPrepares(bool isOnce, ValueChanged<Rect?> onCallBack) {
     if (_hasMeasured) return;
-    WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       if (isOnce) _hasMeasured = true;
-      if (onCallBack != null) onCallBack(null);
+      onCallBack(null);
     });
   }
 
@@ -53,16 +56,14 @@ class WidgetUtil {
   ///获取widget Rect
   static Rect getWidgetBounds(BuildContext context) {
     var box = context.findRenderObject() as RenderParagraph;
-    return (box != null && box.semanticBounds != null)
-        ? box.semanticBounds
-        : Rect.zero;
+    return (box.semanticBounds != null) ? box.semanticBounds : Rect.zero;
   }
 
   ///Get the coordinates of the widget on the screen.Widgets must be rendered completely.
   ///获取widget在屏幕上的坐标,widget必须渲染完成
   static Offset getWidgetLocalToGlobal(BuildContext context) {
     var box = context.findRenderObject() as RenderParagraph;
-    return box == null ? Offset.zero : box.localToGlobal(Offset.zero);
+    return box.localToGlobal(Offset.zero);
   }
 
   /// get image width height，load error return Rect.zero.（unit px）
@@ -70,30 +71,40 @@ class WidgetUtil {
   /// image
   /// url network
   /// local url , package
-  static Future<Rect> getImageWH(
-      {Image? image, String? url, String? localUrl, String? package}) {
-    if (image == null &&
-        url == null &&
-        localUrl == null) {
+  static Future<Rect> getImageWH({
+    Image? image,
+    String? url,
+    String? localUrl,
+    String? package,
+  }) {
+    if (image == null && url == null && localUrl == null) {
       return Future.value(Rect.zero);
     }
     Completer<Rect> completer = Completer<Rect>();
-    Image img = image != null
-        ? image
-        : ((url != null && url.isNotEmpty)
+    Image img =
+        image ??
+        ((url != null && url.isNotEmpty)
             ? Image.network(url)
             : Image.asset(localUrl!, package: package));
     img.image
-        .resolve(new ImageConfiguration())
-        .addListener(new ImageStreamListener(
-          (ImageInfo info, bool _) {
-            completer.complete(Rect.fromLTWH(0, 0, info.image.width.toDouble(),
-                info.image.height.toDouble()));
-          },
-          onError: (dynamic exception, StackTrace? stackTrace) {
-            completer.completeError(exception, stackTrace);
-          },
-        ));
+        .resolve(ImageConfiguration())
+        .addListener(
+          ImageStreamListener(
+            (ImageInfo info, bool _) {
+              completer.complete(
+                Rect.fromLTWH(
+                  0,
+                  0,
+                  info.image.width.toDouble(),
+                  info.image.height.toDouble(),
+                ),
+              );
+            },
+            onError: (dynamic exception, StackTrace? stackTrace) {
+              completer.completeError(exception, stackTrace);
+            },
+          ),
+        );
     return completer.future;
   }
 
@@ -103,30 +114,40 @@ class WidgetUtil {
   /// url network
   /// local url (full path/全路径，example："assets/images/ali_connors.png"，""assets/images/3.0x/ali_connors.png"" );
   /// package
-  static Future<Rect> getImageWHE(
-      {Image? image, String? url, String? localUrl, String? package}) {
-    if (image == null &&
-        url == null  &&
-        localUrl == null) {
+  static Future<Rect> getImageWHE({
+    Image? image,
+    String? url,
+    String? localUrl,
+    String? package,
+  }) {
+    if (image == null && url == null && localUrl == null) {
       return Future.error("image is null.");
     }
     Completer<Rect> completer = Completer<Rect>();
-    Image img = image != null
-        ? image
-        : ((url != null && url.isNotEmpty)
+    Image img =
+        image ??
+        ((url != null && url.isNotEmpty)
             ? Image.network(url)
             : Image.asset(localUrl!, package: package));
     img.image
-        .resolve(new ImageConfiguration())
-        .addListener(new ImageStreamListener(
-          (ImageInfo info, bool _) {
-            completer.complete(Rect.fromLTWH(0, 0, info.image.width.toDouble(),
-                info.image.height.toDouble()));
-          },
-          onError: (dynamic exception, StackTrace? stackTrace) {
-            completer.completeError(exception, stackTrace);
-          },
-        ));
+        .resolve(ImageConfiguration())
+        .addListener(
+          ImageStreamListener(
+            (ImageInfo info, bool _) {
+              completer.complete(
+                Rect.fromLTWH(
+                  0,
+                  0,
+                  info.image.width.toDouble(),
+                  info.image.height.toDouble(),
+                ),
+              );
+            },
+            onError: (dynamic exception, StackTrace? stackTrace) {
+              completer.completeError(exception, stackTrace);
+            },
+          ),
+        );
 
     return completer.future;
   }

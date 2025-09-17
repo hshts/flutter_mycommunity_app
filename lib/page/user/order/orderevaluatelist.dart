@@ -9,16 +9,18 @@ import '../../../widget/circle_headimage.dart';
 import '../../../util/showmessage_util.dart';
 
 class ActivityEvaluateList extends StatefulWidget {
+  const ActivityEvaluateList({super.key});
+
   @override
   _ActivityEvaluateListState createState() => _ActivityEvaluateListState();
 }
 
 class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
   List<Order> _orderlist = [];
-  ActivityService _activityService = ActivityService();
-  GPService gpservice = new GPService();
+  final ActivityService _activityService = ActivityService();
+  GPService gpservice = GPService();
 
-  getOrderUnEvaluate() async {
+  Future<void> getOrderUnEvaluate() async {
     _orderlist = await _activityService.getUnEvaluateOrderList(
       Global.profile.user!.uid,
       Global.profile.user!.token!,
@@ -72,11 +74,17 @@ class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
   Widget buildActivity() {
     List<Widget> widgets = [];
     widgets.add(SizedBox(height: 10));
-    if (_orderlist != null && _orderlist.length > 0) {
-      _orderlist.forEach((e) {
+    if (_orderlist.isNotEmpty) {
+      for (var e in _orderlist) {
         widgets.add(
           Container(
             padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            decoration: BoxDecoration(
+              //背景
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              //设置四周边框
+            ),
             child: Column(
               children: [
                 SizedBox(height: 12),
@@ -213,20 +221,14 @@ class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
                 SizedBox(height: 9),
               ],
             ),
-            decoration: new BoxDecoration(
-              //背景
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
-            ),
           ),
         );
         widgets.add(Container(height: 6, color: Colors.grey.shade200));
-      });
+      }
 
       widgets.add(SizedBox(height: 10));
     }
-    return _orderlist != null && _orderlist.length > 0
+    return _orderlist.isNotEmpty
         ? ListView(children: widgets)
         : Center(
             child: Text(

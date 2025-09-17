@@ -24,7 +24,7 @@ import 'square/mymoment.dart';
 class OtherProfile extends StatefulWidget {
   final Object? arguments;
   int uid = 0;
-  OtherProfile({this.arguments}) {
+  OtherProfile({super.key, this.arguments}) {
     uid = (arguments as Map)["uid"];
   }
 
@@ -54,23 +54,23 @@ class _OtherProfileState extends State<OtherProfile>
   double headContainer = 310;
   double pageHeight = 0;
   double tabContent = 0;
-  final double statebar = MediaQueryData.fromWindow(window).padding.top; //状态栏高度
+  final double statebar = MediaQueryData.fromView(window).padding.top; //状态栏高度
   Color barbackgroundColor = Colors.transparent;
   Color textbarbackgroundColor = Colors.transparent;
   double appbarHeight = 50;
   bool isScroll = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isBlack = false;
   bool isShowAll = false;
   String strpersonalInfo = "";
   bool isMyFriend = false;
-  ImHelper imHelper = new ImHelper();
-  UserService _userService = new UserService();
+  ImHelper imHelper = ImHelper();
+  final UserService _userService = UserService();
 
   void srollChange() {
     if (mounted) {
       setState(() {
-        this.isScroll = false;
+        isScroll = false;
       });
     }
   }
@@ -107,7 +107,7 @@ class _OtherProfileState extends State<OtherProfile>
   }
 
   Future<User> getFollowInfo(User user) async {
-    if (user != null && Global.profile.user != null) {
+    if (Global.profile.user != null) {
       bool ret = await isFollow(user.uid, Global.profile.user!.uid);
       if (ret) {
         user.isFollow = true;
@@ -119,7 +119,7 @@ class _OtherProfileState extends State<OtherProfile>
   Future<bool> isFollow(int followed, int uid) async {
     bool isfollowed = false;
     List<int> list = await imHelper.selFollowState(followed, uid);
-    if (list != null && list.length > 0) isfollowed = true;
+    if (list.isNotEmpty) isfollowed = true;
 
     return isfollowed;
   }
@@ -127,7 +127,7 @@ class _OtherProfileState extends State<OtherProfile>
   @override
   void initState() {
     if (Platform.isAndroid) {
-      WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment =
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
           false; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
     // TODO: implement initState
@@ -156,7 +156,7 @@ class _OtherProfileState extends State<OtherProfile>
   @override
   void dispose() {
     if (Platform.isAndroid) {
-      WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment =
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
           true; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
     // TODO: implement dispose
@@ -183,15 +183,7 @@ class _OtherProfileState extends State<OtherProfile>
 
     String sexinfo = user!.sex == '1' ? '男生' : (user!.sex == '0' ? '女生' : '');
     strpersonalInfo =
-        (user!.city != null && user!.city!.isNotEmpty
-                ? CommonUtil.getProvinceCityName(user!.province, user!.city)
-                : "太阳系")
-            .toString() +
-        " · " +
-        CommonUtil.getAgeGroup(user!.birthday!) +
-        sexinfo +
-        " · " +
-        CommonUtil.getConstellation(user!.birthday!);
+        "${user!.city != null && user!.city!.isNotEmpty ? CommonUtil.getProvinceCityName(user!.province, user!.city) : "太阳系"} · ${CommonUtil.getAgeGroup(user!.birthday!)}$sexinfo · ${CommonUtil.getConstellation(user!.birthday!)}";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -440,14 +432,11 @@ class _OtherProfileState extends State<OtherProfile>
                 context: context,
                 builder: (BuildContext context) {
                   return MessageDialog(
-                    title: new Text(
+                    title: Text(
                       "提示",
-                      style: new TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black87,
-                      ),
+                      style: TextStyle(fontSize: 16.0, color: Colors.black87),
                     ),
-                    message: new Text(
+                    message: Text(
                       "确定要取消关注?",
                       style: TextStyle(fontSize: 14.0, color: Colors.black54),
                     ),
@@ -484,7 +473,6 @@ class _OtherProfileState extends State<OtherProfile>
             child: Container(
               height: 96,
               width: 96,
-              child: SizedBox.shrink(),
               decoration: BoxDecoration(
                 border: Border.all(color: Global.profile.fontColor!, width: 2),
                 borderRadius: BorderRadius.circular(50),
@@ -493,6 +481,7 @@ class _OtherProfileState extends State<OtherProfile>
                   image: NetworkImage(user!.profilepicture!),
                 ),
               ),
+              child: SizedBox.shrink(),
             ),
             onTap: () {
               Navigator.pushNamed(
@@ -596,7 +585,7 @@ class _OtherProfileState extends State<OtherProfile>
                               return MessageDialog(
                                 title: Text(
                                   user!.username,
-                                  style: new TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16.0,
                                     color: Colors.black,
                                   ),
@@ -735,7 +724,9 @@ class _OtherProfileState extends State<OtherProfile>
                         children: [
                           Expanded(
                             child: Text(
-                              '${user!.interest != null && user!.interest != "" ? "喜欢" + CommonUtil.getInterest(user!.interest!) : "喜欢什么就是不告诉你"}',
+                              user!.interest != null && user!.interest != ""
+                                  ? "喜欢${CommonUtil.getInterest(user!.interest!)}"
+                                  : "喜欢什么就是不告诉你",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 13,
@@ -767,7 +758,7 @@ class _OtherProfileState extends State<OtherProfile>
         children: <Widget>[
           Padding(padding: EdgeInsets.only(left: 10)),
           Text(
-            "" + user!.username,
+            "${user!.username}",
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -785,7 +776,7 @@ class _OtherProfileState extends State<OtherProfile>
   //社团信息邀请入团
   Widget buildCommunityInfo() {
     //加好友按钮
-    Widget btnJoin = Container(
+    Widget btnJoin = SizedBox(
       height: 30,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
@@ -818,7 +809,7 @@ class _OtherProfileState extends State<OtherProfile>
       ),
     );
     //分享按钮
-    Widget btnMsg = Container(
+    Widget btnMsg = SizedBox(
       height: 30,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
@@ -863,7 +854,7 @@ class _OtherProfileState extends State<OtherProfile>
   }
 
   //滑动拼图
-  loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
+  void loadingBlockPuzzle(BuildContext context, {barrierDismissible = true}) {
     showDialog<Null>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -879,7 +870,7 @@ class _OtherProfileState extends State<OtherProfile>
   }
 
   //登录后返回
-  logIn() {
+  void logIn() {
     Navigator.pushNamed(context, '/Login').then((value) {
       if (Global.profile.user != null) getUserInfo();
     });
@@ -1001,14 +992,14 @@ class _OtherProfileState extends State<OtherProfile>
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(
+        return AlertDialog(
+          title: Text(
             '加入黑名单，他(她)将不能再给你发消息，并且不能参加你组织的活动',
-            style: new TextStyle(fontSize: 17.0),
+            style: TextStyle(fontSize: 17.0),
           ),
           actions: <Widget>[
-            new TextButton(
-              child: new Text('确定'),
+            TextButton(
+              child: Text('确定'),
               onPressed: () async {
                 bool ret = await _userService.updateBlacklist(
                   Global.profile.user!.token!,
@@ -1027,8 +1018,8 @@ class _OtherProfileState extends State<OtherProfile>
                 Navigator.of(context).pop();
               },
             ),
-            new TextButton(
-              child: new Text('取消'),
+            TextButton(
+              child: Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -1040,19 +1031,19 @@ class _OtherProfileState extends State<OtherProfile>
   }
 
   Future<void> joinMessage(String captchaVerification) async {
-    String timeline_id = "";
+    String timelineId = "";
     if (Global.profile.user!.uid > user!.uid) {
-      timeline_id = user!.uid.toString() + Global.profile.user!.uid.toString();
+      timelineId = user!.uid.toString() + Global.profile.user!.uid.toString();
     } else {
-      timeline_id = Global.profile.user!.uid.toString() + user!.uid.toString();
+      timelineId = Global.profile.user!.uid.toString() + user!.uid.toString();
     }
     GroupRelation? groupRelation = await imHelper.getGroupRelationByGroupid(
       Global.profile.user!.uid,
-      timeline_id,
+      timelineId,
     );
     if (groupRelation == null) {
       groupRelation = await _userService.joinSingle(
-        timeline_id,
+        timelineId,
         Global.profile.user!.uid,
         user!.uid,
         Global.profile.user!.token!,
@@ -1066,7 +1057,7 @@ class _OtherProfileState extends State<OtherProfile>
       int ret = await imHelper.saveGroupRelation(groupRelations);
       if (ret > 0) {
         Navigator.pushNamed(
-          this.context,
+          context,
           '/MyMessage',
           arguments: {"GroupRelation": groupRelation},
         );
@@ -1093,7 +1084,7 @@ class _OtherProfileState extends State<OtherProfile>
     return;
   }
 
-  cancelFollow() async {
+  Future<void> cancelFollow() async {
     bool ret = await _userService.cancelFollow(
       Global.profile.user!.token!,
       Global.profile.user!.uid,
@@ -1111,7 +1102,7 @@ class _OtherProfileState extends State<OtherProfile>
     return;
   }
 
-  errorCallBack(String statusCode, String msg) {
+  void errorCallBack(String statusCode, String msg) {
     if (statusCode == "-1008") {
       //需要进行人机验证
       loadingBlockPuzzle(context);

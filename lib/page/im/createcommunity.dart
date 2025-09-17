@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -21,19 +20,19 @@ import '../../util/showmessage_util.dart';
 import '../../util/imhelper_util.dart';
 import '../../global.dart';
 
-
 class CreateCommunity extends StatefulWidget {
+  const CreateCommunity({super.key});
 
   @override
   _CreateCommunityState createState() => _CreateCommunityState();
 }
 
 class _CreateCommunityState extends State<CreateCommunity> {
-  AliyunService _aliyunService = new AliyunService();
-  ImService _imService = new ImService();
+  final AliyunService _aliyunService = AliyunService();
+  final ImService _imService = ImService();
   List<int> selectItem = [];
   List<String> selectItemName = [];
-  UserService _userService = new UserService();
+  final UserService _userService = UserService();
 
   double fontsize = 15;
   double contentfontsize = 14;
@@ -43,9 +42,11 @@ class _CreateCommunityState extends State<CreateCommunity> {
   String province = "";
   String communityname = "";
   String joinruleValue = "1";
-  RefreshController _refreshController = RefreshController(initialRefresh: true);
+  final RefreshController _refreshController = RefreshController(
+    initialRefresh: true,
+  );
   bool _isButtonEnable = true;
-  ImHelper imHelper = new ImHelper();
+  ImHelper imHelper = ImHelper();
   final _picker = ImagePicker();
   double pageheight = 0.0;
   List<User> users = [];
@@ -66,204 +67,236 @@ class _CreateCommunityState extends State<CreateCommunity> {
   void _getFansList() async {
     users = await _userService.getFans(Global.profile.user!.uid, 0);
     _refreshController.refreshCompleted();
-    if(mounted)
-      setState(() {
-
-      });
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  void _onLoading() async{
-    if(!_ismore) return;
-    final moredata = await _userService.getFans(Global.profile.user!.uid, users.length);
+  void _onLoading() async {
+    if (!_ismore) return;
+    final moredata = await _userService.getFans(
+      Global.profile.user!.uid,
+      users.length,
+    );
 
-    if(moredata.length > 0)
+    if (moredata.isNotEmpty) {
       users = users + moredata;
+    }
 
-    if(moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else{
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
 
-    if(mounted)
-      setState(() {
-
-      });
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20,),
-            onPressed: (){
-              Navigator.pop(context);
-            },
-          ),
-
-          title: Text('发起群聊',  style: TextStyle(color:  Colors.black87, fontSize: 16)),
-          centerTitle: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: SmartRefresher(
-          enablePullDown: true,
-          enablePullUp: users.length >= 25,
-          onRefresh: _getFansList,
-          header: MaterialClassicHeader(distance: 100, ),
-          footer: CustomFooter(
-            builder: (BuildContext context,LoadStatus? mode){
-              Widget body ;
-              if(mode==LoadStatus.idle){
-                body =  Text("加载更多", style: TextStyle(color: Colors.black45, fontSize: 13));
-              }
-              else if(mode==LoadStatus.loading){
-                body =  Center(
-                  child: CircularProgressIndicator(
-                    valueColor:  AlwaysStoppedAnimation(Global.profile.backColor),
-                  ),
-                );
-              }
-              else if(mode == LoadStatus.failed){
-                body = Text("加载失败!点击重试!", style: TextStyle(color: Colors.black45, fontSize: 13));
-              }
-              else if(mode == LoadStatus.canLoading){
-                body = Text("放开我,加载更多!", style: TextStyle(color: Colors.black45, fontSize: 13));
-              }
-              else{
-                body = Text("—————— 我也是有底线的 ——————", style: TextStyle(color: Colors.black45, fontSize: 13));
-              }
-              print(mode);
-              return Container(
-                height: 55.0,
-                child: Center(child:body),
+
+        title: Text(
+          '发起群聊',
+          style: TextStyle(color: Colors.black87, fontSize: 16),
+        ),
+        centerTitle: true,
+      ),
+      body: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: users.length >= 25,
+        onRefresh: _getFansList,
+        header: MaterialClassicHeader(distance: 100),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus? mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text(
+                "加载更多",
+                style: TextStyle(color: Colors.black45, fontSize: 13),
               );
-            },
-          ),
-          controller: _refreshController,
-          onLoading: _onLoading,
-          child: _refreshController.headerStatus == RefreshStatus.completed && users.length == 0 ? Center(
-            child: Text('要先有粉丝才能创建群聊哦~', style: TextStyle(color: Colors.black54, fontSize: 14), maxLines: 2,),
-          ) :buildMyFans(),
+            } else if (mode == LoadStatus.loading) {
+              body = Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
+                ),
+              );
+            } else if (mode == LoadStatus.failed) {
+              body = Text(
+                "加载失败!点击重试!",
+                style: TextStyle(color: Colors.black45, fontSize: 13),
+              );
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text(
+                "放开我,加载更多!",
+                style: TextStyle(color: Colors.black45, fontSize: 13),
+              );
+            } else {
+              body = Text(
+                "—————— 我也是有底线的 ——————",
+                style: TextStyle(color: Colors.black45, fontSize: 13),
+              );
+            }
+            print(mode);
+            return SizedBox(height: 55.0, child: Center(child: body));
+          },
         ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.all(10),
-          color: Colors.grey.shade100,
-          alignment: Alignment.centerRight,
-          height: 59,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 100,
-                child: TextButton(
-                  child: Text(selectItem.length > 0 ? '完成(${selectItem.length})' : '完成', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),),
-                  style: selectItem.length > 0 ? ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Global.defredcolor),
-                    shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                9))),
-                  ) : ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Global.defredcolor.withAlpha(119)),
-                    shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(9))),
-                  ),
-                  onPressed: () async{
-                    try{
-                      if(_isButtonEnable) {
-                        if(selectItem.length <= 0){
-                          ShowMessage.showToast("请选择群成员");
-                          return;
-                        }
-
-                        _isButtonEnable = false;
-                        Community? communiy = await _imService.createCommunity(
-                            Global.profile.user!.token!,
-                            Global.profile.user!.uid,
-                            "群聊",
-                            province,
-                            city,
-                            clubicon,
-                            '',
-                            joinruleValue,
-                            selectItem,
-                            selectItemName,
-                            errorCallBack
-                        );
-                        _isButtonEnable = true;
-                        if (communiy != null) {
-                          Navigator.pop(context, communiy);
-                        }
-                      }
-                    }
-                    catch(e)
-                    {
-                      _isButtonEnable = true;
-                      ShowMessage.showToast("网络不给力，请再试一下!");}
-                    setState(() {
-                    });
-                  },
+        controller: _refreshController,
+        onLoading: _onLoading,
+        child:
+            _refreshController.headerStatus == RefreshStatus.completed &&
+                users.isEmpty
+            ? Center(
+                child: Text(
+                  '要先有粉丝才能创建群聊哦~',
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                  maxLines: 2,
                 ),
               )
-            ],
-          ),
-        )
+            : buildMyFans(),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(10),
+        color: Colors.grey.shade100,
+        alignment: Alignment.centerRight,
+        height: 59,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextButton(
+                style: selectItem.isNotEmpty
+                    ? ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          Global.defredcolor,
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                        ),
+                      )
+                    : ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          Global.defredcolor.withAlpha(119),
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                        ),
+                      ),
+                onPressed: () async {
+                  try {
+                    if (_isButtonEnable) {
+                      if (selectItem.isEmpty) {
+                        ShowMessage.showToast("请选择群成员");
+                        return;
+                      }
+
+                      _isButtonEnable = false;
+                      Community? communiy = await _imService.createCommunity(
+                        Global.profile.user!.token!,
+                        Global.profile.user!.uid,
+                        "群聊",
+                        province,
+                        city,
+                        clubicon,
+                        '',
+                        joinruleValue,
+                        selectItem,
+                        selectItemName,
+                        errorCallBack,
+                      );
+                      _isButtonEnable = true;
+                      if (communiy != null) {
+                        Navigator.pop(context, communiy);
+                      }
+                    }
+                  } catch (e) {
+                    _isButtonEnable = true;
+                    ShowMessage.showToast("网络不给力，请再试一下!");
+                  }
+                  setState(() {});
+                },
+                child: Text(
+                  selectItem.length > 0 ? '完成(${selectItem.length})' : '完成',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget buildMyFans(){
+  Widget buildMyFans() {
     List<Widget> contents = [];
-    if(users != null){
-      for(User user in users){
-        contents.add(
-          ListTile(
-            title: Row(
-              children: [
-                RoundCheckBox(
-                  value: selectItem.indexOf(user.uid) >= 0,
-                ),
-                SizedBox(width: 10,),
-                NoCacheClipRRectOhterHeadImage(imageUrl: user.profilepicture!, width: 30, uid: user.uid, cir: 50,),
-                SizedBox(width: 10,),
-                Text(user.username, style: TextStyle(color: Colors.black87, fontSize: 14),),
-              ],
-            ),
-            onTap: (){
-              if(!(selectItem.indexOf(user.uid) >= 0)){
-                selectItem.add(user.uid);
-                selectItemName.add(user.username);
-              }
-              else{
-                selectItem.remove(user.uid);
-                selectItemName.remove(user.username);
-              }
-              setState(() {
-
-              });
-            },
+    for (User user in users) {
+      contents.add(
+        ListTile(
+          title: Row(
+            children: [
+              RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+              SizedBox(width: 10),
+              NoCacheClipRRectOhterHeadImage(
+                imageUrl: user.profilepicture!,
+                width: 30,
+                uid: user.uid,
+                cir: 50,
+              ),
+              SizedBox(width: 10),
+              Text(
+                user.username,
+                style: TextStyle(color: Colors.black87, fontSize: 14),
+              ),
+            ],
           ),
-        );
-      }
+          onTap: () {
+            if (!(selectItem.indexOf(user.uid) >= 0)) {
+              selectItem.add(user.uid);
+              selectItemName.add(user.username);
+            } else {
+              selectItem.remove(user.uid);
+              selectItemName.remove(user.username);
+            }
+            setState(() {});
+          },
+        ),
+      );
     }
 
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 20),
       color: Colors.white,
       child: Column(
-        children: [
-
-          Expanded(child: ListView(
-            children: contents,
-          ),)
-        ],
-      )
+        children: [Expanded(child: ListView(children: contents))],
+      ),
     );
   }
 
-  void showDemoActionSheet({required BuildContext context,required Widget child}) {
+  void showDemoActionSheet({
+    required BuildContext context,
+    required Widget child,
+  }) {
     File? imageFile;
     File? croppedFile;
     showCupertinoModalPopup<String>(
@@ -271,67 +304,80 @@ class _CreateCommunityState extends State<CreateCommunity> {
       builder: (BuildContext context) => child,
     ).then((value) async {
       if (value != null) {
-        if(value == "Camera"){
-          PickedFile? image = await _picker.getImage(source: ImageSource.camera);
-          imageFile = File(image!.path);
-        }else if(value == "Gallery"){
-          PickedFile? image = await _picker.getImage(source: ImageSource.gallery);
-          imageFile = File(image!.path);
-        }
-        else{
+        if (value == "Camera") {
+          PickedFile? image = await _picker.getImage(
+            source: ImageSource.camera,
+          );
+          imageFile = File(image.path);
+        } else if (value == "Gallery") {
+          PickedFile? image = await _picker.getImage(
+            source: ImageSource.gallery,
+          );
+          imageFile = File(image.path);
+        } else {
           return;
         }
       }
-      if(imageFile != null){
+      if (imageFile != null) {
         croppedFile = await ImageCropper().cropImage(
-            maxWidth: 750,
-            maxHeight: 750,
-            compressQuality: 30,
-            sourcePath: imageFile!.path,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
-            androidUiSettings: AndroidUiSettings(
-                toolbarTitle: '裁剪',
-                toolbarColor: Colors.deepOrange,
-                toolbarWidgetColor: Colors.white,
-                initAspectRatio: CropAspectRatioPreset.original,
-                lockAspectRatio: true),
-            iosUiSettings: IOSUiSettings(
-                title: '裁剪',
-                minimumAspectRatio: 1.0,
-                aspectRatioLockEnabled: true
-            )
+          maxWidth: 750,
+          maxHeight: 750,
+          compressQuality: 30,
+          sourcePath: imageFile!.path,
+          aspectRatioPresets: [CropAspectRatioPreset.square],
+          androidUiSettings: AndroidUiSettings(
+            toolbarTitle: '裁剪',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: true,
+          ),
+          iosUiSettings: IOSUiSettings(
+            title: '裁剪',
+            minimumAspectRatio: 1.0,
+            aspectRatioLockEnabled: true,
+          ),
         );
-        if (croppedFile !=null) {
+        if (croppedFile != null) {
           String ossimagpath = "";
           //转成png格式
-          final Directory _directory = await getTemporaryDirectory();
-          final Directory _imageDirectory =
-              await new Directory('${_directory.path}/profilepicture/images/')
-              .create(recursive: true);
-          String _path = _imageDirectory.path;
+          final Directory directory = await getTemporaryDirectory();
+          final Directory imageDirectory = await Directory(
+            '${directory.path}/profilepicture/images/',
+          ).create(recursive: true);
+          String path = imageDirectory.path;
           Uint8List imageData = await croppedFile!.readAsBytes();
           String md5name = md5.convert(imageData).toString();
 
-          File imageFile = new File('${_path}originalImage_$md5name.png')
+          File imageFile = File('${path}originalImage_$md5name.png')
             ..writeAsBytesSync(imageData);
 
           //上传图片到oss
-          SecurityToken? securityToken = await _aliyunService.getActivitySecurityToken(Global.profile.user!.token!,  Global.profile.user!.uid);
-          if(securityToken != null) {
+          SecurityToken? securityToken = await _aliyunService
+              .getActivitySecurityToken(
+                Global.profile.user!.token!,
+                Global.profile.user!.uid,
+              );
+          if (securityToken != null) {
             ossimagpath = await _aliyunService.uploadImage(
-                securityToken, imageFile.path, '${md5name}.png', Global.profile.user!.uid);
+              securityToken,
+              imageFile.path,
+              '$md5name.png',
+              Global.profile.user!.uid,
+            );
           }
-          if(ossimagpath.isNotEmpty){
-            bool ret = await _imService.updateCommunityPicture(Global.profile.user!.token!, Global.profile.user!.uid,
-                Global.profile.user!.uid.toString(), ossimagpath, errorCallBack);
-            if(ret) {
+          if (ossimagpath.isNotEmpty) {
+            bool ret = await _imService.updateCommunityPicture(
+              Global.profile.user!.token!,
+              Global.profile.user!.uid,
+              Global.profile.user!.uid.toString(),
+              ossimagpath,
+              errorCallBack,
+            );
+            if (ret) {
               clubicon = ossimagpath;
               if (mounted) {
-                setState(() {
-
-                });
+                setState(() {});
               }
             }
           }
@@ -340,16 +386,13 @@ class _CreateCommunityState extends State<CreateCommunity> {
     });
   }
 
-
-
   void errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }
 
 class RoundCheckBox extends StatefulWidget {
-  RoundCheckBox({Key? key, required this.value})
-      : super(key: key);
+  const RoundCheckBox({super.key, required this.value});
 
   final bool value;
   @override
@@ -359,21 +402,22 @@ class RoundCheckBox extends StatefulWidget {
 }
 
 class RoundCheckBoxWidgetBuilder extends State<RoundCheckBox> {
+  @override
   Widget build(BuildContext context) {
     return Container(
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-            border: Border.all(
-                width: 1, color: widget.value ? Global.profile.backColor! : Color(0xff999999)),
-            color: widget.value ? Global.profile.backColor : Color(0xffffffff),
-            borderRadius: BorderRadius.circular(24)),
-        child: Center(
-          child: Icon(
-            Icons.check,
-            color: Color(0xffffffff),
-            size: 20,
-          ),
-        ));
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: widget.value ? Global.profile.backColor! : Color(0xff999999),
+        ),
+        color: widget.value ? Global.profile.backColor : Color(0xffffffff),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Center(
+        child: Icon(Icons.check, color: Color(0xffffffff), size: 20),
+      ),
+    );
   }
 }

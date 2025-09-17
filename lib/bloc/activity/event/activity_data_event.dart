@@ -1,15 +1,14 @@
 import 'package:equatable/equatable.dart';
 
-
-abstract class  ActivityDataEvent extends Equatable {
-  ActivityDataEvent();
+abstract class ActivityDataEvent extends Equatable {
+  const ActivityDataEvent();
 
   @override
   List<Object> get props => [];
 }
+
 ///加载更多
-class Fetch extends ActivityDataEvent{
-}
+class Fetch extends ActivityDataEvent {}
+
 ///刷新
-class Refresh extends ActivityDataEvent{
-}
+class Refresh extends ActivityDataEvent {}

@@ -7,7 +7,7 @@ import '../../global.dart';
 class ProfilePictureShow extends StatefulWidget {
   final Function? parentJumpMyProfile;
 
-  const ProfilePictureShow({Key? key, this.parentJumpMyProfile}) : super(key: key);
+  const ProfilePictureShow({super.key, this.parentJumpMyProfile});
 
   @override
   _ProfilePictureShowState createState() => _ProfilePictureShowState();
@@ -17,21 +17,19 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
-    buildWhen: (previousState, state) {
-      if(state is AuthenticationAuthenticated || state is LoginOuted) {
-        return true;
-      }
-      else
-        return false;
-    },
-    builder: (context, state) {
+      buildWhen: (previousState, state) {
+        if (state is AuthenticationAuthenticated || state is LoginOuted) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      builder: (context, state) {
         return InkWell(
-        onTap: (){
-          if(state is AuthenticationAuthenticated) {
-            widget.parentJumpMyProfile!(4);
-          }
-          else
-            if(Global.profile.user == null) {
+          onTap: () {
+            if (state is AuthenticationAuthenticated) {
+              widget.parentJumpMyProfile!(4);
+            } else if (Global.profile.user == null) {
               Navigator.pushNamed(context, '/Login').then((onValue) {
                 // if (Global.profile.isLogGuided && Global.profile.user != null) {
                 //   showDialog(
@@ -67,35 +65,47 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
                 //   Global.profile.isLogGuided = false;
                 // }
               });
-            }
-            else{
+            } else {
               widget.parentJumpMyProfile!(4);
             }
-        },
-        child: Global.profile.user != null && Global.profile.defProfilePicture != null ? Container(
-          child: Container(
-            height: 45,
-            width: 45,
-            decoration: BoxDecoration(
-//          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
-                borderRadius: BorderRadius.circular(50.0),
-                image: DecorationImage(
-                    image: Global.profile.defProfilePicture!,
-                    fit: BoxFit.cover)
-            ),
-          ),
-        ): Container(
-          height: 45,
-          width: 45,
-          alignment: Alignment.center,
-          child: Text('登录', style: TextStyle(fontSize: 14, color: Global.defredcolor, fontWeight: FontWeight.bold),),
-          decoration: BoxDecoration(
-//          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
-              borderRadius: BorderRadius.circular(50.0),
-              color: Colors.grey.shade200
-          ),
-        )
-      );
-    });
+          },
+          child:
+              Global.profile.user != null &&
+                  Global.profile.defProfilePicture != null
+              ? Container(
+                  child: Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                      //          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
+                      borderRadius: BorderRadius.circular(50.0),
+                      image: DecorationImage(
+                        image: Global.profile.defProfilePicture!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
+                  height: 45,
+                  width: 45,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    //          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
+                    borderRadius: BorderRadius.circular(50.0),
+                    color: Colors.grey.shade200,
+                  ),
+                  child: Text(
+                    '登录',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Global.defredcolor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+        );
+      },
+    );
   }
 }

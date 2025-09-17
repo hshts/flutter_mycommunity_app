@@ -18,22 +18,21 @@ class Post {
 }
 
 class SearchActivity extends StatefulWidget {
-  Object? arguments;
-  String contentDef = "你想参加的活动";
-  SearchActivity({this.arguments}) {
-    if (arguments != null) {
-      Map map = arguments as Map;
-      contentDef = map["content"];
-    }
-  }
+  final Object? arguments;
+  final String contentDef;
+
+  SearchActivity({super.key, this.arguments})
+    : contentDef = arguments != null
+          ? (arguments as Map)["content"]
+          : "你想参加的活动";
 
   @override
   _SearchActivityState createState() => _SearchActivityState();
 }
 
 class _SearchActivityState extends State<SearchActivity> {
-  ActivityService _activityService = ActivityService();
-  ImHelper _imHelper = ImHelper();
+  final ActivityService _activityService = ActivityService();
+  final ImHelper _imHelper = ImHelper();
   final search_bar.SearchBarController<SearchResult> _searchBarController =
       search_bar.SearchBarController();
   bool isReplay = false;
@@ -173,25 +172,25 @@ class _SearchActivityState extends State<SearchActivity> {
     );
   }
 
-  getHostSearch() async {
+  Future<void> getHostSearch() async {
     List<SearchResult> searchResults = await _activityService
         .hotsearchActivity();
-    if (searchResults.length > 0) {
+    if (searchResults.isNotEmpty) {
       for (int i = 0; i < searchResults.length; i++) {
         hotSearchs.add(
           InkWell(
             child: Container(
               margin: EdgeInsets.only(right: 10, bottom: 15),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Container(
                 margin: EdgeInsets.all(10),
                 child: Text(
                   searchResults[i].content!,
                   style: TextStyle(color: Colors.black54, fontSize: 13),
                 ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
             ),
             onTap: () {
@@ -210,24 +209,24 @@ class _SearchActivityState extends State<SearchActivity> {
     }
   }
 
-  getHisSearchs() async {
+  Future<void> getHisSearchs() async {
     List<HisSearch>? hissearch = await _imHelper.getSearchHistory(1);
-    if (hissearch != null && hissearch.length > 0) {
+    if (hissearch != null && hissearch.isNotEmpty) {
       for (int i = 0; i < hissearch.length; i++) {
         hisSearchs.add(
           InkWell(
             child: Container(
               margin: EdgeInsets.only(right: 10, bottom: 15),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Container(
                 margin: EdgeInsets.all(5),
                 child: Text(
                   hissearch[i].content!,
                   style: TextStyle(color: Colors.black54, fontSize: 13),
                 ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
             ),
             onTap: () {
@@ -248,6 +247,8 @@ class _SearchActivityState extends State<SearchActivity> {
 }
 
 class Detail extends StatelessWidget {
+  const Detail({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

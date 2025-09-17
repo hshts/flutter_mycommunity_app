@@ -25,8 +25,10 @@ class AuthenticationUnauthenticated extends AuthenticationState {
     @required this.errorstatusCode,
   });
 
+  @override
   List<Object> get props => [error ?? "", errorstatusCode ?? ""];
 
+  @override
   String toString() =>
       'AuthenticationUnauthenticated { statusCode: $errorstatusCode ,error: $error }';
 }
@@ -38,8 +40,10 @@ class UpdateLocationed extends AuthenticationState {
 
   UpdateLocationed({@required this.locationName, @required this.locationCode});
 
+  @override
   List<Object> get props => [locationName ?? "", locationCode ?? ""];
 
+  @override
   String toString() =>
       'UpdateLocationed { locationName: $locationName ,locationCode: $locationCode }';
 }

@@ -13,10 +13,18 @@ class RedPacketDetail {
   String username;
   String profilepicture;
 
-  RedPacketDetail(this.rpdetailid, this.redpacketid, this.fund, this.uid, this.timeline_id, this.createtime, this.username, this.profilepicture){
-
-  }
+  RedPacketDetail(
+    this.rpdetailid,
+    this.redpacketid,
+    this.fund,
+    this.uid,
+    this.timeline_id,
+    this.createtime,
+    this.username,
+    this.profilepicture,
+  );
 
   Map<String, dynamic> toJson() => _$RedPacketDetailToJson(this);
-  factory RedPacketDetail.fromJson(Map<String, dynamic> json) => _$RedPacketDetailFromJson(json);
+  factory RedPacketDetail.fromJson(Map<String, dynamic> json) =>
+      _$RedPacketDetailFromJson(json);
 }

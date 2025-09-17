@@ -1149,6 +1149,7 @@ var onGenerateRoute = (RouteSettings settings) {
       }
       break;
   }
+  return null;
 };
 
 // Extension to add copyWith method to RouteSettings

@@ -13,13 +13,13 @@ class CategoryInfo extends StatefulWidget {
   @override
   _CategoryInfoState createState() => _CategoryInfoState();
 
-  CategoryInfo(this._selectList);
+  CategoryInfo(this._selectList, {super.key});
 }
 
 class _CategoryInfoState extends State<CategoryInfo> {
-  CommonJSONService _commonJSONService = new CommonJSONService();
+  final CommonJSONService _commonJSONService = CommonJSONService();
   final controller = TextEditingController();
-  final subject = new PublishSubject<String>();
+  final subject = PublishSubject<String>();
   List<String> allList = [];
   String _newtype = "";
 
@@ -45,7 +45,6 @@ class _CategoryInfoState extends State<CategoryInfo> {
       backgroundColor: Colors.transparent,
       bottomNavigationBar: buildLoginButton(context),
       body: Container(
-        child: ListView(children: <Widget>[buildActivityType()]),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -53,6 +52,7 @@ class _CategoryInfoState extends State<CategoryInfo> {
             topRight: Radius.circular(9.0),
           ),
         ),
+        child: ListView(children: <Widget>[buildActivityType()]),
       ),
     );
   }
@@ -75,9 +75,9 @@ class _CategoryInfoState extends State<CategoryInfo> {
           String types = "";
 
           for (int i = 0; i < widget._selectList.length; i++) {
-            types += widget._selectList[i] + ",";
+            types += "${widget._selectList[i]},";
           }
-          if (types.length > 0) {
+          if (types.isNotEmpty) {
             types = types.substring(0, types.length - 1);
           }
 
@@ -117,7 +117,7 @@ class _CategoryInfoState extends State<CategoryInfo> {
                 onChanged: (val) => (subject.add(val)),
                 style: TextStyle(fontSize: 14),
                 controller: controller,
-                decoration: new InputDecoration(
+                decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(top: 0.0),
                   hintText: '添加话题',
                   border: InputBorder.none,
@@ -144,7 +144,7 @@ class _CategoryInfoState extends State<CategoryInfo> {
       categoryTypes.map((item) {
         allList.add(item['typename'] as String);
       }).toList();
-      if (allList.length == 0) {
+      if (allList.isEmpty) {
         allList.add(_newtype);
       }
       setState(() {});

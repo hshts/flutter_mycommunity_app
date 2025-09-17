@@ -16,17 +16,33 @@ class RedPacketModel {
   String username;
   String profilepicture;
   String original_order_id;
-  double tofund;//自己领了多少钱
+  double tofund; //自己领了多少钱
   int touid;
-  String tocreatetime;//领取的时间
+  String tocreatetime; //领取的时间
   bool isexpire;
   int currentnum;
 
-  RedPacketModel(this.redpacketid, this.uid, this.amount, this.redpackettype, this.redpacketstatus, this.redpacketnum, this.createtime,
-      this.timeline_id, this.content, this.username, this.profilepicture, this.original_order_id, this.touid, this.tocreatetime, this.tofund, this.isexpire, this.currentnum){
-
-  }
+  RedPacketModel(
+    this.redpacketid,
+    this.uid,
+    this.amount,
+    this.redpackettype,
+    this.redpacketstatus,
+    this.redpacketnum,
+    this.createtime,
+    this.timeline_id,
+    this.content,
+    this.username,
+    this.profilepicture,
+    this.original_order_id,
+    this.touid,
+    this.tocreatetime,
+    this.tofund,
+    this.isexpire,
+    this.currentnum,
+  );
 
   Map<String, dynamic> toJson() => _$RedPacketModelToJson(this);
-  factory RedPacketModel.fromJson(Map<String, dynamic> json) => _$RedPacketModelFromJson(json);
+  factory RedPacketModel.fromJson(Map<String, dynamic> json) =>
+      _$RedPacketModelFromJson(json);
 }

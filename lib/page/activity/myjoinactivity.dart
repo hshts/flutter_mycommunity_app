@@ -7,15 +7,17 @@ import '../../global.dart';
 import '../../widget/circle_headimage.dart';
 
 class MyJoinActivity extends StatefulWidget {
+  const MyJoinActivity({super.key});
+
   @override
   _MyJoinActivityState createState() => _MyJoinActivityState();
 }
 
 class _MyJoinActivityState extends State<MyJoinActivity>
     with AutomaticKeepAliveClientMixin {
-  ActivityService _activityService = ActivityService();
+  final ActivityService _activityService = ActivityService();
   List<Activity> _activityJoinList = [];
-  RefreshController _refreshController = RefreshController(
+  final RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
   bool _ismore = true;
@@ -31,7 +33,7 @@ class _MyJoinActivityState extends State<MyJoinActivity>
     _getMyActivity();
   }
 
-  _getMyActivity() async {
+  Future<void> _getMyActivity() async {
     _activityJoinList = await _activityService
         .getALLJoinActivityListByUserCount5(
           0,
@@ -50,7 +52,7 @@ class _MyJoinActivityState extends State<MyJoinActivity>
     }
   }
 
-  _onLoading() async {
+  Future<void> _onLoading() async {
     if (!_ismore) return;
 
     final moredata = await _activityService.getALLJoinActivityListByUserCount5(
@@ -59,11 +61,11 @@ class _MyJoinActivityState extends State<MyJoinActivity>
       Global.profile.user!.token!,
     );
 
-    if (moredata.length > 0) _activityJoinList = _activityJoinList + moredata;
+    if (moredata.isNotEmpty) _activityJoinList = _activityJoinList + moredata;
 
-    if (moredata.length >= 25)
+    if (moredata.length >= 25) {
       _refreshController.loadComplete();
-    else {
+    } else {
       _ismore = false;
       _refreshController.loadNoData();
     }
@@ -127,14 +129,14 @@ class _MyJoinActivityState extends State<MyJoinActivity>
                   style: TextStyle(color: Colors.black45, fontSize: 13),
                 );
               }
-              return Container(height: 55.0, child: Center(child: body));
+              return SizedBox(height: 55.0, child: Center(child: body));
             },
           ),
           controller: _refreshController,
           onLoading: _onLoading,
           child:
               _refreshController.headerStatus == RefreshStatus.completed &&
-                  _activityJoinList.length == 0
+                  _activityJoinList.isEmpty
               ? Center(
                   child: Text(
                     '你还没参加过活动',
@@ -152,13 +154,19 @@ class _MyJoinActivityState extends State<MyJoinActivity>
     Widget ret = SizedBox.shrink();
     List<Widget> lists = [];
     lists.add(SizedBox.shrink());
-    if (_activityJoinList.length > 0) {
+    if (_activityJoinList.isNotEmpty) {
       for (int i = 0; i < _activityJoinList.length; i++) {
         Activity e = _activityJoinList[i];
 
         lists.add(
           Container(
             padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            decoration: BoxDecoration(
+              //背景
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              //设置四周边框
+            ),
             child: Column(
               children: [
                 InkWell(
@@ -276,12 +284,6 @@ class _MyJoinActivityState extends State<MyJoinActivity>
                   },
                 ),
               ],
-            ),
-            decoration: new BoxDecoration(
-              //背景
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
             ),
           ),
         );

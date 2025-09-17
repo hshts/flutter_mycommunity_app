@@ -14,7 +14,7 @@ import '../../global.dart';
 class CityActivityWidget extends StatefulWidget {
   final Activity activity;
 
-  const CityActivityWidget({required this.activity});
+  const CityActivityWidget({super.key, required this.activity});
 
   @override
   _CityActivityWidgetState createState() => _CityActivityWidgetState();
@@ -24,9 +24,9 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
   bool isEnter = true;
   int maxImgs = 4;
   _CityActivityWidgetState();
-  ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
   bool retLike = false;
-  final ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
 
   @override
   initState() {
@@ -35,7 +35,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
         widget.activity.actid,
         Global.profile.user!.uid,
         (List<String> actid) {
-          if (actid.length > 0) {
+          if (actid.isNotEmpty) {
             if (mounted) {
               setState(() {
                 retLike = true;
@@ -72,7 +72,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           width: 45,
           height: 45,
           child: NoCacheClipRRectHeadImage(
@@ -139,7 +139,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
                     ],
                   ),
                   Padding(padding: EdgeInsets.only(top: 5)),
-                  lists.length == 0
+                  lists.isEmpty
                       ? SizedBox.shrink()
                       : CityPhotoViewGallery(list: lists),
                   Padding(padding: EdgeInsets.only(top: 5)),
@@ -148,6 +148,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
                     style: TextStyle(color: Colors.black, fontSize: 13),
                   ),
                   Padding(
+                    padding: EdgeInsets.all(10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +255,6 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
                         ),
                       ],
                     ),
-                    padding: EdgeInsets.all(10),
                   ),
                 ],
               ),
@@ -264,7 +264,6 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
                   '/ActivityInfo',
                   arguments: {"actid": widget.activity.actid},
                 ).then((val) {});
-                ;
               },
             ),
           ),

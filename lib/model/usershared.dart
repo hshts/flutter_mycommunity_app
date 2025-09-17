@@ -1,7 +1,4 @@
-
 part 'usershared.g.dart';
-
-
 
 class UserShared {
   int? sharedid;
@@ -17,58 +14,68 @@ class UserShared {
   String? fromprofilepicture;
   double? mincost;
   double? maxcost;
-  double? lat;//坐标
-  double? lng;//坐标
+  double? lat; //坐标
+  double? lng; //坐标
 
+  UserShared(
+    this.sharedid,
+    this.uid,
+    this.content,
+    this.contentid,
+    this.image,
+    this.sharedtype,
+    this.createtime,
+    this.fromuid,
+    this.fromusername,
+    this.fromprofilepicture,
+    this.mincost,
+    this.maxcost,
+    this.lat,
+    this.lng,
+  );
 
-
-  UserShared(this.sharedid, this.uid, this.content, this.contentid, this.image, this.sharedtype, this.createtime, this.fromuid,
-      this.fromusername, this.fromprofilepicture, this.mincost, this.maxcost, this.lat, this.lng);
-
-  factory UserShared.fromJson(Map<String, dynamic> json) => _$UserSharedFromJson(json);
+  factory UserShared.fromJson(Map<String, dynamic> json) =>
+      _$UserSharedFromJson(json);
 
   Map<String, dynamic> toMap() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
-    data['sharedid'] = this.sharedid;
-    data['uid'] = this.uid;
-    data['content'] = this.content;
-    data['contentid'] = this.contentid;
-    data['image'] = this.image;
-    data['sharedtype'] = this.sharedtype;
-    data['createtime'] = this.createtime;
-    data['fromuid'] = this.fromuid;
-    data['fromusername'] = this.fromusername;
-    data['fromprofilepicture'] = this.fromprofilepicture;
-    data['mincost'] = this.mincost;
-    data['maxcost'] = this.maxcost;
-    data['lat'] = this.lat;
-    data['lng'] = this.lng;
+    data['sharedid'] = sharedid;
+    data['uid'] = uid;
+    data['content'] = content;
+    data['contentid'] = contentid;
+    data['image'] = image;
+    data['sharedtype'] = sharedtype;
+    data['createtime'] = createtime;
+    data['fromuid'] = fromuid;
+    data['fromusername'] = fromusername;
+    data['fromprofilepicture'] = fromprofilepicture;
+    data['mincost'] = mincost;
+    data['maxcost'] = maxcost;
+    data['lat'] = lat;
+    data['lng'] = lng;
     data['isread'] = 0;
 
     return data;
   }
 
-
-
   UserShared.fromMap(Map<String, dynamic> data) {
-//    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
-    this.sharedid = data['sharedid'];
-    this.uid = data['uid'];
-    this.fromuid = data['touid'];
-    this.content = data['content'];
-    this.createtime = data['createtime'];
-    this.contentid = data['contentid'];
-    this.image = data['image'];
-    this.sharedtype = data['sharedtype'];
+    //    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
+    sharedid = data['sharedid'];
+    uid = data['uid'];
+    fromuid = data['touid'];
+    content = data['content'];
+    createtime = data['createtime'];
+    contentid = data['contentid'];
+    image = data['image'];
+    sharedtype = data['sharedtype'];
 
-    this.fromprofilepicture = data['fromprofilepicture'];
-    this.fromusername = data['fromusername'];
-    this.mincost = data['mincost'];
-    this.maxcost = data['maxcost'];
+    fromprofilepicture = data['fromprofilepicture'];
+    fromusername = data['fromusername'];
+    mincost = data['mincost'];
+    maxcost = data['maxcost'];
 
-    this.lat = data['lat'];
-    this.lng = data['lng'];
-
+    lat = data['lat'];
+    lng = data['lng'];
   }
 }

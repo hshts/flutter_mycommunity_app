@@ -29,8 +29,7 @@ class HomePage extends StatefulWidget {
   final Function? parentJumpMyProfile;
   bool isPop;
 
-  HomePage({Key? key, this.parentJumpMyProfile, this.isPop = false})
-    : super(key: key);
+  HomePage({super.key, this.parentJumpMyProfile, this.isPop = false});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -38,7 +37,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  int _currentIndex = 1;
+  final int _currentIndex = 1;
   late TabController _tabController;
   String _title = "";
   final GlobalKey<_TabBarItemState> _itemKey1 = GlobalKey();
@@ -47,12 +46,12 @@ class _HomePageState extends State<HomePage>
   String _temcitycode = "";
   DateTime? _lastPopTime;
   StreamSubscription<Map<String, Object>>? _locationListener;
-  AMapFlutterLocation _locationPlugin = new AMapFlutterLocation();
+  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
   Map<String, Object>? _locationResult;
   late ActivityDataBloc _activityBloc;
   StreamSubscription? _sub;
   bool _initialUriIsHandled = false;
-  TokenUtil _tokenUtil = new TokenUtil();
+  final TokenUtil _tokenUtil = TokenUtil();
 
   @override
   void initState() {
@@ -60,7 +59,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _activityBloc = BlocProvider.of<ActivityDataBloc>(context);
     _initMap();
-    _tabController = new TabController(vsync: this, length: 3);
+    _tabController = TabController(vsync: this, length: 3);
     _tabController.index = _currentIndex;
     _tabController.addListener(() {
       _itemKey1.currentState!.onPressed(_tabController.index);
@@ -84,9 +83,7 @@ class _HomePageState extends State<HomePage>
     }
 
     ///销毁定位
-    if (null != _locationPlugin) {
-      _locationPlugin.destroy();
-    }
+    _locationPlugin.destroy();
 
     super.dispose();
   }
@@ -94,8 +91,8 @@ class _HomePageState extends State<HomePage>
   @override
   bool get wantKeepAlive => true;
 
-  _initMap() async {
-    await Global.init(this.context);
+  Future<void> _initMap() async {
+    await Global.init(context);
     await _tokenUtil.getDeviceToken();
     _handleIncomingLinks();
     _handleInitialUri();
@@ -148,7 +145,7 @@ class _HomePageState extends State<HomePage>
       } on PlatformException {
         // Platform messages may fail but we ignore the exception
         print('falied to get initial uri');
-      } on FormatException catch (err) {
+      } on FormatException {
         if (!mounted) return;
         print('malformed initial uri');
         //ShowMessage.showToast(err.message);
@@ -157,20 +154,18 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> _noticeHandle(String deeplink) async {
-    if (deeplink != null && deeplink != "") {
+    if (deeplink != "") {
       await _tokenUtil.deeplinkNav(deeplink);
     }
   }
 
   Future<void> _locationCity() async {
     try {
-      if (Global.profile.locationCode == null ||
-          Global.profile.locationCode == "") {
+      if (Global.profile.locationCode == "") {
         Global.profile.locationCode = "allCode";
         Global.profile.locationName = "全国";
 
-        if (Global.profile.locationGoodPriceCode == null ||
-            Global.profile.locationGoodPriceCode == "") {
+        if (Global.profile.locationGoodPriceCode == "") {
           Global.profile.locationGoodPriceName = "全国";
           Global.profile.locationGoodPriceCode = "allCode";
         }
@@ -236,60 +231,56 @@ class _HomePageState extends State<HomePage>
   }
 
   void _setLocationOption() {
-    if (null != _locationPlugin) {
-      AMapLocationOption locationOption = new AMapLocationOption();
+    AMapLocationOption locationOption = new AMapLocationOption();
 
-      ///是否单次定位
-      locationOption.onceLocation = true;
+    ///是否单次定位
+    locationOption.onceLocation = true;
 
-      ///是否需要返回逆地理信息
-      locationOption.needAddress = true;
+    ///是否需要返回逆地理信息
+    locationOption.needAddress = true;
 
-      ///逆地理信息的语言类型
-      locationOption.geoLanguage = GeoLanguage.DEFAULT;
+    ///逆地理信息的语言类型
+    locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-      locationOption.desiredLocationAccuracyAuthorizationMode =
-          AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+    locationOption.desiredLocationAccuracyAuthorizationMode =
+        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-      locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-      ///设置Android端连续定位的定位间隔
-      locationOption.locationInterval = 2000;
+    ///设置Android端连续定位的定位间隔
+    locationOption.locationInterval = 2000;
 
-      ///设置Android端的定位模式<br>
-      ///可选值：<br>
-      ///<li>[AMapLocationMode.Battery_Saving]</li>
-      ///<li>[AMapLocationMode.Device_Sensors]</li>
-      ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-      locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+    ///设置Android端的定位模式<br>
+    ///可选值：<br>
+    ///<li>[AMapLocationMode.Battery_Saving]</li>
+    ///<li>[AMapLocationMode.Device_Sensors]</li>
+    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-      ///设置iOS端的定位最小更新距离<br>
-      locationOption.distanceFilter = -1;
+    ///设置iOS端的定位最小更新距离<br>
+    locationOption.distanceFilter = -1;
 
-      ///设置iOS端期望的定位精度
-      /// 可选值：<br>
-      /// <li>[DesiredAccuracy.Best] 最高精度</li>
-      /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-      /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-      /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-      /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-      locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+    ///设置iOS端期望的定位精度
+    /// 可选值：<br>
+    /// <li>[DesiredAccuracy.Best] 最高精度</li>
+    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-      ///设置iOS端是否允许系统暂停定位
-      locationOption.pausesLocationUpdatesAutomatically = false;
+    ///设置iOS端是否允许系统暂停定位
+    locationOption.pausesLocationUpdatesAutomatically = false;
 
-      ///将定位参数设置给定位插件
-      _locationPlugin.setLocationOption(locationOption);
-    }
+    ///将定位参数设置给定位插件
+    _locationPlugin.setLocationOption(locationOption);
   }
 
   ///开始定位
   void _startLocation() {
-    if (null != _locationPlugin) {
-      ///开始定位之前设置定位参数
-      _setLocationOption();
-      _locationPlugin.startLocation();
-    }
+    ///开始定位之前设置定位参数
+    _setLocationOption();
+    _locationPlugin.startLocation();
   }
 
   @override
@@ -426,13 +417,13 @@ class TabBarItem extends StatefulWidget {
   TabController? tabController;
 
   TabBarItem({
-    Key? key,
+    super.key,
     this.bottomAlignment,
     this.itemtype = 0,
     this.title = "",
     this.itemindex = 0,
     this.tabController,
-  }) : super(key: key) {
+  }) {
     //print(this.title);
   }
 
@@ -442,10 +433,10 @@ class TabBarItem extends StatefulWidget {
 }
 
 class _TabBarItemState extends State<TabBarItem> {
-  Alignment _bottomAlignment;
-  int _itemtype;
+  final Alignment _bottomAlignment;
+  final int _itemtype;
   int _currentIndex = 1;
-  int _itemindex;
+  final int _itemindex;
   late ActivityDataBloc _activityDataBloc;
   late CityActivityDataBloc _cityActivityDataBloc;
   _TabBarItemState(this._bottomAlignment, this._itemtype, this._itemindex);
@@ -505,6 +496,35 @@ class _TabBarItemState extends State<TabBarItem> {
     return Container(
       alignment: _bottomAlignment,
       child: InkWell(
+        onTap: _itemindex == _currentIndex
+            ? () {
+                Navigator.pushNamed(
+                  context,
+                  '/ListViewProvince',
+                  arguments: null,
+                ).then((dynamic value) {
+                  if (value != null) {
+                    if (Global.profile.locationCode !=
+                        value["code"].toString()) {
+                      Global.profile.locationCode = value["code"].toString();
+                      Global.profile.locationName = value["name"].toString();
+                      _activityDataBloc.add(Refresh());
+                      _cityActivityDataBloc.add(
+                        Refreshed(Global.profile.locationCode),
+                      );
+                      Global.saveProfile();
+                    }
+
+                    widget.title = Global.profile.locationName;
+                    setState(() {
+                      if (widget.title.length > 3) {
+                        widget.title = widget.title.substring(0, 3);
+                      }
+                    });
+                  }
+                });
+              }
+            : null,
         child: Column(
           children: <Widget>[
             Container(
@@ -553,40 +573,12 @@ class _TabBarItemState extends State<TabBarItem> {
             ),
           ],
         ),
-        onTap: _itemindex == _currentIndex
-            ? () {
-                Navigator.pushNamed(
-                  context,
-                  '/ListViewProvince',
-                  arguments: null,
-                ).then((dynamic value) {
-                  if (value != null) {
-                    if (Global.profile.locationCode !=
-                        value["code"].toString()) {
-                      Global.profile.locationCode = value["code"].toString();
-                      Global.profile.locationName = value["name"].toString();
-                      _activityDataBloc.add(Refresh());
-                      _cityActivityDataBloc.add(
-                        Refreshed(Global.profile.locationCode),
-                      );
-                      Global.saveProfile();
-                    }
-
-                    widget.title = Global.profile.locationName;
-                    setState(() {
-                      if (widget.title.length > 3)
-                        widget.title = widget.title.substring(0, 3);
-                    });
-                  }
-                });
-              }
-            : null,
       ),
     );
   } //城市选择页
 
   void onPressed(int val) {
-    this._currentIndex = val;
+    _currentIndex = val;
 
     setState(() {});
   }

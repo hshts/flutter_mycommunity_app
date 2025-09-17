@@ -11,7 +11,7 @@ class ManageActivityMember extends StatefulWidget {
   Object? arguments;
   List<User> members = [];
   String actid = "";
-  ManageActivityMember({this.arguments}) {
+  ManageActivityMember({super.key, this.arguments}) {
     members = (arguments as Map)["members"];
     for (int i = 0; i < members.length; i++) {
       members[i].isFollow = false;
@@ -24,29 +24,30 @@ class ManageActivityMember extends StatefulWidget {
 }
 
 class _ManageActivityMemberState extends State<ManageActivityMember> {
-  ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
   List<User> delMember = [];
-  ImHelper _imHelper = new ImHelper();
+  final ImHelper _imHelper = ImHelper();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title:
-              Text('增减成员', style: TextStyle(color: Colors.black, fontSize: 16)),
-          centerTitle: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: ListView(
-          children: _memberList(),
+        title: Text(
+          '增减成员',
+          style: TextStyle(color: Colors.black, fontSize: 16),
         ),
-        bottomNavigationBar: buildDelBtn());
+        centerTitle: true,
+      ),
+      body: ListView(children: _memberList()),
+      bottomNavigationBar: buildDelBtn(),
+    );
   }
 
   List<Widget> _memberList() {
@@ -56,58 +57,56 @@ class _ManageActivityMemberState extends State<ManageActivityMember> {
       if (index == 0) {
         // widgets.add(SizedBox.shrink());
       } else {
-        widgets.add(InkWell(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Checkbox(
-                    checkColor: Colors.white,
-                    activeColor: Colors.blue,
-                    value: item.isFollow,
-                    onChanged: (value) {
-                      setState(() {
-                        item.isFollow = value!;
-                        if (value) {
-                          delMember.add(item);
-                        } else {
-                          delMember.remove(item);
-                        }
-                      });
-                    },
-                  ),
-                  NoCacheClipRRectHeadImage(
-                    width: 35,
-                    uid: item.uid,
-                    imageUrl: '${item.profilepicture}',
-                  )
-                ],
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                  child: Text(
-                item.username,
-                overflow: TextOverflow.ellipsis,
-              )),
-            ],
+        widgets.add(
+          InkWell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      checkColor: Colors.white,
+                      activeColor: Colors.blue,
+                      value: item.isFollow,
+                      onChanged: (value) {
+                        setState(() {
+                          item.isFollow = value!;
+                          if (value) {
+                            delMember.add(item);
+                          } else {
+                            delMember.remove(item);
+                          }
+                        });
+                      },
+                    ),
+                    NoCacheClipRRectHeadImage(
+                      width: 35,
+                      uid: item.uid,
+                      imageUrl: '${item.profilepicture}',
+                    ),
+                  ],
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(item.username, overflow: TextOverflow.ellipsis),
+                ),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                item.isFollow = !item.isFollow;
+                if (item.isFollow) {
+                  delMember.add(item);
+                } else {
+                  delMember.remove(item);
+                }
+              });
+            },
           ),
-          onTap: () {
-            setState(() {
-              item.isFollow = !item.isFollow;
-              if (item.isFollow) {
-                delMember.add(item);
-              } else {
-                delMember.remove(item);
-              }
-            });
-          },
-        ));
+        );
       }
 
       index++;
@@ -122,15 +121,10 @@ class _ManageActivityMemberState extends State<ManageActivityMember> {
       padding: EdgeInsets.all(10),
       height: 60,
       child: TextButton(
-        style: TextButton.styleFrom(
-          backgroundColor: Colors.green,
-        ),
-        child: Text(
-          '移除群成员',
-          style: TextStyle(color: Colors.white),
-        ),
+        style: TextButton.styleFrom(backgroundColor: Colors.green),
+        child: Text('移除群成员', style: TextStyle(color: Colors.white)),
         onPressed: () {
-          if (delMember != null && delMember.length > 0) {
+          if (delMember.isNotEmpty) {
             _asked();
           } else {
             ShowMessage.showToast('请选择要移除的成员!');
@@ -142,50 +136,57 @@ class _ManageActivityMemberState extends State<ManageActivityMember> {
 
   Future<void> _asked() async {
     return showDialog<Null>(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('移除群成员后他们将无法收到消息，确定要移除吗?',
-                style: new TextStyle(fontSize: 17.0)),
-            actions: <Widget>[
-              new TextButton(
-                child: new Text('确定'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  if (delMember != null && delMember.length > 0) {
-                    String uids = "";
-                    delMember.forEach((element) {
-                      uids += element.uid.toString() + ",";
-                    });
-                    uids = uids.substring(0, uids.length - 1);
-                    bool ret = await _activityService.manageDelQuiteActivity(
-                        widget.actid,
-                        Global.profile.user!.uid,
-                        Global.profile.user!.token!,
-                        uids, (String statusCode, String msg) {
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            '移除群成员后他们将无法收到消息，确定要移除吗?',
+            style: TextStyle(fontSize: 17.0),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('确定'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                if (delMember.isNotEmpty) {
+                  String uids = "";
+                  for (var element in delMember) {
+                    uids += "${element.uid},";
+                  }
+                  uids = uids.substring(0, uids.length - 1);
+                  bool ret = await _activityService.manageDelQuiteActivity(
+                    widget.actid,
+                    Global.profile.user!.uid,
+                    Global.profile.user!.token!,
+                    uids,
+                    (String statusCode, String msg) {
                       ShowMessage.cancel();
                       ShowMessage.showToast(msg);
-                    });
-                    if (ret) {
-                      await _imHelper.delGroupMemberRelation(
-                          delMember, widget.actid);
-                      delMember.forEach((element) {
-                        widget.members.remove(element);
-                      });
-                      setState(() {});
+                    },
+                  );
+                  if (ret) {
+                    await _imHelper.delGroupMemberRelation(
+                      delMember,
+                      widget.actid,
+                    );
+                    for (var element in delMember) {
+                      widget.members.remove(element);
                     }
+                    setState(() {});
                   }
-                },
-              ),
-              new TextButton(
-                child: new Text('取消'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+                }
+              },
+            ),
+            TextButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

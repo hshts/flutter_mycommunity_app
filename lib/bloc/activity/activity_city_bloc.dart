@@ -7,9 +7,9 @@ export './event/activity_city_event.dart';
 export './state/activity_city_state.dart';
 
 class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
-  final ActivityService _activityService = new ActivityService();
+  final ActivityService _activityService = ActivityService();
 
-  CityActivityDataBloc():super(PostInitial());
+  CityActivityDataBloc() : super(PostInitial());
 
   //@override
   // TODO: implement initialState
@@ -22,33 +22,46 @@ class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
       if (event is PostFetched && !_hasReachedMax(currentState)) {
         if (currentState is PostInitial || currentState is PostFailure) {
           yield PostLoading();
-          final activitys = await _activityService
-              .getActivityListByCity(0, event.locationCode);
-          yield PostSuccess(activitys: activitys, hasReachedMax: activitys.length < 6 ? true : false, isRefreshed: true);
+          final activitys = await _activityService.getActivityListByCity(
+            0,
+            event.locationCode,
+          );
+          yield PostSuccess(
+            activitys: activitys,
+            hasReachedMax: activitys.length < 6 ? true : false,
+            isRefreshed: true,
+          );
           return;
         }
         //加载更多
-        if (currentState is PostSuccess ) {
-          final activitys = await _activityService
-              .getActivityListByCity(currentState.activitys!.length, event.locationCode);
+        if (currentState is PostSuccess) {
+          final activitys = await _activityService.getActivityListByCity(
+            currentState.activitys!.length,
+            event.locationCode,
+          );
           yield activitys.isEmpty
               ? currentState.copyWith(hasReachedMax: true)
               : PostSuccess(
-            activitys: currentState.activitys! + activitys,
-            hasReachedMax: false,
-            isRefreshed: false
-          );
+                  activitys: currentState.activitys! + activitys,
+                  hasReachedMax: false,
+                  isRefreshed: false,
+                );
         }
       }
-      if (event is Refreshed){
+      if (event is Refreshed) {
         yield PostLoading();
-        final activitys = await _activityService
-            .getActivityListByCity(0, event.locationCode);
-        yield PostSuccess(activitys: activitys, hasReachedMax: activitys.length < 6 ? true : false, isRefreshed: true);
+        final activitys = await _activityService.getActivityListByCity(
+          0,
+          event.locationCode,
+        );
+        yield PostSuccess(
+          activitys: activitys,
+          hasReachedMax: activitys.length < 6 ? true : false,
+          isRefreshed: true,
+        );
         return;
       }
-    }
-    catch(_){
+    } catch (_) {
       yield PostFailure();
     }
   }
@@ -60,5 +73,5 @@ class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
   }
 
   bool _hasReachedMax(CityActivityState state) =>
-      state is PostSuccess  && state.hasReachedMax;
+      state is PostSuccess && state.hasReachedMax;
 }

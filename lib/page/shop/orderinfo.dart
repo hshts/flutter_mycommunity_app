@@ -24,7 +24,7 @@ class OrderInfo extends StatefulWidget {
   String goodpriceid = "";
   String orderid = "";
 
-  OrderInfo({required this.arguments}) {
+  OrderInfo({super.key, required this.arguments}) {
     goodpriceid = (arguments as Map)["goodpriceid"];
     title = (arguments as Map)["title"];
     brand = (arguments as Map)["brand"];
@@ -35,9 +35,7 @@ class OrderInfo extends StatefulWidget {
     saleprice = (arguments as Map)["saleprice"];
     orderid = (arguments as Map)["orderid"];
 
-    actid = (arguments as Map)["actid"] != null
-        ? (arguments as Map)["actid"]
-        : "";
+    actid = (arguments as Map)["actid"] ?? "";
   }
 
   @override
@@ -45,7 +43,7 @@ class OrderInfo extends StatefulWidget {
 }
 
 class _OrderInfoState extends State<OrderInfo> {
-  ActivityService _activityservice = ActivityService();
+  final ActivityService _activityservice = ActivityService();
   num _saleprice = 0;
   int _productNum = 0;
   int _paymenttype = 1; //0支付宝 1微信
@@ -83,6 +81,10 @@ class _OrderInfoState extends State<OrderInfo> {
                   Container(
                     margin: EdgeInsets.only(top: 10),
                     padding: EdgeInsets.only(bottom: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(9)),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,13 +178,13 @@ class _OrderInfoState extends State<OrderInfo> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(9)),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
                     child: Column(
                       children: [
                         ListTile(
@@ -239,10 +241,6 @@ class _OrderInfoState extends State<OrderInfo> {
                         ),
                       ],
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(9)),
-                    ),
                   ),
                 ],
               ),
@@ -278,7 +276,7 @@ class _OrderInfoState extends State<OrderInfo> {
                     ),
                   ),
                   Text(
-                    '${_saleprice}',
+                    '$_saleprice',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -292,17 +290,9 @@ class _OrderInfoState extends State<OrderInfo> {
           SizedBox(
             width: 130,
             child: TextButton(
-              child: Text(
-                '去支付',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Global.defredcolor),
-                shape: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(Global.defredcolor),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(9),
                   ),
@@ -318,6 +308,14 @@ class _OrderInfoState extends State<OrderInfo> {
                   _wxpay();
                 }
               },
+              child: Text(
+                '去支付',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],
@@ -325,7 +323,7 @@ class _OrderInfoState extends State<OrderInfo> {
     );
   }
 
-  _alipay() async {
+  Future<void> _alipay() async {
     if (!Global.isInDebugMode) {
       bool isInstalled = await tobias.isAliPayInstalled();
       if (!isInstalled) {
@@ -350,7 +348,7 @@ class _OrderInfoState extends State<OrderInfo> {
     if (orderinfo != null && orderinfo.isNotEmpty) {
       Map ret;
       ret = await tobias.aliPay(orderinfo['data']);
-      if (ret != null && ret["resultStatus"] == "9000") {
+      if (ret["resultStatus"] == "9000") {
         GoodPiceModel goodPiceModel = GoodPiceModel(
           widget.goodpriceid,
           widget.title,
@@ -403,7 +401,7 @@ class _OrderInfoState extends State<OrderInfo> {
     }
   }
 
-  _wxpay() async {
+  Future<void> _wxpay() async {
     if (!Global.isInDebugMode) {
       if (!Global.isWeChatInstalled) {
         ShowMessage.showToast("需要有微信客户端才能支付");
@@ -491,7 +489,7 @@ class _OrderInfoState extends State<OrderInfo> {
     }
   }
 
-  _errorCallBack(String statusCode, String msg) {
+  void _errorCallBack(String statusCode, String msg) {
     ShowMessage.showToast(msg);
   }
 }

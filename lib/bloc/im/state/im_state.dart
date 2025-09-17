@@ -15,7 +15,7 @@ class initImState extends ImState {}
 class errorState extends ImState {
   final String error;
   final String errorstatusCode;
-  errorState({this.error = "", this.errorstatusCode = ""});
+  const errorState({this.error = "", this.errorstatusCode = ""});
 
   @override
   List<Object> get props => [error, errorstatusCode];
@@ -53,7 +53,7 @@ class PostSuccess extends ImState {
 
   @override
   String toString() =>
-      'PostSuccess { posts: ${timeLineSyncs}, hasReachedMax: $hasReachedMax }';
+      'PostSuccess { posts: $timeLineSyncs, hasReachedMax: $hasReachedMax }';
 }
 
 class PostLoading extends ImState {}
@@ -63,7 +63,7 @@ class NewMessageState extends ImState {
   final List<GroupRelation> groupRelations;
   final List<TimeLineSync> msgMessage;
 
-  NewMessageState({
+  const NewMessageState({
     required this.sysMessage,
     required this.groupRelations,
     required this.msgMessage,

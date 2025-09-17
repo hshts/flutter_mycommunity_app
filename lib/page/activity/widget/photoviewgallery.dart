@@ -5,7 +5,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 class MyPhotoViewGallery extends StatefulWidget {
   List<Map<String, String>> list;
-  MyPhotoViewGallery({required this.list});
+  MyPhotoViewGallery({super.key, required this.list});
 
   @override
   _MyPhotoViewGalleryState createState() => _MyPhotoViewGalleryState();
@@ -23,7 +23,7 @@ class _MyPhotoViewGalleryState extends State<MyPhotoViewGallery> {
     }
     height = imgCount * height;
 
-    return Container(height: height, child: NinePicture(widget.list));
+    return SizedBox(height: height, child: NinePicture(widget.list));
   }
 
   void open(BuildContext context, final int index) {
@@ -43,6 +43,7 @@ class _MyPhotoViewGalleryState extends State<MyPhotoViewGallery> {
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
   GalleryPhotoViewWrapper({
+    super.key,
     this.loadingBuilder,
     this.backgroundDecoration,
     this.minScale,
@@ -125,7 +126,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     final Map<String, String> item = widget.galleryItems[index];
     return item['img'] != null
         ? PhotoViewGalleryPageOptions.customChild(
-            child: Container(
+            child: SizedBox(
               width: 300,
               height: 300,
               child: CachedNetworkImage(imageUrl: item['img']!),
@@ -149,7 +150,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
 class NinePicture extends StatelessWidget {
   List<Map<String, String>> list = [];
 
-  NinePicture(List<Map<String, String>> list) {
+  NinePicture(List<Map<String, String>> list, {super.key}) {
     this.list = list;
   }
 
@@ -169,17 +170,17 @@ class NinePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int _crossAxisCount = 1;
+    int crossAxisCount = 1;
     double pagewidth = MediaQuery.of(context).size.width - 20;
 
     if (list.length == 1) {
-      _crossAxisCount = 1;
+      crossAxisCount = 1;
     } else {
-      _crossAxisCount = 2;
+      crossAxisCount = 2;
     }
     return GridView.count(
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: _crossAxisCount,
+      crossAxisCount: crossAxisCount,
       mainAxisSpacing: 2.0,
       crossAxisSpacing: 2.0,
       padding: const EdgeInsets.all(4.0),
@@ -194,12 +195,12 @@ class NinePicture extends StatelessWidget {
               child: Hero(
                 tag: list[index]['tag'].toString(),
                 child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
                     imageUrl:
                         '${list[index]['img']}?x-oss-process=image/resize,m_fill,w_800/sharpen,50/quality,q_80',
                   ),
-                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
