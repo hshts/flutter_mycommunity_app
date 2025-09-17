@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class MessageDialog extends Dialog {
   Widget? title;
   Widget? message;
@@ -10,16 +9,16 @@ class MessageDialog extends Dialog {
   void Function()? onPositivePressEvent;
   double? containerHeight;
 
-  MessageDialog({
-    Key? key,
-    @required this.title,
-    @required this.message,
-    this.negativeText,
-    this.positiveText,
-    this.onPositivePressEvent,
-    @required this.onCloseEvent,
-    @required this.containerHeight
-  }) : super(key: key);
+  MessageDialog(
+      {Key? key,
+      @required this.title,
+      @required this.message,
+      this.negativeText,
+      this.positiveText,
+      this.onPositivePressEvent,
+      @required this.onCloseEvent,
+      @required this.containerHeight})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +87,10 @@ class MessageDialog extends Dialog {
 
   Widget _buildBottomButtonGroup() {
     var widgets = <Widget>[];
-    if (negativeText != null && negativeText!.isNotEmpty) widgets.add(_buildBottomCancelButton());
-    if (positiveText != null && positiveText!.isNotEmpty) widgets.add(_buildBottomPositiveButton());
+    if (negativeText != null && negativeText!.isNotEmpty)
+      widgets.add(_buildBottomCancelButton());
+    if (positiveText != null && positiveText!.isNotEmpty)
+      widgets.add(_buildBottomPositiveButton());
     return new Flex(
       direction: Axis.horizontal,
       children: widgets,
@@ -99,14 +100,11 @@ class MessageDialog extends Dialog {
   Widget _buildBottomCancelButton() {
     return new Flexible(
       fit: FlexFit.tight,
-      child: new FlatButton(
+      child: new TextButton(
         onPressed: onCloseEvent,
         child: new Text(
           negativeText!,
-          style: TextStyle(
-            fontSize: 16.0,
-            color: Colors.black
-          ),
+          style: TextStyle(fontSize: 16.0, color: Colors.black),
         ),
       ),
     );
@@ -115,7 +113,7 @@ class MessageDialog extends Dialog {
   Widget _buildBottomPositiveButton() {
     return new Flexible(
       fit: FlexFit.tight,
-      child: new FlatButton(
+      child: new TextButton(
         onPressed: onPositivePressEvent,
         child: new Text(
           positiveText!,

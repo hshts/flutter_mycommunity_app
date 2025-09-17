@@ -205,7 +205,7 @@ class _State extends State<GroupMember> {
           return AlertDialog(
             title: new Text(msg , style: new TextStyle(fontSize: 17.0)),
             actions: <Widget>[
-              new FlatButton(
+              new TextButton(
                 child: new Text('确定'),
                 onPressed: () async {
                   bool ret = await _activityService.delQuiteActivity(widget.timeline_id, Global.profile.user!.uid, Global.profile.user!.token!,(String statusCode, String msg) {
@@ -225,7 +225,7 @@ class _State extends State<GroupMember> {
                   }
                 },
               ),
-              new FlatButton(
+              new TextButton(
                 child: new Text('取消'),
                 onPressed: (){
                   Navigator.pop(context);

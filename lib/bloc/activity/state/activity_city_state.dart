@@ -13,9 +13,9 @@ class PostInitial extends CityActivityState {}
 class PostFailure extends CityActivityState {}
 
 class PostSuccess extends CityActivityState {
-  List<Activity>? activitys;
-  bool hasReachedMax = false;
-  bool isRefreshed = false;
+  final List<Activity>? activitys;
+  final bool hasReachedMax;
+  final bool isRefreshed;
   PostSuccess({
     this.activitys,
     this.hasReachedMax = false,
@@ -25,18 +25,17 @@ class PostSuccess extends CityActivityState {
   PostSuccess copyWith({
     List<Activity>? posts,
     bool hasReachedMax = false,
-    bool isRefreshed = false
+    bool isRefreshed = false,
   }) {
     return PostSuccess(
       activitys: activitys ?? this.activitys,
       hasReachedMax: hasReachedMax,
       isRefreshed: isRefreshed,
-
     );
   }
 
   @override
-  List<Object> get props => [activitys??[], hasReachedMax];
+  List<Object> get props => [activitys ?? [], hasReachedMax];
 
   @override
   String toString() =>

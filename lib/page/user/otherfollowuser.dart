@@ -179,7 +179,7 @@ class _OtherFollowUserState extends State<OtherFollowUser> {
                           .profilePicture! : element.profilepicture!, width: 50, uid: element.uid,),
                   // trailing: Global.profile.user != null && Global.profile.user!.uid == element.uid ? SizedBox.shrink() : Container(
                   //   height: 36,
-                  //   child: OutlineButton (
+                  //   child: OutlinedButton (
                   //     shape:  RoundedRectangleBorder(
                   //         borderRadius: BorderRadius.all(Radius.circular(10))),
                   //     borderSide: BorderSide(

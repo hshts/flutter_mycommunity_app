@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_app/widget/icontext.dart';
 
@@ -120,7 +120,7 @@ class _MyHomeState extends State<MyHome> {
                                     Navigator.pushNamed(context, '/MyCollectionActivity');
 
                                   },),
-                                IconText('分享的', icon:  _newSharedCount > 0 ? Badge(
+                                IconText('分享的', icon:  _newSharedCount > 0 ? badges.Badge(
                                     alignment: Alignment.centerLeft,
                                     toAnimate: false,
                                     badgeContent: Text(_newSharedCount > 99 ? '...' : _newSharedCount.toString(), style: TextStyle(fontSize: 10, color: Colors.white)),
@@ -144,7 +144,7 @@ class _MyHomeState extends State<MyHome> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                IconText('待付款', icon: _pendingOrderCount > 0 ? Badge(
+                                IconText('待付款', icon: _pendingOrderCount > 0 ? badges.Badge(
                                     alignment: Alignment.centerLeft,
                                     toAnimate: false,
                                     badgeContent: Text(_pendingOrderCount > 99 ? '...' : _pendingOrderCount.toString(),
@@ -159,7 +159,7 @@ class _MyHomeState extends State<MyHome> {
                                     });
                                   },),
                                 //icon_daifukuan2
-                                IconText('待收货', icon: _finishOrderCount > 0 ? Badge(
+                                IconText('待收货', icon: _finishOrderCount > 0 ? badges.Badge(
                                     alignment: Alignment.centerLeft,
                                     toAnimate: false,
                                     badgeContent: Text(_finishOrderCount > 99 ? '...' : _finishOrderCount.toString(),
@@ -174,7 +174,7 @@ class _MyHomeState extends State<MyHome> {
                                     });
                                   },),
 
-                                IconText('待评价', icon: _countActivityEvaluate > 0 ? Badge(
+                                IconText('待评价', icon: _countActivityEvaluate > 0 ? badges.Badge(
                                     alignment: Alignment.centerLeft,
                                     toAnimate: false,
                                     badgeContent: Text(_countActivityEvaluate > 99 ? '...' : _countActivityEvaluate.toString(),

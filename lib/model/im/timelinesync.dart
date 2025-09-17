@@ -5,7 +5,14 @@ import '../user.dart';
 
 part 'timelinesync.g.dart';
 
-enum ContentType { Type_Text, Type_System, Type_Image, Type_Sound, Type_Location, Type_shared}//Type_localSystem本地的系统通知，不从服务器取数据
+enum ContentType {
+  Type_Text,
+  Type_System,
+  Type_Image,
+  Type_Sound,
+  Type_Location,
+  Type_shared,
+} //Type_localSystem本地的系统通知，不从服务器取数据
 
 @JsonSerializable()
 class TimeLineSync {
@@ -17,13 +24,12 @@ class TimeLineSync {
   String? serdername;
   String? serderpicture;
   String? content;
-  int? contenttype;//0文本 1 系统 2 图片 3声音 4地图 5分享
+  int? contenttype; //0文本 1 系统 2 图片 3声音 4地图 5分享
   User? senderUser;
   bool? isplay = false;
   String? localpath;
-  int? isopen = 0;//是否打开过红包
-  String? source_id = "";//来源ID
-
+  int? isopen = 0; //是否打开过红包
+  String? source_id = ""; //来源ID
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -32,16 +38,20 @@ class TimeLineSync {
     data['sequence_id'] = this.sequence_id;
     data['conversation'] = this.conversation;
     data['send_time'] = this.send_time;
-    data['serdername'] = this.senderUser == null ? this.serdername : this.senderUser!.username;
-    data['serderpicture'] = this.senderUser == null ? this.serderpicture : this.senderUser!.profilepicture;
+    data['serdername'] = this.senderUser == null
+        ? this.serdername
+        : this.senderUser!.username;
+    data['serderpicture'] = this.senderUser == null
+        ? this.serderpicture
+        : this.senderUser!.profilepicture;
     data['content'] = this.content;
     data['contenttype'] = this.contenttype;
-    if(sender != null && sender == 0){
+    if (sender != null && sender == 0) {
       data['sender'] = this.sender;
-    }
-    else {
-      data['sender'] =
-      this.senderUser == null ? this.sender : this.senderUser!.uid;
+    } else {
+      data['sender'] = this.senderUser == null
+          ? this.sender
+          : this.senderUser!.uid;
     }
     data['uid'] = Global.profile.user!.uid;
     data['localpath'] = this.localpath;
@@ -51,7 +61,7 @@ class TimeLineSync {
   }
 
   TimeLineSync.fromMap(Map<String, dynamic> data) {
-//    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
+    //    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
     this.timeline_id = data['timeline_id'];
     this.sequence_id = data['sequence_id'];
     this.conversation = data['conversation'];
@@ -67,39 +77,46 @@ class TimeLineSync {
   }
 
   TimeLineSync.fromMapByServer(Map<String, dynamic> data) {
-//    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
+    //    User user = User.fromJson(data['sender'] as Map<String, dynamic>);
     this.timeline_id = data['timeline_id'];
     this.sequence_id = data['sequence_id'];
     this.conversation = data['conversation'];
     this.send_time = data['send_time'];
-    this.senderUser = (data['sender'] == null ? null
+    this.senderUser = (data['sender'] == null
+        ? null
         : User.fromJson(data['sender'] as Map<String, dynamic>));
-    this.serdername = (this.senderUser!.username == null ? "" : this.senderUser!.username);
-    this.serderpicture = (this.senderUser!.profilepicture == null ? "" : this.senderUser!.profilepicture);
+    this.serdername = this.senderUser!.username;
+    this.serderpicture = this.senderUser!.profilepicture;
     this.content = data['content'];
     this.contenttype = data['contenttype'];
     this.localpath = '';
     this.source_id = data['source_id'];
   }
 
-
-  TimeLineSync(this.timeline_id, this.sequence_id, this.conversation, this.send_time, this.senderUser,
-      this.content, this.contenttype, this.localpath, this.source_id){
-    if(conversation == 0){
+  TimeLineSync(
+    this.timeline_id,
+    this.sequence_id,
+    this.conversation,
+    this.send_time,
+    this.senderUser,
+    this.content,
+    this.contenttype,
+    this.localpath,
+    this.source_id,
+  ) {
+    if (conversation == 0) {
       //拉黑取消拉黑举报等本地提示
       this.sender = 0;
       this.serdername = "system";
       this.serderpicture = "";
-    }
-    else{
+    } else {
       this.sender = senderUser!.uid;
       this.serdername = senderUser!.username;
       this.serderpicture = senderUser!.profilepicture;
     }
   }
 
-
-
-//  Map<String, dynamic> toJson() => _$TimeLineSyncToJson(this);
-  factory TimeLineSync.fromJson(Map<String, dynamic> json) => _$TimeLineSyncFromJson(json);
+  //  Map<String, dynamic> toJson() => _$TimeLineSyncToJson(this);
+  factory TimeLineSync.fromJson(Map<String, dynamic> json) =>
+      _$TimeLineSyncFromJson(json);
 }

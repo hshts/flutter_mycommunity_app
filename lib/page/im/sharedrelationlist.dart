@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -192,7 +192,7 @@ class _SharedRelationListState extends State<SharedRelationList> {
 
                                         item.unreadcount == 0 ? SizedBox.shrink() : Container(
                                           margin: EdgeInsets.only(right: 10),
-                                          child: Badge(
+                                          child: badges.Badge(
                                             toAnimate: false,
                                             badgeContent: Text(item.unreadcount >= 100 ? "..." : item.unreadcount.toString(), style: TextStyle(fontSize: 10, color: Colors.white),),
                                           ),

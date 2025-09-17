@@ -5,21 +5,19 @@ import '../../../service/activity.dart';
 import '../../../util/showmessage_util.dart';
 import '../../../widget/captcha/block_puzzle_captcha.dart';
 
-
 class ReportImageActivity extends StatefulWidget {
-  String actid  = "";
+  String actid = "";
   int sourcetype = 0; //0活动 1商品 2 聊天
   Object? arguments;
   int touid = 0;
 
-  ReportImageActivity({this.arguments}){
-    if(arguments != null){
+  ReportImageActivity({this.arguments}) {
+    if (arguments != null) {
       actid = (arguments as Map)["actid"];
-      sourcetype =  (arguments as Map)["sourcetype"];
-      touid =  (arguments as Map)["touid"];
+      sourcetype = (arguments as Map)["sourcetype"];
+      touid = (arguments as Map)["touid"];
     }
   }
-
 
   @override
   _ReportImageActivityState createState() => _ReportImageActivityState();
@@ -42,16 +40,16 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
-          onPressed: (){
+          onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text('违规图片', style: TextStyle(color: Colors.black, fontSize: 16)),
+        title:
+            Text('违规图片', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: ListView(
@@ -61,16 +59,17 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
             padding: EdgeInsets.all(10),
             child: Text('请先选择违规类型'),
           ),
-          SizedBox(height: 3,),
+          SizedBox(
+            height: 3,
+          ),
           buildContent()
         ],
       ),
       bottomNavigationBar: buildReportBtn(),
-
     );
   }
 
-  Widget buildContent(){
+  Widget buildContent() {
     return Container(
       color: Colors.white,
       child: ListView.builder(
@@ -78,7 +77,13 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
           itemCount: _radioList.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-              title: Text(_radioList[index], style: TextStyle(color: Colors.black87, fontSize: 14, ),),
+              title: Text(
+                _radioList[index],
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 14,
+                ),
+              ),
               leading: Radio(
                 focusColor: Colors.green,
                 hoverColor: Colors.green,
@@ -88,12 +93,11 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
                 groupValue: _radioCheck,
                 onChanged: (String? value) {
                   setState(() {
-                    if(value != null)
-                      _radioCheck = value;
+                    if (value != null) _radioCheck = value;
                   });
                 },
               ),
-              onTap:(){
+              onTap: () {
                 setState(() {
                   _radioCheck = _radioList[index];
                   selectindex = index;
@@ -104,20 +108,22 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
     );
   }
 
-  Widget buildReportBtn(){
+  Widget buildReportBtn() {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(10),
       height: 60,
-      child: FlatButton(
-        color: Colors.green,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.green,
+        ),
         child: Text(
           '举报',
           style: TextStyle(color: Colors.white),
         ),
         onPressed: () async {
-          if(Global.profile.user != null) {
-            if(selectindex == -1){
+          if (Global.profile.user != null) {
+            if (selectindex == -1) {
               ShowMessage.showToast("请选择违规类型");
               return;
             }
@@ -126,23 +132,26 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
                 widget.touid,
                 Global.profile.user!.token!,
                 widget.actid,
-                1,//0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
+                1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
                 "",
                 "",
-                selectindex, widget.sourcetype, "", (code, error){
-                  if(code == "-1008"){
-                    loadingBlockPuzzle(context);
-                  }
-                  else {
-                    ShowMessage.showToast(error);
-                  }
-                }
-            );
-            if(reportid != null && reportid != ""){
-              Navigator.pushReplacementNamed(context, '/MyReportInfo', arguments: {"reportid": reportid, "sourcetype": widget.sourcetype});
+                selectindex,
+                widget.sourcetype,
+                "", (code, error) {
+              if (code == "-1008") {
+                loadingBlockPuzzle(context);
+              } else {
+                ShowMessage.showToast(error);
+              }
+            });
+            if (reportid != null && reportid != "") {
+              Navigator.pushReplacementNamed(context, '/MyReportInfo',
+                  arguments: {
+                    "reportid": reportid,
+                    "sourcetype": widget.sourcetype
+                  });
             }
-          }
-          else{
+          } else {
             Navigator.pushNamed(context, '/Login');
           }
         },
@@ -162,18 +171,22 @@ class _ReportImageActivityState extends State<ReportImageActivity> {
                 widget.touid,
                 Global.profile.user!.token!,
                 widget.actid,
-                1,//0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
+                1, //0 疑似欺诈 1低俗图片 2其他 3留言内容和聊天内容
                 "",
                 "",
-                selectindex, widget.sourcetype, v, (code, error){}
-            );
-            if(reportid != null && reportid != ""){
-              Navigator.pushReplacementNamed(context, '/MyReportInfo', arguments: {"reportid": reportid, "sourcetype": widget.sourcetype});
+                selectindex,
+                widget.sourcetype,
+                v,
+                (code, error) {});
+            if (reportid != null && reportid != "") {
+              Navigator.pushReplacementNamed(context, '/MyReportInfo',
+                  arguments: {
+                    "reportid": reportid,
+                    "sourcetype": widget.sourcetype
+                  });
             }
           },
-          onFail: (){
-
-          },
+          onFail: () {},
         );
       },
     );

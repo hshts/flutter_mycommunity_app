@@ -1,3 +1,4 @@
+import 'package:flappy_search_bar_ns/flappy_search_bar_ns.dart' as search_bar;
 import 'package:flappy_search_bar_ns/flappy_search_bar_ns.dart';
 import 'package:flappy_search_bar_ns/scaled_tile.dart';
 import 'package:flappy_search_bar_ns/search_bar_style.dart';
@@ -31,7 +32,7 @@ class SearchMoment extends StatefulWidget {
 
 class _SearchMomentState extends State<SearchMoment> {
   ImHelper _imHelper = ImHelper();
-  final SearchBarController<SearchResult> _searchBarController = SearchBarController();
+  final search_bar.SearchBarController<SearchResult> _searchBarController = search_bar.SearchBarController();
   ImService _imService = new ImService();
   bool isReplay = false;
   List<Widget> hotSearchs = [];
@@ -66,7 +67,7 @@ class _SearchMomentState extends State<SearchMoment> {
       backgroundColor: Colors.white,
 
       body: SafeArea(
-        child: SearchBar<SearchResult>(
+        child: search_bar.SearchBar<SearchResult>(
           textInputType: TextInputType.text,
           minimumChars: 1,
           isCustList: true,

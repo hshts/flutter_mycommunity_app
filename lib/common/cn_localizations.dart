@@ -35,7 +35,7 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
       DatePickerDateTimeOrder.date_time_dayPeriod;
 
   @override
-  String datePickerDayOfMonth(int dayIndex) {
+  String datePickerDayOfMonth(int dayIndex, [int? monthIndex]) {
     return dayIndex.toString();
   }
 
@@ -114,7 +114,7 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
   }
 
   static const LocalizationsDelegate<CupertinoLocalizations> delegate =
-  _ChineseDelegate();
+      _ChineseDelegate();
 
   static Future<CupertinoLocalizations> load(Locale locale) async {
     var localizaltions = ChineseCupertinoLocalizations();
@@ -123,34 +123,68 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
   }
 
   @override
-  // TODO: implement modalBarrierDismissLabel
-  String get modalBarrierDismissLabel => throw UnimplementedError();
+  String get modalBarrierDismissLabel => ml.modalBarrierDismissLabel;
 
   @override
   String tabSemanticsLabel({int? tabIndex, int? tabCount}) {
-    // TODO: implement tabSemanticsLabel
-    throw UnimplementedError();
+    return ml.tabLabel(tabIndex: tabIndex ?? 0, tabCount: tabCount ?? 0);
   }
 
   @override
-  // TODO: implement todayLabel
-  String get todayLabel => throw UnimplementedError();
+  String get todayLabel => "今天"; // 直接提供中文文本，因为ml.todayLabel不存在
 
   @override
-  // TODO: implement searchTextFieldPlaceholderLabel
-  String get searchTextFieldPlaceholderLabel => throw UnimplementedError();
+  String get searchTextFieldPlaceholderLabel => ml.searchFieldLabel;
 
   @override
-  // TODO: implement timerPickerHourLabels
-  List<String> get timerPickerHourLabels => throw UnimplementedError();
+  List<String> get timerPickerHourLabels => const <String>['时'];
 
   @override
-  // TODO: implement timerPickerMinuteLabels
-  List<String> get timerPickerMinuteLabels => throw UnimplementedError();
+  List<String> get timerPickerMinuteLabels => const <String>['分'];
 
   @override
-  // TODO: implement timerPickerSecondLabels
-  List<String> get timerPickerSecondLabels => throw UnimplementedError();
+  List<String> get timerPickerSecondLabels => const <String>['秒'];
+
+  @override
+  String datePickerStandaloneMonth(int monthIndex) {
+    return "$monthIndex月";
+  }
+
+  @override
+  String get backButtonLabel => ml.backButtonTooltip;
+
+  @override
+  String get cancelButtonLabel => ml.cancelButtonLabel;
+
+  @override
+  String get clearButtonLabel => ml.clearButtonTooltip;
+
+  @override
+  String get closeButtonLabel => ml.closeButtonTooltip;
+
+  @override
+  String get collapseButtonLabel => "收起"; // 直接提供中文文本
+
+  @override
+  String get expandButtonLabel => "展开"; // 直接提供中文文本
+
+  @override
+  String get lookUpButtonLabel => "查询";
+
+  @override
+  String get menuButtonLabel => ml.showMenuTooltip;
+
+  @override
+  String get shareButtonLabel => "分享";
+
+  @override
+  String get menuDismissLabel => "关闭菜单";
+
+  @override
+  String get noSpellCheckReplacementsLabel => "未找到替换项";
+
+  @override
+  String get searchWebButtonLabel => "网页搜索";
 }
 
 class _ChineseDelegate extends LocalizationsDelegate<CupertinoLocalizations> {

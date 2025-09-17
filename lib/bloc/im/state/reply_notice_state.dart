@@ -15,10 +15,7 @@ class ReplyPostSuccess extends ReplyNoticeState {
   final List<CommentReply>? commentReplys;
   final bool? hasReachedMax;
 
-  const ReplyPostSuccess({
-    this.commentReplys,
-    this.hasReachedMax,
-  });
+  const ReplyPostSuccess({this.commentReplys, this.hasReachedMax});
 
   ReplyPostSuccess copyWith({
     List<CommentReply>? commentReplys,
@@ -31,12 +28,13 @@ class ReplyPostSuccess extends ReplyNoticeState {
   }
 
   @override
-  List<Object> get props => [commentReplys??[], hasReachedMax??false];
+  List<Object> get props => [commentReplys ?? [], hasReachedMax ?? false];
 
   @override
   String toString() =>
       'PostSuccess { posts: ${commentReplys}, hasReachedMax: $hasReachedMax }';
 }
+
 //获取消息失败
 class ReplyPostFailure extends ReplyNoticeState {}
 
@@ -45,51 +43,48 @@ class ReplyPostLoading extends ReplyNoticeState {}
 class PostInitial extends ReplyNoticeState {}
 
 //有新的评论回复数量
-class newReplyCount extends ReplyNoticeState{
-  int? count;
-  int? followcount;
-  int? newlithumbupCount;
+class newReplyCount extends ReplyNoticeState {
+  final int? count;
+  final int? followcount;
+  final int? newlithumbupCount;
 
   newReplyCount({this.count, this.followcount, this.newlithumbupCount});
 
   @override
-  List<Object> get props => [count??0];
+  List<Object> get props => [count ?? 0];
 }
 
-class myNoticeCount extends ReplyNoticeState{
-  int? count;
+class myNoticeCount extends ReplyNoticeState {
+  final int? count;
   myNoticeCount({this.count});
 
   @override
-  List<Object> get props => [count??0];
+  List<Object> get props => [count ?? 0];
 }
 
-
 //有新好友分享
-class newSharedCount extends ReplyNoticeState{
-  int? count;
+class newSharedCount extends ReplyNoticeState {
+  final int? count;
   newSharedCount({this.count});
 
   @override
-  List<Object> get props => [count??0];
+  List<Object> get props => [count ?? 0];
 }
 
 //有新的待评论活动
-class newUnActivityEvaluteCount extends ReplyNoticeState{
-  int? count;
+class newUnActivityEvaluteCount extends ReplyNoticeState {
+  final int? count;
   newUnActivityEvaluteCount({this.count});
 
   @override
-  List<Object> get props => [count??0];
+  List<Object> get props => [count ?? 0];
 }
 
 //有新的订单
-class newOrderCount extends ReplyNoticeState{
-  int? count;
+class newOrderCount extends ReplyNoticeState {
+  final int? count;
   newOrderCount({this.count});
 
   @override
-  List<Object> get props => [count??0];
+  List<Object> get props => [count ?? 0];
 }
-
-

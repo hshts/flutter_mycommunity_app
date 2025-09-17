@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
@@ -11,15 +9,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 class AppupdateUtil {
-
   static ReceivePort _port = ReceivePort();
-  static int _downloaderrowcount = 0;//下载失败尝试次数
+  static int _downloaderrowcount = 0; //下载失败尝试次数
   static _TaskInfo _downloadinfo = new _TaskInfo();
 
-  static launcherApp (String appurl) async {
+  static launcherApp(String appurl) async {
     if (Platform.isAndroid) {
       //直接下载更新
-      if(_downloaderrowcount == 0) {
+      if (_downloaderrowcount == 0) {
         await FlutterDownloader.initialize(
           //表示是否在控制台显示调试信息
           debug: true,
@@ -28,9 +25,11 @@ class AppupdateUtil {
 
       if (await _checkPermissionStorage()) {
         bool isSuccess = IsolateNameServer.registerPortWithName(
-            _port.sendPort, 'flutter_mycommunity_app');
+          _port.sendPort,
+          'flutter_mycommunity_app',
+        );
         if (!isSuccess) {
-          if(_downloaderrowcount > 2){
+          if (_downloaderrowcount > 2) {
             ShowMessage.showToast("下载更新包失败");
             return;
           }
@@ -40,7 +39,7 @@ class AppupdateUtil {
           return;
         }
 
-        if(_downloaderrowcount == 0) {
+        if (_downloaderrowcount == 0) {
           _port.listen((dynamic data) {
             print('UI Isolate Callback: $data');
             String taskId = data[0];
@@ -50,19 +49,15 @@ class AppupdateUtil {
             if (_downloadinfo.taskId == taskId) {
               if (status == DownloadTaskStatus.undefined) {
                 _startDownload(appurl);
-              }
-              else if (status == DownloadTaskStatus.complete) {
+              } else if (status == DownloadTaskStatus.complete) {
                 print(" DownloadTaskStatus.complete");
                 _delete(taskId);
-              }
-              else if (status == DownloadTaskStatus.paused) {
+              } else if (status == DownloadTaskStatus.paused) {
                 _resumeDownload(taskId);
-              }
-              else if (status == DownloadTaskStatus.failed) {
+              } else if (status == DownloadTaskStatus.failed) {
                 _retryDownload(taskId);
               }
             }
-
 
             print("status: $status");
             print("progress: $progress");
@@ -70,23 +65,23 @@ class AppupdateUtil {
         }
         FlutterDownloader.registerCallback(downloadCallback);
 
-
         final tasks = await FlutterDownloader.loadTasks();
         _downloadinfo.name = "android_apk";
         _downloadinfo.link = appurl;
 
-        if(tasks != null && tasks.length > 0) {
+        if (tasks != null && tasks.length > 0) {
           tasks.forEach((task) async {
             if (_downloadinfo.link == task.url) {
               await FlutterDownloader.remove(
-                  taskId: task.taskId, shouldDeleteContent: true);
+                taskId: task.taskId,
+                shouldDeleteContent: true,
+              );
               _unbindBackgroundIsolate();
               _downloaderrowcount++;
               launcherApp(appurl);
             }
           });
-        }
-        else{
+        } else {
           _startDownload(appurl);
         }
       }
@@ -95,9 +90,7 @@ class AppupdateUtil {
       if (await canLaunch(appurl)) {
         await launch(appurl);
       } else {
-        ShowMessage.showToast(
-          "安装文件不存在，请去苹果商店更新",
-        );
+        ShowMessage.showToast("安装文件不存在，请去苹果商店更新");
       }
     }
   }
@@ -137,12 +130,16 @@ class AppupdateUtil {
     return localPath;
   }
 
-  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
+  @pragma('vm:entry-point')
+  static void downloadCallback(String id, int status, int progress) {
     print(
-        'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
-    final SendPort? send = IsolateNameServer.lookupPortByName('flutter_mycommunity_app');
-    if(send != null)
-      send.send([id, status, progress]);
+      'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)',
+    );
+    final SendPort? send = IsolateNameServer.lookupPortByName(
+      'flutter_mycommunity_app',
+    );
+    if (send != null)
+      send.send([id, DownloadTaskStatus.values[status], progress]);
   }
 
   static void _delete(taskId) async {
@@ -151,10 +148,14 @@ class AppupdateUtil {
       await FlutterDownloader.open(taskId: taskId);
       //await OpenFile.open(path);
       await FlutterDownloader.remove(
-          taskId: taskId, shouldDeleteContent: false);
+        taskId: taskId,
+        shouldDeleteContent: false,
+      );
     });
 
-    print("delete11 ----------------------------------------------------------");
+    print(
+      "delete11 ----------------------------------------------------------",
+    );
   }
 
   static void _resumeDownload(String taskId) async {
@@ -163,7 +164,6 @@ class AppupdateUtil {
   }
 
   static void _retryDownload(String taskId) async {
-
     String? newTaskId = await FlutterDownloader.retry(taskId: taskId);
     _downloadinfo.taskId = newTaskId;
   }
@@ -172,14 +172,15 @@ class AppupdateUtil {
     IsolateNameServer.removePortNameMapping('flutter_mycommunity_app');
   }
 
-  static void dispose(){
-    if(_downloadinfo.taskId != null && _downloadinfo.taskId != "") {
+  static void dispose() {
+    if (_downloadinfo.taskId != null && _downloadinfo.taskId != "") {
       FlutterDownloader.remove(
-          taskId: _downloadinfo.taskId!, shouldDeleteContent: true);
+        taskId: _downloadinfo.taskId!,
+        shouldDeleteContent: true,
+      );
       _unbindBackgroundIsolate();
     }
   }
-
 }
 
 class _TaskInfo {
@@ -192,4 +193,3 @@ class _TaskInfo {
 
   _TaskInfo({this.name, this.link});
 }
-

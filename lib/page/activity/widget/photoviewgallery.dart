@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -17,17 +16,14 @@ class _MyPhotoViewGalleryState extends State<MyPhotoViewGallery> {
   @override
   Widget build(BuildContext context) {
     int imgCount = (widget.list.length / 2).ceil();
-    double pagewidth = MediaQuery.of(context).size.width-20;
-    double height = (pagewidth-20);
-    if(widget.list.length > 1){
-      height = height/2+10;
+    double pagewidth = MediaQuery.of(context).size.width - 20;
+    double height = (pagewidth - 20);
+    if (widget.list.length > 1) {
+      height = height / 2 + 10;
     }
     height = imgCount * height;
 
-    return Container(
-      height: height,
-      child: NinePicture(widget.list),
-    );
+    return Container(height: height, child: NinePicture(widget.list));
   }
 
   void open(BuildContext context, final int index) {
@@ -36,9 +32,7 @@ class _MyPhotoViewGalleryState extends State<MyPhotoViewGallery> {
       MaterialPageRoute(
         builder: (context) => GalleryPhotoViewWrapper(
           galleryItems: widget.list,
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.black,
-          ),
+          backgroundDecoration: const BoxDecoration(color: Colors.black),
           initialIndex: index,
           scrollDirection: verticalGallery ? Axis.vertical : Axis.horizontal,
         ),
@@ -104,7 +98,8 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               builder: _buildItem,
               itemCount: widget.galleryItems.length,
               loadingBuilder: widget.loadingBuilder,
-              backgroundDecoration: widget.backgroundDecoration as BoxDecoration,
+              backgroundDecoration:
+                  widget.backgroundDecoration as BoxDecoration,
               pageController: widget.pageController,
               onPageChanged: onPageChanged,
               scrollDirection: widget.scrollDirection,
@@ -119,7 +114,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   decoration: null,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -127,29 +122,27 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    final  Map<String, String> item = widget.galleryItems[index];
+    final Map<String, String> item = widget.galleryItems[index];
     return item['img'] != null
         ? PhotoViewGalleryPageOptions.customChild(
-      child: Container(
-        width: 300,
-        height: 300,
-        child: CachedNetworkImage(
-          imageUrl: item['img']!,
-        ),
-      ),
-      childSize: const Size(300, 300),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
-    )
+            child: Container(
+              width: 300,
+              height: 300,
+              child: CachedNetworkImage(imageUrl: item['img']!),
+            ),
+            childSize: const Size(300, 300),
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+            maxScale: PhotoViewComputedScale.covered * 1.1,
+            heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
+          )
         : PhotoViewGalleryPageOptions(
-      imageProvider: AssetImage(item['img']!),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
-    );
+            imageProvider: AssetImage(item['img']!),
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+            maxScale: PhotoViewComputedScale.covered * 1.1,
+            heroAttributes: PhotoViewHeroAttributes(tag: item['tag']!),
+          );
   }
 }
 
@@ -166,9 +159,7 @@ class NinePicture extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => GalleryPhotoViewWrapper(
           galleryItems: list,
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.black,
-          ),
+          backgroundDecoration: const BoxDecoration(color: Colors.black),
           initialIndex: index,
           //scrollDirection: verticalGallery ? Axis.vertical : Axis.horizontal,
         ),
@@ -179,11 +170,11 @@ class NinePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int _crossAxisCount = 1;
-    double pagewidth = MediaQuery.of(context).size.width-20;
+    double pagewidth = MediaQuery.of(context).size.width - 20;
 
     if (list.length == 1) {
       _crossAxisCount = 1;
-    } else  {
+    } else {
       _crossAxisCount = 2;
     }
     return GridView.count(
@@ -192,23 +183,28 @@ class NinePicture extends StatelessWidget {
       mainAxisSpacing: 2.0,
       crossAxisSpacing: 2.0,
       padding: const EdgeInsets.all(4.0),
-      children: list.asMap().keys.map((index) =>
-          InkWell(
-            onTap: () {
-              showPhoto(context, list[index], index);
-            },
-            child: Hero(
-              tag: list[index]['tag'].toString(),
-              child: ClipRRect(
-                child: CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  imageUrl: '${list[index]['img']}?x-oss-process=image/resize,m_fill,w_800/sharpen,50/quality,q_80',
+      children: list
+          .asMap()
+          .keys
+          .map(
+            (index) => InkWell(
+              onTap: () {
+                showPhoto(context, list[index], index);
+              },
+              child: Hero(
+                tag: list[index]['tag'].toString(),
+                child: ClipRRect(
+                  child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    imageUrl:
+                        '${list[index]['img']}?x-oss-process=image/resize,m_fill,w_800/sharpen,50/quality,q_80',
+                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                borderRadius: BorderRadius.circular(8),
               ),
             ),
           )
-      ).toList(),
+          .toList(),
     );
   }
 }

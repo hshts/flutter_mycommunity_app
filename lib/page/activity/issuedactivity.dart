@@ -2,10 +2,9 @@ import 'dart:async';
 import 'package:amap_flutter_location/amap_flutter_location.dart';
 import 'package:amap_flutter_location/amap_location_option.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_manager/photo_manager.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart'
+    as date_picker;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../model/user.dart';
@@ -38,8 +37,8 @@ class IssuedActivity extends StatefulWidget {
   String goodpriceid = "";
   Object? arguments;
 
-  IssuedActivity({required this.arguments}){
-    if(arguments != null){
+  IssuedActivity({required this.arguments}) {
+    if (arguments != null) {
       mincost = (arguments as Map)["mincost"];
       maxcost = (arguments as Map)["maxcost"];
 
@@ -52,7 +51,6 @@ class IssuedActivity extends StatefulWidget {
       content = (arguments as Map)["content"];
       goodpriceid = (arguments as Map)["goodpriceid"];
       actimagespath = (arguments as Map)["pic"];
-
     }
   }
 
@@ -68,23 +66,23 @@ class _IssuedActivityState extends State<IssuedActivity> {
 
   bool _isButtonEnable = true;
   List<AssetEntity> _images = [];
-  int _imageMax = 4;//最多上传4张图
-  String _provinceCode = "allCode";//默认是全国的拼玩活动
+  int _imageMax = 4; //最多上传4张图
+  String _provinceCode = "allCode"; //默认是全国的拼玩活动
   String _city = "allCode";
   int _startyear = 0;
   int _endyear = 0;
-  int _coverimgIndex= 0;
+  int _coverimgIndex = 0;
   bool _loading = false;
-  bool _ispublic = true;//是否公开
-  String _address = "";//活动位置
-  String _addresstitle = "";//位置标题
-  double _lat = 0;//活动位置
-  double _lng = 0;//活动位置
-  int oldImageCount = 0;//旧的图片数量
+  bool _ispublic = true; //是否公开
+  String _address = ""; //活动位置
+  String _addresstitle = ""; //位置标题
+  double _lat = 0; //活动位置
+  double _lng = 0; //活动位置
+  int oldImageCount = 0; //旧的图片数量
   ActivityService _activityService = new ActivityService();
   SecurityToken? _securityToken;
   List<String> _imagesUrl = [];
-  List<String> _imagesWH = [];//图片的分辨率
+  List<String> _imagesWH = []; //图片的分辨率
   FocusNode _contentfocusNode = FocusNode();
   List<String> _oldImagesUrl = [];
   int _paytype = 0;
@@ -139,41 +137,39 @@ class _IssuedActivityState extends State<IssuedActivity> {
   }
 
   @override
-  void initState(){
+  void initState() {
     _user = Global.profile.user!;
     super.initState();
 
-    if(widget.provinceCode != null) {
+    if (widget.provinceCode != null) {
       _provinceCode = widget.provinceCode;
     }
-    if(widget.city != null) {
+    if (widget.city != null) {
       _city = widget.city;
     }
-    if(widget.address != null) {
+    if (widget.address != null) {
       _address = widget.address;
     }
-    if(widget.addresstitle != null) {
+    if (widget.addresstitle != null) {
       _addresstitle = widget.addresstitle;
     }
-    if(widget.lat != null) {
+    if (widget.lat != null) {
       _lat = widget.lat;
     }
-    if(widget.lng != null) {
+    if (widget.lng != null) {
       _lng = widget.lng;
     }
 
-
-    if(widget.actimagespath != null && widget.actimagespath.isNotEmpty){
+    if (widget.actimagespath != null && widget.actimagespath.isNotEmpty) {
       List<String> oldImages = widget.actimagespath.split(',');
       oldImageCount = oldImages.length;
       oldImages.forEach((element) {
         Uri u = Uri.parse(element);
         String tem = u.path.substring(1, u.path.length);
         _imagesUrl.add(tem);
-        _imagesWH.add("300, 300");//优惠拼玩没有大小
+        _imagesWH.add("300, 300"); //优惠拼玩没有大小
         _oldImagesUrl.add(element);
       });
-
     }
   }
 
@@ -184,69 +180,112 @@ class _IssuedActivityState extends State<IssuedActivity> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: IconButton(icon: Icon(Icons.arrow_back_ios),iconSize: 20, color: Colors.black, onPressed: (){Navigator.pop(context);},),
-        title: Text('', style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          iconSize: 20,
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          '',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
-      body: new MyLoadingProgress(loading: _loading, isNetError: false, child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
+      body: new MyLoadingProgress(
+        loading: _loading,
+        isNetError: false,
+        child: Container(
+          decoration: BoxDecoration(color: Colors.white),
+          child: ListView(
+            // item 内容内边距
+            children: <Widget>[
+              buildActivityinfo(),
+              SizedBox(height: 6),
+              buildGridView(),
+              SizedBox(height: 9),
+              buildLocation(),
+              // buildAge(),
+              buildIsPubilc(),
+            ],
+          ),
         ),
-        child: ListView(
-          // item 内容内边距
-          children: <Widget>[
-            buildActivityinfo(),
-            SizedBox(height: 6,),
-            buildGridView(),
-            SizedBox(height: 9,),
-            buildLocation(),
-            // buildAge(),
-            buildIsPubilc(),
-          ],
-        ),
-      ), msg: '发布中',),
+        msg: '发布中',
+      ),
       bottomNavigationBar: buildIssuedButton(context),
     );
   }
+
   //活动位置
-  Container buildLocation(){
+  Container buildLocation() {
     return Container(
       color: Colors.white,
       child: ListTile(
         onTap: () async {
           _contentfocusNode.unfocus();
-          if(_locationListener != null){
+          if (_locationListener != null) {
             _startLocation();
           }
 
-          if(_locationListener == null){
-            bool locationStatus = await PermissionUtil.requestLocationPermisson();
+          if (_locationListener == null) {
+            bool locationStatus =
+                await PermissionUtil.requestLocationPermisson();
             if (locationStatus) {
-              _locationListener = _locationPlugin.onLocationChanged().listen((Map<String, Object> result) {
+              _locationListener = _locationPlugin.onLocationChanged().listen((
+                Map<String, Object> result,
+              ) {
                 setState(() {
                   _locationResult = result;
                   if (_locationResult != null) {
-                    if(result["longitude"] != "" && result["adCode"] != "") {
-                      Global.profile.lat = double.parse(result["latitude"].toString());
-                      Global.profile.lng = double.parse(result["longitude"].toString());
+                    if (result["longitude"] != "" && result["adCode"] != "") {
+                      Global.profile.lat = double.parse(
+                        result["latitude"].toString(),
+                      );
+                      Global.profile.lng = double.parse(
+                        result["longitude"].toString(),
+                      );
 
-                      Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(result["adCode"].toString());
+                      Global.profile.locationCode =
+                          CommonUtil.getCityNameByGaoDe(
+                            result["adCode"].toString(),
+                          );
                       Global.profile.locationName = result["city"].toString();
 
-                      if (Global.profile.locationGoodPriceCode == null || Global.profile.locationGoodPriceCode == "") {
-                        Global.profile.locationGoodPriceCode = CommonUtil.getCityNameByGaoDe(result["adCode"].toString());
-                        Global.profile.locationGoodPriceName = result["city"].toString();
+                      if (Global.profile.locationGoodPriceCode == null ||
+                          Global.profile.locationGoodPriceCode == "") {
+                        Global.profile.locationGoodPriceCode =
+                            CommonUtil.getCityNameByGaoDe(
+                              result["adCode"].toString(),
+                            );
+                        Global.profile.locationGoodPriceName = result["city"]
+                            .toString();
                       }
 
                       Global.saveProfile();
 
-                      Navigator.pushNamed(context, '/MapLocationPicker', arguments: {"lat" : Global.profile.lat,
-                        "lng": Global.profile.lng, "citycode": Global.profile.locationCode, "isMapImage": false}).then((dynamic value){
-                        if(value != null) {
+                      Navigator.pushNamed(
+                        context,
+                        '/MapLocationPicker',
+                        arguments: {
+                          "lat": Global.profile.lat,
+                          "lng": Global.profile.lng,
+                          "citycode": Global.profile.locationCode,
+                          "isMapImage": false,
+                        },
+                      ).then((dynamic value) {
+                        if (value != null) {
                           setState(() {
                             _addresstitle = value["title"];
                             _address = value["address"];
-                            _city = CommonUtil.getCityNameByGaoDe(value["adCode"]);
+                            _city = CommonUtil.getCityNameByGaoDe(
+                              value["adCode"],
+                            );
                             _provinceCode = value["provinceCode"];
                             _lat = value["latitude"];
                             _lng = value["longitude"];
@@ -266,13 +305,18 @@ class _IssuedActivityState extends State<IssuedActivity> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text("位置", style: TextStyle(color: Colors.black87, fontSize: 14),),
-              SizedBox(width: 15,),
+              Text("位置", style: TextStyle(color: Colors.black87, fontSize: 14)),
+              SizedBox(width: 15),
               Expanded(
-                child: Text((_addresstitle!=null && _addresstitle.isNotEmpty)?_addresstitle:'默认商家所在位置',
+                child: Text(
+                  (_addresstitle != null && _addresstitle.isNotEmpty)
+                      ? _addresstitle
+                      : '默认商家所在位置',
                   style: TextStyle(color: Colors.black45, fontSize: 14),
-                  overflow: TextOverflow.ellipsis, textDirection: TextDirection.rtl,),
-              )
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: TextDirection.rtl,
+                ),
+              ),
             ],
           ),
         ),
@@ -338,283 +382,299 @@ class _IssuedActivityState extends State<IssuedActivity> {
     }
   }
 
-  ListTile buildAge(){
+  ListTile buildAge() {
     return ListTile(
-      onTap: (){
-        DatePicker.showDatePicker(context,
-            showTitleActions: true,
-            minTime: DateTime(1960),
-            maxTime: DateTime(DateTime.now().year),
-            theme: DatePickerTheme(
-                headerColor: Global.profile.backColor,
-                itemStyle: TextStyle(
-                    color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 18),
-                doneStyle: TextStyle(color: Colors.white, fontSize: 16)),
-            onChanged: (date) {
-
-            },
-            onConfirm: (date) {
-              if(date[0] >  date[1]){
-                ShowMessage.showToast("开始日期不能大于结束日期！");
-              }
-              else{
-                setState(() {
-                  _startyear = date[0];
-                  _endyear = date[1];
-                });
-              }
-
-            },
-            onCancel: (){
+      onTap: () {
+        date_picker.DatePicker.showDatePicker(
+          context,
+          showTitleActions: true,
+          minTime: DateTime(1960),
+          maxTime: DateTime(DateTime.now().year),
+          theme: date_picker.DatePickerTheme(
+            headerColor: Global.profile.backColor,
+            itemStyle: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+            doneStyle: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          onChanged: (date) {},
+          onConfirm: (date) {
+            if (date[0] > date[1]) {
+              ShowMessage.showToast("开始日期不能大于结束日期！");
+            } else {
               setState(() {
-                _startyear = 0;
+                _startyear = date[0];
+                _endyear = date[1];
               });
-            },
-            currentTime: DateTime.now(), locale: LocaleType.zh);
+            }
+          },
+          onCancel: () {
+            setState(() {
+              _startyear = 0;
+            });
+          },
+          currentTime: DateTime.now(),
+          locale: date_picker.LocaleType.zh,
+        );
       },
       title: Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text("年龄", style: TextStyle(color:  Colors.black87, fontSize: 15)),
-            Text(_startyear == 0 ? "不限": "${_startyear.toString().substring(2,4)}-${_endyear.toString().substring(2,4)}年", style: TextStyle(color: Colors.black54, fontSize: 15))
+            Text("年龄", style: TextStyle(color: Colors.black87, fontSize: 15)),
+            Text(
+              _startyear == 0
+                  ? "不限"
+                  : "${_startyear.toString().substring(2, 4)}-${_endyear.toString().substring(2, 4)}年",
+              style: TextStyle(color: Colors.black54, fontSize: 15),
+            ),
           ],
         ),
       ),
       trailing: Icon(Icons.keyboard_arrow_right),
     );
   }
+
   //是否公开
-  Widget buildIsPubilc(){
-    return  ListTile(
+  Widget buildIsPubilc() {
+    return ListTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text("公开", style: TextStyle(color:  Colors.black87, fontSize: 15),),
+          Text("公开", style: TextStyle(color: Colors.black87, fontSize: 15)),
           Checkbox(
             checkColor: Global.profile.backColor,
             activeColor: Global.profile.backColor,
-            fillColor: MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-              const Set<MaterialState> interactiveStates = <MaterialState>{
-                MaterialState.pressed,
-                MaterialState.hovered,
-                MaterialState.focused,
-              };
-
+            fillColor: MaterialStateProperty.resolveWith((
+              Set<MaterialState> states,
+            ) {
               // 最终返回
               return Colors.white;
             }),
             value: this._ispublic,
             onChanged: null,
-          )
+          ),
         ],
       ),
-      onTap: (){
+      onTap: () {
         setState(() {
           this._ispublic = !this._ispublic;
-
         });
       },
     );
   }
 
   //社团活动描述
-  TextField buildActivityinfo(){
+  TextField buildActivityinfo() {
     return TextField(
-        focusNode: _contentfocusNode,
-        controller: _textContentController,
-        maxLength: 500,//最大长度，设置此项会让TextField右下角有一个输入数量的统计字符串
-        maxLines: 15,//最大行数
-        autocorrect: true,//是否自动更正
-        autofocus: false,//是否自动对焦
-        textAlign: TextAlign.left,//文本对齐方式
-        style: TextStyle(color: Colors.black87, fontSize: 14, ),//输入文本的样式
-        onChanged: (text) {//内容改变的回调
-        },
-
-        decoration: InputDecoration(
-          counterText:"",
-          hintText: "有趣的活动介绍，能让你组织的活动获得更多关注",
-          hintStyle: TextStyle(color: Colors.black45, fontSize: 14),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.only(left: 10,  bottom: 0, right: 10),
-        )
+      focusNode: _contentfocusNode,
+      controller: _textContentController,
+      maxLength: 500, //最大长度，设置此项会让TextField右下角有一个输入数量的统计字符串
+      maxLines: 15, //最大行数
+      autocorrect: true, //是否自动更正
+      autofocus: false, //是否自动对焦
+      textAlign: TextAlign.left, //文本对齐方式
+      style: TextStyle(color: Colors.black87, fontSize: 14), //输入文本的样式
+      onChanged: (text) {
+        //内容改变的回调
+      },
+      decoration: InputDecoration(
+        counterText: "",
+        hintText: "有趣的活动介绍，能让你组织的活动获得更多关注",
+        hintStyle: TextStyle(color: Colors.black45, fontSize: 14),
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.only(left: 10, bottom: 0, right: 10),
+      ),
     );
   }
+
   //imageGridview
   Widget buildGridView() {
-    List<Widget> lists = List.generate(_images.length + oldImageCount == _imageMax ? _images.length  + oldImageCount: _images.length + 1 + oldImageCount,
-            (index) {
-          if(index == (_images.length + oldImageCount) && index < _imageMax){
-            return Container(
-              child: Center(
-                child: IconButton(
-                  alignment: Alignment.center,
-                  icon: Icon(IconFont.icon_tianjiajiahaowubiankuang, size: 30, color: Colors.grey,),
-                  onPressed: (){
-                    _contentfocusNode.unfocus();
-                    loadAssets();
-                  },
+    List<Widget> lists = List.generate(
+      _images.length + oldImageCount == _imageMax
+          ? _images.length + oldImageCount
+          : _images.length + 1 + oldImageCount,
+      (index) {
+        if (index == (_images.length + oldImageCount) && index < _imageMax) {
+          return Container(
+            child: Center(
+              child: IconButton(
+                alignment: Alignment.center,
+                icon: Icon(
+                  IconFont.icon_tianjiajiahaowubiankuang,
+                  size: 30,
+                  color: Colors.grey,
                 ),
+                onPressed: () {
+                  _contentfocusNode.unfocus();
+                  loadAssets();
+                },
               ),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.all(new Radius.circular(5.0)),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.all(new Radius.circular(5.0)),
+            ),
+          );
+        } else if (index == _imageMax) {
+          return Container();
+        } else if (index < (_images.length + oldImageCount)) {
+          Widget tem = SizedBox.shrink();
+          if (index < oldImageCount) {
+            tem = ClipRRectOhterHeadImageContainer(
+              imageUrl: _oldImagesUrl[index],
+              width: 300,
+              height: 300,
+            );
+          } else {
+            tem = ClipRRect(
+              child: ExtendedImage(
+                image: AssetEntityImageProvider(_images[index - oldImageCount]),
+                width: 300,
+                height: 300,
+                fit: BoxFit.fill,
               ),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
             );
           }
-          else if(index == _imageMax){
-            return Container();
-          }
-          else if(index < (_images.length + oldImageCount)){
-            Widget tem = SizedBox.shrink();
-            if(index < oldImageCount){
-              tem = ClipRRectOhterHeadImageContainer(imageUrl: _oldImagesUrl[index], width: 300,height: 300,);
-            }
-            else{
-              tem = ClipRRect(
-                child: ExtendedImage(
-                  image: AssetEntityImageProvider(
-                      _images[index-oldImageCount],
-                  ),
-                  width: 300,
-                  height: 300,
-                  fit: BoxFit.fill,
-                ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5),
-                ),
-              );
-            }
-            return Stack(
-              children: <Widget>[
-                tem,
-                Positioned(
-                  right: 0.08,
-                  top: 0.08,
-                  child: new GestureDetector(
-                    onTap: (){
-                      if(index >= oldImageCount){
-                        _images.removeAt(index - oldImageCount);
-                      }
-                      else if(oldImageCount > 0){
-                        oldImageCount = oldImageCount-1;
-                        _oldImagesUrl.remove(index);
-                      }
-                      _imagesUrl.removeAt(index);
-                      _imagesWH.removeAt(index);
+          return Stack(
+            children: <Widget>[
+              tem,
+              Positioned(
+                right: 0.08,
+                top: 0.08,
+                child: new GestureDetector(
+                  onTap: () {
+                    if (index >= oldImageCount) {
+                      _images.removeAt(index - oldImageCount);
+                    } else if (oldImageCount > 0) {
+                      oldImageCount = oldImageCount - 1;
+                      _oldImagesUrl.remove(index);
+                    }
+                    _imagesUrl.removeAt(index);
+                    _imagesWH.removeAt(index);
 
-                      if(index == _coverimgIndex)
-                        _coverimgIndex=0;
-                      setState(() {
-
-                      });
-
-                    },
-                    child: new Container(
-                      decoration: new BoxDecoration(
-                        color: Colors.black45,
-                        shape: BoxShape.circle,
-                      ),
-                      child: new Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20.0,
-                      ),
+                    if (index == _coverimgIndex) _coverimgIndex = 0;
+                    setState(() {});
+                  },
+                  child: new Container(
+                    decoration: new BoxDecoration(
+                      color: Colors.black45,
+                      shape: BoxShape.circle,
+                    ),
+                    child: new Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20.0,
                     ),
                   ),
                 ),
-
-              ],
-            );
-          }
-          else{
-            return SizedBox.shrink();
-          }
+              ),
+            ],
+          );
+        } else {
+          return SizedBox.shrink();
         }
+      },
     );
     return Container(
       margin: EdgeInsets.only(left: 10, right: 10),
       child: GridView.count(
-          shrinkWrap: true, // 自动高
-          physics: NeverScrollableScrollPhysics(),// 添加
-          childAspectRatio: 1.0,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          crossAxisCount: 4,
-          children: lists),
+        shrinkWrap: true, // 自动高
+        physics: NeverScrollableScrollPhysics(), // 添加
+        childAspectRatio: 1.0,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        crossAxisCount: 4,
+        children: lists,
+      ),
     );
   }
+
   //发布按钮
   Container buildIssuedButton(BuildContext context) {
     return Container(
-        margin: EdgeInsets.all(10),
-        height: 40,
-        child: FlatButton(
-            color: Global.profile.backColor,
-            child: Text(
-              '一起出发',style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            shape: RoundedRectangleBorder(
-                side: BorderSide.none,
-                borderRadius: BorderRadius.all(Radius.circular(9))
-            ),
-
-            onPressed: () async{
-              try{
-                if(_isButtonEnable) {
-
-                  if (_textContentController.text == "") {
-                    ShowMessage.showToast("描述下你要组织的活动吧");
-                    return;
-                  }
-
-                  setState(() {
-                    _loading = true;
-                  });
-                  _isButtonEnable = false;
-                  Activity? activity = await _activityService.createActivity(
-                    _user.token!, _provinceCode,
-                    _city,
-                    _user.uid,
-                    _textContentController.text,
-                    _imagesUrl,
-                    _imagesUrl.length == 0 ? "":_imagesUrl[_coverimgIndex],
-                    _imagesUrl.length == 0 ? "":_imagesWH[_coverimgIndex],
-                    _startyear,
-                    _endyear,
-                    _ispublic,
-                    _address,
-                    _addresstitle,
-                    _lat,
-                    _lng,
-                    widget.goodpriceid,
-                    "", _paytype, (String statusCode, String msg){
-                      if(statusCode == "-1008"){
-                        loadingBlockPuzzle(context);
-                      }
-                      else if(int.parse(statusCode) < 0){
-                        ShowMessage.showToast(msg);
-                      }
-                    }
-                  );
-                  if (activity != null) {
-                    Navigator.popAndPushNamed(context, '/ActivityInfo',arguments: {"actid": activity.actid});
-                  }
-                  _loading = false;
-                  _isButtonEnable = true;
-                }
+      margin: EdgeInsets.all(10),
+      height: 40,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Global.profile.backColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(9)),
+          ),
+        ),
+        child: Text(
+          '一起出发',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        onPressed: () async {
+          try {
+            if (_isButtonEnable) {
+              if (_textContentController.text == "") {
+                ShowMessage.showToast("描述下你要组织的活动吧");
+                return;
               }
-              catch(e)
-              {
-                _isButtonEnable = true;
-                ShowMessage.showToast("网络不给力，请再试一下!");}
-                setState(() {
-                  _loading = false;
-                });
-            }),
-      );
+
+              setState(() {
+                _loading = true;
+              });
+              _isButtonEnable = false;
+              Activity? activity = await _activityService.createActivity(
+                _user.token!,
+                _provinceCode,
+                _city,
+                _user.uid,
+                _textContentController.text,
+                _imagesUrl,
+                _imagesUrl.length == 0 ? "" : _imagesUrl[_coverimgIndex],
+                _imagesUrl.length == 0 ? "" : _imagesWH[_coverimgIndex],
+                _startyear,
+                _endyear,
+                _ispublic,
+                _address,
+                _addresstitle,
+                _lat,
+                _lng,
+                widget.goodpriceid,
+                "",
+                _paytype,
+                (String statusCode, String msg) {
+                  if (statusCode == "-1008") {
+                    loadingBlockPuzzle(context);
+                  } else if (int.parse(statusCode) < 0) {
+                    ShowMessage.showToast(msg);
+                  }
+                },
+              );
+              if (activity != null) {
+                Navigator.popAndPushNamed(
+                  context,
+                  '/ActivityInfo',
+                  arguments: {"actid": activity.actid},
+                );
+              }
+              _loading = false;
+              _isButtonEnable = true;
+            }
+          } catch (e) {
+            _isButtonEnable = true;
+            ShowMessage.showToast("网络不给力，请再试一下!");
+          }
+          setState(() {
+            _loading = false;
+          });
+        },
+      ),
+    );
   }
+
   //加载图片并处理
   Future<void> loadAssets() async {
     List<AssetEntity>? resultList;
@@ -626,34 +686,44 @@ class _IssuedActivityState extends State<IssuedActivity> {
         selectedAssets: _images,
         requestType: RequestType.image,
       );
-
     } on Exception catch (e) {
       print(e.toString());
     }
     if (resultList != null && resultList.length != 0) {
       //添加图片并上传oss 1.申请oss临时token，1000s后过期
-      _securityToken = await _aliyunService.getActivitySecurityToken(_user.token!, _user.uid);
+      _securityToken = await _aliyunService.getActivitySecurityToken(
+        _user.token!,
+        _user.uid,
+      );
       if (_securityToken != null) {
         for (int i = 0; i < resultList.length; i++) {
           int width = resultList[i].orientatedWidth;
           int height = resultList[i].orientatedHeight;
-          String url = await CommonUtil.upLoadImage((await resultList[i].file)!, _securityToken!, _aliyunService);
-          if(!_imagesUrl.contains(url)) {
+          String url = await CommonUtil.upLoadImage(
+            (await resultList[i].file)!,
+            _securityToken!,
+            _aliyunService,
+          );
+          if (!_imagesUrl.contains(url)) {
             _imagesUrl.add(url);
             _imagesWH.add("${width},${height}");
           }
         }
         if (!mounted) return;
         setState(() {
-          if(resultList!.length != 0)
-            _images = resultList;
+          if (resultList!.length != 0) _images = resultList;
         });
-
       }
     }
   }
 
-  loadingBlockPuzzle(BuildContext context, {barrierDismissible = true, int? commentid, int? touid, User? touser}) {
+  loadingBlockPuzzle(
+    BuildContext context, {
+    barrierDismissible = true,
+    int? commentid,
+    int? touid,
+    User? touser,
+  }) {
     showDialog<Null>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -661,30 +731,35 @@ class _IssuedActivityState extends State<IssuedActivity> {
         return BlockPuzzleCaptchaPage(
           onSuccess: (v) async {
             Activity? activity = await _activityService.createActivity(
-                _user.token!, _provinceCode,
-                _city,
-                _user.uid,
-                _textContentController.text,
-                _imagesUrl,
-                _imagesUrl.length == 0 ? "":_imagesUrl[_coverimgIndex],
-                _imagesUrl.length == 0 ? "":_imagesWH[_coverimgIndex],
-                _startyear,
-                _endyear,
-                _ispublic,
-                _address,
-                _addresstitle,
-                _lat,
-                _lng,
-                widget.goodpriceid,
-                v, _paytype, (String statusCode, String msg){}
+              _user.token!,
+              _provinceCode,
+              _city,
+              _user.uid,
+              _textContentController.text,
+              _imagesUrl,
+              _imagesUrl.length == 0 ? "" : _imagesUrl[_coverimgIndex],
+              _imagesUrl.length == 0 ? "" : _imagesWH[_coverimgIndex],
+              _startyear,
+              _endyear,
+              _ispublic,
+              _address,
+              _addresstitle,
+              _lat,
+              _lng,
+              widget.goodpriceid,
+              v,
+              _paytype,
+              (String statusCode, String msg) {},
             );
             if (activity != null) {
-              Navigator.popAndPushNamed(this.context, '/ActivityInfo',arguments: {"actid": activity.actid});
+              Navigator.popAndPushNamed(
+                this.context,
+                '/ActivityInfo',
+                arguments: {"actid": activity.actid},
+              );
             }
           },
-          onFail: (){
-
-          },
+          onFail: () {},
         );
       },
     );

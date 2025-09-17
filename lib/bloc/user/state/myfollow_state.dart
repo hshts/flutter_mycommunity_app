@@ -3,10 +3,8 @@ import 'package:equatable/equatable.dart';
 import '../../../model/user.dart';
 import '../../../model/activity.dart';
 
-
 abstract class MyFollowState extends Equatable {
   const MyFollowState();
-
 
   @override
   List<Object> get props => [];
@@ -19,16 +17,16 @@ class PostFailure extends MyFollowState {}
 class PostSuccess extends MyFollowState {
   final List<User> users;
   final List<Activity> activitys;
-  bool hasReachedActivityMax = false;
-  bool hasReachedUserMax = false;
-  String? time = "";
+  final bool hasReachedActivityMax;
+  final bool hasReachedUserMax;
+  final String? time;
 
   PostSuccess({
     required this.users,
     required this.activitys,
     this.hasReachedActivityMax = false,
     this.hasReachedUserMax = false,
-    this.time
+    this.time,
   });
 
   PostSuccess copyWith({
@@ -40,12 +38,18 @@ class PostSuccess extends MyFollowState {
       activitys: activitys,
       hasReachedActivityMax: hasReachedActivityMax,
       hasReachedUserMax: hasReachedUserMax,
-      time: time
+      time: time,
     );
   }
 
   @override
-  List<Object> get props => [users, activitys, hasReachedActivityMax, hasReachedUserMax, time??"" ];
+  List<Object> get props => [
+    users,
+    activitys,
+    hasReachedActivityMax,
+    hasReachedUserMax,
+    time ?? "",
+  ];
 
   @override
   String toString() =>
@@ -55,4 +59,3 @@ class PostSuccess extends MyFollowState {
 class PostLoading extends MyFollowState {}
 
 class NoLogin extends MyFollowState {}
-

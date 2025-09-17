@@ -6,18 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../global.dart';
 import '../widget/privacyview.dart';
 
-
 class SplashPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return  SplashPageState();
+    return SplashPageState();
   }
 }
 
 class SplashPageState extends State<SplashPage> {
-
-  String _data =
-      "我们依据最新的监管要求更新了《用户协议》和《隐私政策》(点击了解更新后的详细内容),特向您说明如下：\n" +
+  String _data = "我们依据最新的监管要求更新了《用户协议》和《隐私政策》(点击了解更新后的详细内容),特向您说明如下：\n" +
       "1.为向您提供更优质的服务，我们会收集、使用必要的信息；\n" +
       "2.基于您的明示授权，我们可能会获取您的位置（为您提供附近的活动、商品等）、设备号信息（为保障您账号与交易安全）等信息，您有权拒绝或取消授权；\n" +
       "3.我们会采取业界新进的安全措施保护您的信息安全；\n" +
@@ -66,69 +63,87 @@ class SplashPageState extends State<SplashPage> {
                   alignment: Alignment.center,
                   child: Text(
                     '温馨提示',
-                    style: TextStyle(
-                        fontSize: 19, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                   ),
                 ),
-
                 Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        child: PrivacyView(
-                          data: _data,
-                          keys: ['《用户协议》', '《隐私政策》'],
-                          keyStyle: TextStyle(color: Colors.blue, fontSize: 12),
-                          style: TextStyle(color: Colors.black, fontSize: 12),
-                          onTapCallback: (String key) {
-                            if (key == '《用户协议》') {
-                              Navigator.pushNamed(context, '/HtmlContent', arguments: {"parameterkey": "useragreement", "title": ""});
-                            } else if (key == '《隐私政策》') {
-                              Navigator.pushNamed(context, '/HtmlContent', arguments: {"parameterkey": "loginuseragree", "title": ""});
-                            }
-                          },
-                        ),
-                      ),
-                    )),
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    child: PrivacyView(
+                      data: _data,
+                      keys: ['《用户协议》', '《隐私政策》'],
+                      keyStyle: TextStyle(color: Colors.blue, fontSize: 12),
+                      style: TextStyle(color: Colors.black, fontSize: 12),
+                      onTapCallback: (String key) {
+                        if (key == '《用户协议》') {
+                          Navigator.pushNamed(context, '/HtmlContent',
+                              arguments: {
+                                "parameterkey": "useragreement",
+                                "title": ""
+                              });
+                        } else if (key == '《隐私政策》') {
+                          Navigator.pushNamed(context, '/HtmlContent',
+                              arguments: {
+                                "parameterkey": "loginuseragree",
+                                "title": ""
+                              });
+                        }
+                      },
+                    ),
+                  ),
+                )),
                 Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ButtonTheme(
                         minWidth: 120.0,
-                        child: OutlineButton(
-                          color: Colors.white,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50))),
+                          ),
                           onPressed: () {
                             exit(0);
                           },
-                          child: Text('不同意',style: TextStyle(fontSize: 14.0,color: Colors.black),),
-                          ///圆角
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(50))
+                          child: Text(
+                            '不同意',
+                            style:
+                                TextStyle(fontSize: 14.0, color: Colors.black),
                           ),
                         ),
                       ),
                       ButtonTheme(
-                        minWidth: 120.0,//设置最小宽度
-                        child: RaisedButton(
-                          color: Global.defredcolor,
+                        minWidth: 120.0, //设置最小宽度
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Global.defredcolor,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50))),
+                          ),
                           onPressed: () async {
                             _agreeprivacy();
                             _goMain();
                           },
-                          child: Text('同意',style: TextStyle(fontSize: 14.0,color: Colors.white),),
-                          ///圆角
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(50))
+                          child: Text(
+                            '同意',
+                            style:
+                                TextStyle(fontSize: 14.0, color: Colors.white),
                           ),
                         ),
                       )
                     ],
                   ),
                 ),
-                SizedBox(height: 20,)
+                SizedBox(
+                  height: 20,
+                )
               ],
             ),
             decoration: BoxDecoration(
@@ -140,7 +155,6 @@ class SplashPageState extends State<SplashPage> {
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

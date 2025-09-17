@@ -15,7 +15,7 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
   final UserService _userService = new UserService();
   final ActivityService _activityService = new ActivityService();
 
-  MyFollowBloc():super(PostInitial());
+  MyFollowBloc() : super(PostInitial());
 
   // @override
   // // TODO: implement initialState
@@ -27,83 +27,109 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
   Stream<MyFollowState> mapEventToState(MyFollowEvent event) async* {
     final currentState = state;
     try {
-      if (event is PostFetched ) {
+      if (event is PostFetched) {
         if (currentState is PostInitial) {
-          if(event.user == null){
+          if (event.user == null) {
             yield NoLogin();
             return;
           }
           yield PostLoading();
-          users = await _userService.getFollowUsers(0, event.user!.uid, event.user!.token!);
-          if(users != null &&users.length  > 0) {
-            activitys = await _activityService.getActivityListByFollow(0, users);
+          users = await _userService.getFollowUsers(
+            0,
+            event.user!.uid,
+            event.user!.token!,
+          );
+          if (users.length > 0) {
+            activitys = await _activityService.getActivityListByFollow(
+              0,
+              users,
+            );
           }
-          yield PostSuccess(users: users, activitys: activitys, hasReachedActivityMax: false,
-              hasReachedUserMax: false);
+          yield PostSuccess(
+            users: users,
+            activitys: activitys,
+            hasReachedActivityMax: false,
+            hasReachedUserMax: false,
+          );
           return;
         }
         //加载更多
       }
 
-      if (event is PostActvityFetched){
-        if (currentState is PostSuccess && !currentState.hasReachedActivityMax) {
+      if (event is PostActvityFetched) {
+        if (currentState is PostSuccess &&
+            !currentState.hasReachedActivityMax) {
           int currentindex = 0;
           currentindex += currentState.activitys.length;
-          if(currentState.users != null && currentState.users.length > 0) {
-            activitys = await _activityService.getActivityListByFollow(currentindex, currentState.users);
+          if (currentState.users.length > 0) {
+            activitys = await _activityService.getActivityListByFollow(
+              currentindex,
+              currentState.users,
+            );
           }
 
-          if(activitys.length > 0)
-            currentState.activitys.addAll(activitys);
+          if (activitys.length > 0) currentState.activitys.addAll(activitys);
           yield activitys.length == 0
               ? currentState.copyWith(hasReachedActivityMax: true)
               : PostSuccess(
-            users: currentState.users,
-            activitys: currentState.activitys,
-            hasReachedActivityMax: false,
-            hasReachedUserMax: currentState.hasReachedUserMax,
-            time: DateTime.now().toString()
-          );
+                  users: currentState.users,
+                  activitys: currentState.activitys,
+                  hasReachedActivityMax: false,
+                  hasReachedUserMax: currentState.hasReachedUserMax,
+                  time: DateTime.now().toString(),
+                );
           return;
         }
-
       }
-      if (event is PostCommunityFetched){
+      if (event is PostCommunityFetched) {
         if (currentState is PostSuccess && !currentState.hasReachedUserMax) {
           int currentindex = 0;
           currentindex += currentState.users.length;
 
-          users = await _userService.getFollowUsers(currentindex,  event.user.uid, event.user.token!);
-          if(users!= null && users.length > 0) {
+          users = await _userService.getFollowUsers(
+            currentindex,
+            event.user.uid,
+            event.user.token!,
+          );
+          if (users.length > 0) {
             currentState.users.addAll(users);
-            activitys = await _activityService.getActivityListByFollow(0, currentState.users);
+            activitys = await _activityService.getActivityListByFollow(
+              0,
+              currentState.users,
+            );
             currentState.activitys.clear();
             currentState.activitys.addAll(activitys);
           }
           yield users.length == 0
               ? currentState.copyWith(hasReachedUserMax: true)
               : PostSuccess(
-              users: currentState.users,
-              activitys: currentState.activitys,
-              hasReachedUserMax: false,
-              hasReachedActivityMax: currentState.hasReachedActivityMax,
-              time: DateTime.now().toString()
-          );
+                  users: currentState.users,
+                  activitys: currentState.activitys,
+                  hasReachedUserMax: false,
+                  hasReachedActivityMax: currentState.hasReachedActivityMax,
+                  time: DateTime.now().toString(),
+                );
           return;
-
         }
-
       }
 
-      if (event is Refreshed){
-        users = await _userService.getFollowUsers(0, event.user.uid, event.user.token!);
-        if(users != null && users.length > 0) {
+      if (event is Refreshed) {
+        users = await _userService.getFollowUsers(
+          0,
+          event.user.uid,
+          event.user.token!,
+        );
+        if (users.length > 0) {
           activitys = await _activityService.getActivityListByFollow(0, users);
         }
-        yield PostSuccess(users: users, activitys: activitys, hasReachedActivityMax: false, hasReachedUserMax: false);
+        yield PostSuccess(
+          users: users,
+          activitys: activitys,
+          hasReachedActivityMax: false,
+          hasReachedUserMax: false,
+        );
       }
-    }
-    catch(_){
+    } catch (_) {
       yield PostFailure();
     }
   }
@@ -115,13 +141,19 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
   }
 }
 
-Map<String, List<Dynamic>> groupData(List<Dynamic> myDynamics){
+Map<String, List<Dynamic>> groupData(List<Dynamic> myDynamics) {
   Map<String, List<Dynamic>> map = new Map.fromIterable(
-      myDynamics,
-      key: (key) => key.createtime.substring(0, 10),
-      value: (value){
-        return myDynamics.where((item) => (item.createtime.substring(0, 10) == value.createtime.substring(0, 10))).toList();
-      }
+    myDynamics,
+    key: (key) => key.createtime.substring(0, 10),
+    value: (value) {
+      return myDynamics
+          .where(
+            (item) =>
+                (item.createtime.substring(0, 10) ==
+                value.createtime.substring(0, 10)),
+          )
+          .toList();
+    },
   );
   return map;
 }

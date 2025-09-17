@@ -126,7 +126,7 @@ class _SettingState extends State<Setting> {
         child: Row(
           children: [
             Expanded(
-              child: FlatButton(
+              child: TextButton(
                   child: Text(
                     '取 消', style: TextStyle(color:  Colors.black87, fontSize: 15, fontWeight: FontWeight.bold),),
                   onPressed: () {
