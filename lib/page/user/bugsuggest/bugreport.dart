@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../model/aliyun/securitytoken.dart';
@@ -14,17 +13,17 @@ import '../../../service/aliyun.dart';
 import '../../../global.dart';
 
 class BugReport extends StatefulWidget {
-  String timeline_id = "";
-  int reporttype = 0; //0拼玩活动 1 社团 2私聊天  3团购
+  final String timeline_id;
+  final int reporttype; //0拼玩活动 1 社团 2私聊天  3团购
+  final Object? arguments;
 
-  Object? arguments;
-
-  BugReport({super.key, this.arguments}) {
-    if (arguments != null) {
-      timeline_id = (arguments as Map)["timeline_id"];
-      reporttype = (arguments as Map)["reporttype"];
-    }
-  }
+  BugReport({super.key, this.arguments})
+    : timeline_id = arguments != null
+          ? (arguments as Map)["timeline_id"] ?? ""
+          : "",
+      reporttype = arguments != null
+          ? (arguments as Map)["reporttype"] ?? 0
+          : 0;
 
   @override
   _BugReportState createState() => _BugReportState();

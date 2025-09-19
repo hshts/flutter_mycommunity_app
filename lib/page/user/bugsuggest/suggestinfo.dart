@@ -16,14 +16,13 @@ import '../../../widget/photo/photo_viewwrapper.dart';
 import '../../../widget/captcha/block_puzzle_captcha.dart';
 
 class SuggestInfo extends StatefulWidget {
-  Object? arguments;
-  String suggestid = "";
+  final Object? arguments;
+  final String suggestid;
 
-  SuggestInfo({super.key, this.arguments}) {
-    if (arguments != null) {
-      suggestid = (arguments as Map)["suggestid"];
-    }
-  }
+  SuggestInfo({super.key, this.arguments})
+    : suggestid = (arguments is Map && (arguments)['suggestid'] != null)
+          ? (arguments)['suggestid'] as String
+          : "";
 
   @override
   _SuggestInfoState createState() => _SuggestInfoState();

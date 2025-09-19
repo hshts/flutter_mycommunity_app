@@ -4,7 +4,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class MyPhotoViewGallery extends StatefulWidget {
-  List<Map<String, String>> list;
+  final List<Map<String, String>> list;
   MyPhotoViewGallery({super.key, required this.list});
 
   @override
@@ -148,11 +148,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
 }
 
 class NinePicture extends StatelessWidget {
-  List<Map<String, String>> list = [];
+  final List<Map<String, String>> list;
 
-  NinePicture(List<Map<String, String>> list, {super.key}) {
-    this.list = list;
-  }
+  NinePicture(this.list, {super.key});
 
   void showPhoto(BuildContext context, Map<String, String> img, int index) {
     Navigator.push(
@@ -171,7 +169,6 @@ class NinePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int crossAxisCount = 1;
-    double pagewidth = MediaQuery.of(context).size.width - 20;
 
     if (list.length == 1) {
       crossAxisCount = 1;

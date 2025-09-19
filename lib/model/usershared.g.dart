@@ -1,5 +1,3 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
 part of 'usershared.dart';
 
 // **************************************************************************
@@ -7,21 +5,21 @@ part of 'usershared.dart';
 // **************************************************************************
 
 UserShared _$UserSharedFromJson(Map<String, dynamic> json) => UserShared(
-      json['sharedid'] as int?,
-      json['uid'] as int?,
-      json['content'] as String?,
-      json['contentid'] as String?,
-      json['image'] as String?,
-      json['sharedtype'] as int?,
-      json['createtime'] as String?,
-      json['fromuid'] as int?,
-      json['fromusername'] as String?,
-      json['fromprofilepicture'] as String?,
-      (json['mincost'] as num?)?.toDouble(),
-      (json['maxcost'] as num?)?.toDouble(),
-      (json['lat'] as num?)?.toDouble(),
-      (json['lng'] as num?)?.toDouble(),
-    );
+  json['sharedid'] as int?,
+  json['uid'] as int?,
+  json['content'] as String?,
+  json['contentid'] as String?,
+  json['image'] as String?,
+  json['sharedtype'] as int?,
+  json['createtime'] as String?,
+  json['fromuid'] as int?,
+  json['fromusername'] as String?,
+  json['fromprofilepicture'] as String?,
+  (json['mincost'] as num?)?.toDouble(),
+  (json['maxcost'] as num?)?.toDouble(),
+  (json['lat'] as num?)?.toDouble(),
+  (json['lng'] as num?)?.toDouble(),
+);
 
 Map<String, dynamic> _$UserSharedToJson(UserShared instance) =>
     <String, dynamic>{

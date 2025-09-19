@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:fluwx/fluwx.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../model/user.dart';
 import '../../widget/circle_headimage.dart';
@@ -11,23 +8,59 @@ import '../../util/showmessage_util.dart';
 import '../../global.dart';
 
 class BindUser extends StatefulWidget {
-  Object? arguments;
-  User? sourceuser;
-  String bindtype = "";
-  String vcode = ""; //手机验证码
-  String mobile = ""; //新手机
-  String myCountry = ""; //手机国家
-  BindUser({super.key, this.arguments}) {
-    if (arguments != null) {
-      Map map = arguments as Map;
-      bindtype = map["bindtype"];
-      sourceuser = map["sourceuser"];
+  final Object? arguments;
+  final User? sourceuser;
+  final String bindtype;
+  final String vcode; //手机验证码
+  final String mobile; //新手机
+  final String myCountry; //手机国家
 
-      vcode = map["vcode"] ?? "";
-      mobile = map["mobile"] ?? "";
-      myCountry = map["myCountry"] ?? "";
-    }
-  }
+  BindUser({super.key, this.arguments})
+    : bindtype = (() {
+        final Map<dynamic, dynamic>? argMap = arguments is Map
+            ? arguments
+            : null;
+        final v = argMap != null && argMap["bindtype"] is String
+            ? argMap["bindtype"] as String
+            : "";
+        return v;
+      })(),
+      sourceuser = (() {
+        final Map<dynamic, dynamic>? argMap = arguments is Map
+            ? arguments
+            : null;
+        final v = argMap != null && argMap["sourceuser"] is User
+            ? argMap["sourceuser"] as User
+            : null;
+        return v;
+      })(),
+      vcode = (() {
+        final Map<dynamic, dynamic>? argMap = arguments is Map
+            ? arguments
+            : null;
+        final v = argMap != null && argMap["vcode"] is String
+            ? argMap["vcode"] as String
+            : "";
+        return v;
+      })(),
+      mobile = (() {
+        final Map<dynamic, dynamic>? argMap = arguments is Map
+            ? arguments
+            : null;
+        final v = argMap != null && argMap["mobile"] is String
+            ? argMap["mobile"] as String
+            : "";
+        return v;
+      })(),
+      myCountry = (() {
+        final Map<dynamic, dynamic>? argMap = arguments is Map
+            ? arguments
+            : null;
+        final v = argMap != null && argMap["myCountry"] is String
+            ? argMap["myCountry"] as String
+            : "";
+        return v;
+      })();
 
   @override
   _BindUserState createState() => _BindUserState();
@@ -35,44 +68,17 @@ class BindUser extends StatefulWidget {
 
 class _BindUserState extends State<BindUser> {
   final UserService _userService = UserService();
-  String wxcode = "";
-  StreamSubscription? _streamDemoSubscription;
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if (_streamDemoSubscription != null) {
-      _streamDemoSubscription!.cancel();
-    }
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _streamDemoSubscription = weChatResponseEventHandler.listen((res) async {
-      if (res is WeChatAuthResponse) {
-        if (res.code != null && res.code != wxcode) {
-          wxcode = res.code.toString();
-          User? user = await _userService.updateWeixin(
-            Global.profile.user!.uid,
-            Global.profile.user!.token!,
-            res.code!,
-            true,
-            errorCallBack,
-          );
-
-          if (user != null) {
-            if (user.uid != Global.profile.user!.uid) {
-              Global.profile.user!.wxuserid = user.wxuserid;
-              Global.saveProfile();
-              Navigator.pop(context);
-            }
-          }
-        }
-      }
-    });
   }
 
   @override
@@ -330,10 +336,8 @@ class _BindUserState extends State<BindUser> {
   }
 
   Future<void> _bindWeixin() async {
-    await sendWeChatAuth(
-      scope: "snsapi_userinfo",
-      state: "wechat_sdk_demo_test",
-    ).then((value) {});
+    // 当前版本暂未启用微信 SDK 绑定流程，避免编译错误，先给出用户提示。
+    ShowMessage.showToast("当前版本暂未开启微信绑定，请稍后重试");
   }
 
   Future<bool> _bindIos() async {

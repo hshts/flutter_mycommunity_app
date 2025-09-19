@@ -16,14 +16,17 @@ import '../../../widget/photo/photo_viewwrapper.dart';
 import '../../../widget/captcha/block_puzzle_captcha.dart';
 
 class BugInfo extends StatefulWidget {
-  Object? arguments;
-  String bugid = "";
+  final Object? arguments;
+  final String bugid;
 
-  BugInfo({super.key, this.arguments}) {
-    if (arguments != null) {
-      bugid = (arguments as Map)["bugid"];
-    }
-  }
+  BugInfo({super.key, this.arguments})
+    : bugid = (() {
+        if (arguments is Map) {
+          final m = arguments;
+          return m["bugid"]?.toString() ?? "";
+        }
+        return "";
+      })();
 
   @override
   _BugInfoState createState() => _BugInfoState();
@@ -756,7 +759,7 @@ class _BugInfoState extends State<BugInfo> {
                           );
                           setState(() {});
                         } else {
-                          errorHandle(commentid ?? 0, touid, touser);
+                          errorHandle(commentid, touid, touser);
                         }
                       } else {
                         Navigator.pop(context);
@@ -796,7 +799,7 @@ class _BugInfoState extends State<BugInfo> {
                           }
                           setState(() {});
                         } else {
-                          errorHandle(commentid ?? 0, touid, touser!);
+                          errorHandle(commentid, touid, touser);
                         }
                       }
                     } else {
@@ -1074,9 +1077,7 @@ class _BugInfoState extends State<BugInfo> {
               if (temreplyid > 0) {
                 for (var e in listComments) {
                   if (e.commentid == commentid) {
-                    if (e.replys == null) {
-                      e.replys = [];
-                    }
+                    e.replys ??= [];
                     e.replys!.add(
                       CommentReply(
                         temreplyid,

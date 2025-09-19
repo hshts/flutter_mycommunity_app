@@ -1,0 +1,17 @@
+{
+  "dart.flutterSdkPath": ".fvm/versions/3.35.4",
+  "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+  "dart.checkForSdkUpdates": false,
+  "dart.allowAnalytics": false,
+  "dart.showDartDeveloperLogs": true,
+  "dart.showInspectorNotificationsForWidgetErrors": true,
+  "dart.debugExternalPackageLibraries": false,
+  "dart.debugSdkLibraries": false,
+  "dart.enableSdkFormatter": true,
+  "dart.lineLength": 120,
+  "files.watcherExclude": {
+    "**/build/**": true,
+    "**/.dart_tool/**": true,
+    "**/.fvm/**": true
+  }
+}

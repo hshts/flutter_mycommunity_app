@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/networkmanager_util.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../service/commonjson.dart';
 import '../../service/userservice.dart';
-import '../../bloc/user/authentication_bloc.dart';
 import '../../util/imhelper_util.dart';
 import '../../util/showmessage_util.dart';
 import '../../model/im/grouprelation.dart';
 import '../../common/iconfont.dart';
 import '../../widget/my_divider.dart';
 import '../../widget/captcha/block_puzzle_captcha.dart';
-import '../../widget/weixing/wxshareview.dart';
 import '../../global.dart';
 
 class Setting extends StatefulWidget {
@@ -176,24 +172,22 @@ class _SettingState extends State<Setting> {
       uid,
       timelineId,
     );
-    if (groupRelation == null) {
-      groupRelation = await _userService.joinSingleCustomer(
-        timelineId,
-        uid,
-        customuid,
-        Global.profile.user!.token!,
-        vcode,
-        (String statusCode, String msg) {
-          if (statusCode == "-1008") {
-            loadingBlockPuzzle(context);
-            return;
-          } else {
-            ShowMessage.showToast(msg);
-          }
-        },
-        isCustomer: 1,
-      );
-    }
+    groupRelation ??= await _userService.joinSingleCustomer(
+      timelineId,
+      uid,
+      customuid,
+      Global.profile.user!.token!,
+      vcode,
+      (String statusCode, String msg) {
+        if (statusCode == "-1008") {
+          loadingBlockPuzzle(context);
+          return;
+        } else {
+          ShowMessage.showToast(msg);
+        }
+      },
+      isCustomer: 1,
+    );
     if (groupRelation != null) {
       List<GroupRelation> groupRelations = [];
       groupRelations.add(groupRelation);

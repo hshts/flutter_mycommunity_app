@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/json/city_json.dart';
 
 class ListViewProvince extends StatefulWidget {
-  ListViewProvince({super.key});
+  const ListViewProvince({super.key});
   @override
   _ListViewProvince createState() => _ListViewProvince();
 }
@@ -73,13 +73,14 @@ class _ListViewProvince extends State<ListViewProvince> {
               '/ListViewCity',
               arguments: {"code": keys[index]},
             ).then((onValue) {
-              if (onValue != null)
+              if (onValue != null) {
                 Navigator.of(context).pop<Map>(onValue as Map);
+              }
             });
           }
         },
         title: Text(provincesData[keys[index]]!.split(',')[0]),
-        trailing: new Icon(Icons.keyboard_arrow_right),
+        trailing: Icon(Icons.keyboard_arrow_right),
       ),
     );
   }

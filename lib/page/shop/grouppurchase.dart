@@ -341,7 +341,8 @@ class _GroupPurchaseState extends State<GroupPurchase> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        SizedBox(
+                          height: 40,
                           child: Text(
                             goodPiceModel.title,
                             maxLines: 2,
@@ -350,7 +351,6 @@ class _GroupPurchaseState extends State<GroupPurchase> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          height: 40,
                         ),
                         SizedBox(height: 6),
                         tag,
@@ -371,15 +371,8 @@ class _GroupPurchaseState extends State<GroupPurchase> {
                                 right: 5,
                               ),
                               alignment: Alignment.center,
-                              child: Text(
-                                '${goodPiceModel.brand}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
                               decoration: BoxDecoration(
-                                borderRadius: new BorderRadius.circular(
+                                borderRadius: BorderRadius.circular(
                                   (5.0),
                                 ), // 圆角度
                                 gradient: LinearGradient(
@@ -389,6 +382,13 @@ class _GroupPurchaseState extends State<GroupPurchase> {
                                     Global.profile.backColor!,
                                     Colors.deepOrange,
                                   ],
+                                ),
+                              ),
+                              child: Text(
+                                goodPiceModel.brand,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
                                 ),
                               ),
                             ),

@@ -44,7 +44,7 @@ class ImService {
           );
 
           ///如果本地已储存的数据大于服务器则使用本地最新数据id
-          if (temsequenceId != null && temsequenceId > sequenceId) {
+          if (temsequenceId > sequenceId) {
             sequenceId = temsequenceId;
           }
 
@@ -457,23 +457,21 @@ class ImService {
   ) async {
     bool ret = false;
     int readindex = await imhelper.getMaxsequence_id(timelineId);
-    if (readindex != null) {
-      FormData formData = FormData.fromMap({
-        "token": token,
-        "uid": uid,
-        "timeline_id": timelineId,
-        "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
-      });
+    FormData formData = FormData.fromMap({
+      "token": token,
+      "uid": uid,
+      "timeline_id": timelineId,
+      "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
+    });
 
-      await NetUtil.getInstance().post(
-        formData,
-        "/IM/updateGroupMessageAlready",
-        (Map<String, dynamic> data) {
-          ret = true;
-        },
-        errorCallBack,
-      );
-    }
+    await NetUtil.getInstance().post(
+      formData,
+      "/IM/updateGroupMessageAlready",
+      (Map<String, dynamic> data) {
+        ret = true;
+      },
+      errorCallBack,
+    );
     return ret;
   }
 
@@ -486,20 +484,18 @@ class ImService {
   ) async {
     bool ret = false;
     int readindex = await imhelper.getMaxsequence_id(timelineId);
-    if (readindex != null) {
-      FormData formData = FormData.fromMap({
-        "token": token,
-        "uid": uid,
-        "timeline_id": timelineId,
-        "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
-      });
+    FormData formData = FormData.fromMap({
+      "token": token,
+      "uid": uid,
+      "timeline_id": timelineId,
+      "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
+    });
 
-      await NetUtil.getInstance().post(formData, "/IM/postSingleReadMessage", (
-        Map<String, dynamic> data,
-      ) {
-        ret = true;
-      }, errorCallBack);
-    }
+    await NetUtil.getInstance().post(formData, "/IM/postSingleReadMessage", (
+      Map<String, dynamic> data,
+    ) {
+      ret = true;
+    }, errorCallBack);
     return ret;
   }
 
@@ -512,23 +508,21 @@ class ImService {
   ) async {
     bool ret = false;
     int readindex = await imhelper.getMaxsequence_id(timelineId);
-    if (readindex != null) {
-      FormData formData = FormData.fromMap({
-        "token": token,
-        "uid": uid,
-        "timeline_id": timelineId,
-        "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
-      });
+    FormData formData = FormData.fromMap({
+      "token": token,
+      "uid": uid,
+      "timeline_id": timelineId,
+      "sequence_id": readindex, //已经下载的消息索引，下载后标记为已经读取到本地
+    });
 
-      await NetUtil.getInstance().post(
-        formData,
-        "/IM/updateCommunityMessageAlready",
-        (Map<String, dynamic> data) {
-          ret = true;
-        },
-        errorCallBack,
-      );
-    }
+    await NetUtil.getInstance().post(
+      formData,
+      "/IM/updateCommunityMessageAlready",
+      (Map<String, dynamic> data) {
+        ret = true;
+      },
+      errorCallBack,
+    );
     return ret;
   }
 
@@ -541,20 +535,18 @@ class ImService {
   ) async {
     bool ret = false;
     int readindex = await imhelper.getMaxsequence_id(timelineId);
-    if (readindex != null) {
-      FormData formData = FormData.fromMap({
-        "token": token,
-        "uid": uid,
-        "timeline_id": timelineId,
-        "sequence_id": readindex, //服务器已读的
-      });
+    FormData formData = FormData.fromMap({
+      "token": token,
+      "uid": uid,
+      "timeline_id": timelineId,
+      "sequence_id": readindex, //服务器已读的
+    });
 
-      await NetUtil.getInstance().post(formData, "/IM/LoadedMessage", (
-        Map<String, dynamic> data,
-      ) {
-        ret = true;
-      }, errorCallBack);
-    }
+    await NetUtil.getInstance().post(formData, "/IM/LoadedMessage", (
+      Map<String, dynamic> data,
+    ) {
+      ret = true;
+    }, errorCallBack);
 
     return ret;
   }

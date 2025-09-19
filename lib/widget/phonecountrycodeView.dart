@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/service/commonjson.dart';
 
@@ -31,16 +30,16 @@ class PhoneCountryCodeViewState extends State<PhoneCountryCodeView> {
   }
 
   Future<void> getPhoneCodeDataList() async {
-    PhoneCountryCodeEntity resultEntity;
+    PhoneCountryCodeEntity? resultEntity;
     await _commonJSONController.getPhoneCode((Map<String, dynamic> data) {
       if (data["data"] != null) {
         resultEntity = PhoneCountryCodeEntity.fromJson(data);
       }
     });
 
-    if (resultEntity.code == 200) {
+    if (resultEntity?.code == 200) {
       setState(() {
-        data = resultEntity.data;
+        data = resultEntity!.data;
         for (int i = 0; i < data.length; i++) {
           letters.add(data[i].name.toUpperCase());
         }
@@ -233,9 +232,7 @@ class PhoneCountryCodeData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    if (listData != null) {
-      data['listData'] = listData.map((v) => v.toJson()).toList();
-    }
+    data['listData'] = listData.map((v) => v.toJson()).toList();
     data['name'] = name;
     return data;
   }

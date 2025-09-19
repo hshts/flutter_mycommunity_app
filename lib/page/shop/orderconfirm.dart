@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:tobias/tobias.dart' as tobias;
@@ -13,23 +12,21 @@ import '../../widget/circle_headimage.dart';
 import 'widget/numberwidget.dart';
 
 class OrderConfirm extends StatefulWidget {
-  Object? arguments;
+  final Object? arguments;
+  final GoodPiceModel goodPiceModel;
+  final String specsid;
+  final String specsname;
+  final int productNum;
+  final num saleprice; //选中显示的价格
+  final String actid;
 
-  late GoodPiceModel goodPiceModel;
-  String specsid = "";
-  String specsname = "";
-  int productNum = 0;
-  num saleprice = 0; //选中显示的价格
-  String actid = "";
-
-  OrderConfirm({super.key, required this.arguments}) {
-    goodPiceModel = (arguments as Map)["goodprice"];
-    specsid = (arguments as Map)["specsid"];
-    productNum = (arguments as Map)["productNum"];
-    specsname = (arguments as Map)["specsname"];
-    saleprice = (arguments as Map)["saleprice"];
-    actid = (arguments as Map)["actid"] ?? "";
-  }
+  OrderConfirm({super.key, required this.arguments})
+    : goodPiceModel = (arguments as Map)["goodprice"],
+      specsid = (arguments as Map)["specsid"] ?? "",
+      productNum = (arguments as Map)["productNum"] ?? 0,
+      specsname = (arguments as Map)["specsname"] ?? "",
+      saleprice = (arguments as Map)["saleprice"] ?? 0,
+      actid = (arguments as Map)["actid"] ?? "";
 
   @override
   _OrderConfirmState createState() => _OrderConfirmState();

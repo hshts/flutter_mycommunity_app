@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform_interface.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
@@ -367,7 +366,7 @@ class _PlayRecorderState extends State<PlayRecorder> {
         "${md5.convert(_recordFilepath.codeUnits)}.mp4",
         Global.profile.user!.uid,
       );
-      return soundUrl + "," + _currentTime.toString();
+      return "$soundUrl,$_currentTime";
     }
 
     return ret;

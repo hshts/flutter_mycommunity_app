@@ -7,24 +7,24 @@ part of 'bug.dart';
 // **************************************************************************
 
 Bug _$BugFromJson(Map<String, dynamic> json) => Bug(
-      json['bugid'] as String,
-      json['content'] as String,
-      json['images'] as String,
-      json['createtime'] as String,
-      json['commentcount'] as int,
-      json['likenum'] as int,
-      json['user'] == null
-          ? null
-          : User.fromJson(json['user'] as Map<String, dynamic>),
-    );
+  json['bugid'] as String,
+  json['content'] as String,
+  json['images'] as String,
+  json['createtime'] as String,
+  (json['commentcount'] as num).toInt(),
+  (json['likenum'] as num).toInt(),
+  json['user'] == null
+      ? null
+      : User.fromJson(json['user'] as Map<String, dynamic>),
+)..islike = json['islike'] as bool;
 
 Map<String, dynamic> _$BugToJson(Bug instance) => <String, dynamic>{
-      'bugid': instance.bugid,
-      'content': instance.content,
-      'images': instance.images,
-      'createtime': instance.createtime,
-      'commentcount': instance.commentcount,
-      'likenum': instance.likenum,
-      'user': instance.user,
-      'islike': instance.islike,
-    };
+  'bugid': instance.bugid,
+  'content': instance.content,
+  'images': instance.images,
+  'createtime': instance.createtime,
+  'commentcount': instance.commentcount,
+  'likenum': instance.likenum,
+  'user': instance.user,
+  'islike': instance.islike,
+};

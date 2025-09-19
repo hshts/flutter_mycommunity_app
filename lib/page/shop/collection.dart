@@ -165,7 +165,8 @@ class _MyCollectionGoodPriceState extends State<MyCollectionGoodPrice> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        SizedBox(
+                          height: 40,
                           child: Text(
                             goodPiceModel.title,
                             maxLines: 2,
@@ -174,7 +175,6 @@ class _MyCollectionGoodPriceState extends State<MyCollectionGoodPrice> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          height: 40,
                         ),
 
                         SizedBox(height: 6),

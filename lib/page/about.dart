@@ -240,6 +240,8 @@ class _AboutState extends State<About> {
                   },
                 ),
                 Container(
+                  alignment: Alignment.center,
+                  color: Colors.white,
                   child: Text(
                     '发现新版本:${_appInfo!.versionName}',
                     style: TextStyle(
@@ -248,8 +250,6 @@ class _AboutState extends State<About> {
                       decoration: TextDecoration.none,
                     ),
                   ),
-                  alignment: Alignment.center,
-                  color: Colors.white,
                 ),
                 SizedBox(height: 19),
                 Text(
@@ -268,6 +268,10 @@ class _AboutState extends State<About> {
                     Expanded(
                       child: Container(
                         height: 39,
+                        decoration: BoxDecoration(
+                          color: Global.defredcolor,
+                          borderRadius: BorderRadius.all(Radius.circular(39)),
+                        ),
                         child: TextButton(
                           child: Text(
                             '立即更新',
@@ -277,10 +281,6 @@ class _AboutState extends State<About> {
                             AppupdateUtil.launcherApp(appurl);
                             Navigator.of(context).pop();
                           },
-                        ),
-                        decoration: BoxDecoration(
-                          color: Global.defredcolor,
-                          borderRadius: BorderRadius.all(Radius.circular(39)),
                         ),
                       ),
                     ),

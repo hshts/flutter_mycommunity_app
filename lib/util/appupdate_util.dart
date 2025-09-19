@@ -192,5 +192,5 @@ class _TaskInfo {
   int? progress = 0;
   DownloadTaskStatus? status = DownloadTaskStatus.undefined;
 
-  _TaskInfo({this.link});
+  _TaskInfo();
 }

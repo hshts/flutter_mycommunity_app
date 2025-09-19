@@ -160,7 +160,7 @@ class _SuggestListState extends State<SuggestList> {
   List<Widget> buildSuggestContent() {
     List<Widget> widgets = [];
     widgets.add(SizedBox(height: 10));
-    suggests.forEach((e) {
+    for (var e in suggests) {
       widgets.add(
         Card(
           elevation: 0,
@@ -295,7 +295,7 @@ class _SuggestListState extends State<SuggestList> {
           ),
         ),
       );
-    });
+    }
 
     return widgets;
   }

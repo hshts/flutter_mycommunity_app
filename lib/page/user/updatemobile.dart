@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -292,7 +291,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
         child: Text('提交', style: TextStyle(color: Global.profile.fontColor)),
         onPressed: () async {
           if (_vcode.length > 1) {
-            if (_newmobile != null && _newmobile.length > 0) {
+            if (_newmobile.isNotEmpty) {
               User? user = await _userService.updateMobile(
                 Global.profile.user!.uid,
                 Global.profile.user!.token!,

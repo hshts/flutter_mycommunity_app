@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
+// import 'package:amap_flutter_location/amap_flutter_location.dart';
+// import 'package:amap_flutter_location/amap_location_option.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ import 'user/follow.dart';
 
 class HomePage extends StatefulWidget {
   final Function? parentJumpMyProfile;
-  bool isPop;
+  final bool isPop;
 
   HomePage({super.key, this.parentJumpMyProfile, this.isPop = false});
 
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage>
   String _temcitycode = "";
   DateTime? _lastPopTime;
   StreamSubscription<Map<String, Object>>? _locationListener;
-  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
+  // final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
   Map<String, Object>? _locationResult;
   late ActivityDataBloc _activityBloc;
   StreamSubscription? _sub;
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage>
     }
 
     ///销毁定位
-    _locationPlugin.destroy();
+    // _locationPlugin.destroy();
 
     super.dispose();
   }
@@ -97,9 +97,10 @@ class _HomePageState extends State<HomePage>
     _handleIncomingLinks();
     _handleInitialUri();
 
-    AMapFlutterLocation.updatePrivacyShow(true, true);
-    AMapFlutterLocation.updatePrivacyAgree(true);
-    await _locationCity();
+    // AMapFlutterLocation 2.0.0 版本不支持这些方法，注释掉
+    // AMapFlutterLocation.updatePrivacyShow(true, true);
+    // AMapFlutterLocation.updatePrivacyAgree(true);
+    // await _locationCity();
     setState(() {});
   }
 
@@ -159,129 +160,129 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _locationCity() async {
-    try {
-      if (Global.profile.locationCode == "") {
-        Global.profile.locationCode = "allCode";
-        Global.profile.locationName = "全国";
+  // Future<void> _locationCity() async {
+  //   try {
+  //     if (Global.profile.locationCode == "") {
+  //       Global.profile.locationCode = "allCode";
+  //       Global.profile.locationName = "全国";
 
-        if (Global.profile.locationGoodPriceCode == "") {
-          Global.profile.locationGoodPriceName = "全国";
-          Global.profile.locationGoodPriceCode = "allCode";
-        }
+  //       if (Global.profile.locationGoodPriceCode == "") {
+  //         Global.profile.locationGoodPriceName = "全国";
+  //         Global.profile.locationGoodPriceCode = "allCode";
+  //       }
 
-        bool locationStatus = await PermissionUtil.reqestLocation();
-        await PermissionUtil.reqestStorage();
+  //       bool locationStatus = await PermissionUtil.reqestLocation();
+  //       await PermissionUtil.reqestStorage();
 
-        if (locationStatus) {
-          _locationListener = _locationPlugin.onLocationChanged().listen((
-            Map<String, Object> result,
-          ) {
-            setState(() {
-              _locationResult = result;
-              if (_locationResult != null) {
-                if (result["longitude"] != "" && result["adCode"] != "") {
-                  try {
-                    Global.profile.lat = double.parse(
-                      result["latitude"].toString(),
-                    );
-                    Global.profile.lng = double.parse(
-                      result["longitude"].toString(),
-                    );
+  //       if (locationStatus) {
+  //         _locationListener = _locationPlugin.onLocationChanged().listen((
+  //           Map<String, Object> result,
+  //         ) {
+  //           setState(() {
+  //             _locationResult = result;
+  //             if (_locationResult != null) {
+  //               if (result["longitude"] != "" && result["adCode"] != "") {
+  //                 try {
+  //                   Global.profile.lat = double.parse(
+  //                     result["latitude"].toString(),
+  //                   );
+  //                   Global.profile.lng = double.parse(
+  //                     result["longitude"].toString(),
+  //                   );
 
-                    Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(
-                      result["adCode"].toString(),
-                    );
-                    Global.profile.locationName = result["city"].toString();
-                    Global.profile.locationGoodPriceCode =
-                        CommonUtil.getCityNameByGaoDe(
-                          result["adCode"].toString(),
-                        );
-                    Global.profile.locationGoodPriceName = result["city"]
-                        .toString();
-                  } catch (e) {
-                    Global.profile.locationCode = "allCode";
-                    Global.profile.locationName = "全国";
-                    Global.profile.locationGoodPriceName = "全国";
-                    Global.profile.locationGoodPriceCode = "allCode";
-                    _activityBloc.add(Refresh());
-                  }
-                  Global.saveProfile();
-                }
-              }
-              _activityBloc.add(Refresh());
-            });
-          });
-          _startLocation();
-        } else {
-          Global.profile.locationCode = "allCode";
-          Global.profile.locationName = "全国";
-          Global.profile.locationGoodPriceName = "全国";
-          Global.profile.locationGoodPriceCode = "allCode";
-          _activityBloc.add(Refresh());
-        }
-      }
-      //只有同意隐私协议才能使用定位权限
-    } catch (Ex) {
-      Global.profile.locationCode = "allCode";
-      Global.profile.locationName = "全国";
-      Global.profile.locationGoodPriceName = "全国";
-      Global.profile.locationGoodPriceCode = "allCode";
-    }
-  }
+  //                   Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(
+  //                     result["adCode"].toString(),
+  //                   );
+  //                   Global.profile.locationName = result["city"].toString();
+  //                   Global.profile.locationGoodPriceCode =
+  //                       CommonUtil.getCityNameByGaoDe(
+  //                         result["adCode"].toString(),
+  //                       );
+  //                   Global.profile.locationGoodPriceName = result["city"]
+  //                       .toString();
+  //                 } catch (e) {
+  //                   Global.profile.locationCode = "allCode";
+  //                   Global.profile.locationName = "全国";
+  //                   Global.profile.locationGoodPriceName = "全国";
+  //                   Global.profile.locationGoodPriceCode = "allCode";
+  //                   _activityBloc.add(Refresh());
+  //                 }
+  //                 Global.saveProfile();
+  //               }
+  //             }
+  //             _activityBloc.add(Refresh());
+  //           });
+  //         });
+  //         _startLocation();
+  //       } else {
+  //         Global.profile.locationCode = "allCode";
+  //         Global.profile.locationName = "全国";
+  //         Global.profile.locationGoodPriceName = "全国";
+  //         Global.profile.locationGoodPriceCode = "allCode";
+  //         _activityBloc.add(Refresh());
+  //       }
+  //     }
+  //     //只有同意隐私协议才能使用定位权限
+  //   } catch (Ex) {
+  //     Global.profile.locationCode = "allCode";
+  //     Global.profile.locationName = "全国";
+  //     Global.profile.locationGoodPriceName = "全国";
+  //     Global.profile.locationGoodPriceCode = "allCode";
+  //   }
+  // }
 
-  void _setLocationOption() {
-    AMapLocationOption locationOption = new AMapLocationOption();
+  // void _setLocationOption() {
+  //   AMapLocationOption locationOption = AMapLocationOption();
 
-    ///是否单次定位
-    locationOption.onceLocation = true;
+  //   ///是否单次定位
+  //   locationOption.onceLocation = true;
 
-    ///是否需要返回逆地理信息
-    locationOption.needAddress = true;
+  //   ///是否需要返回逆地理信息
+  //   locationOption.needAddress = true;
 
-    ///逆地理信息的语言类型
-    locationOption.geoLanguage = GeoLanguage.DEFAULT;
+  //   ///逆地理信息的语言类型
+  //   locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-    locationOption.desiredLocationAccuracyAuthorizationMode =
-        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+  //   locationOption.desiredLocationAccuracyAuthorizationMode =
+  //       AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+  //   locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-    ///设置Android端连续定位的定位间隔
-    locationOption.locationInterval = 2000;
+  //   ///设置Android端连续定位的定位间隔
+  //   locationOption.locationInterval = 2000;
 
-    ///设置Android端的定位模式<br>
-    ///可选值：<br>
-    ///<li>[AMapLocationMode.Battery_Saving]</li>
-    ///<li>[AMapLocationMode.Device_Sensors]</li>
-    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+  //   ///设置Android端的定位模式<br>
+  //   ///可选值：<br>
+  //   ///<li>[AMapLocationMode.Battery_Saving]</li>
+  //   ///<li>[AMapLocationMode.Device_Sensors]</li>
+  //   ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+  //   locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-    ///设置iOS端的定位最小更新距离<br>
-    locationOption.distanceFilter = -1;
+  //   ///设置iOS端的定位最小更新距离<br>
+  //   locationOption.distanceFilter = -1;
 
-    ///设置iOS端期望的定位精度
-    /// 可选值：<br>
-    /// <li>[DesiredAccuracy.Best] 最高精度</li>
-    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+  //   ///设置iOS端期望的定位精度
+  //   /// 可选值：<br>
+  //   /// <li>[DesiredAccuracy.Best] 最高精度</li>
+  //   /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+  //   /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+  //   /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+  //   /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+  //   locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-    ///设置iOS端是否允许系统暂停定位
-    locationOption.pausesLocationUpdatesAutomatically = false;
+  //   ///设置iOS端是否允许系统暂停定位
+  //   locationOption.pausesLocationUpdatesAutomatically = false;
 
-    ///将定位参数设置给定位插件
-    _locationPlugin.setLocationOption(locationOption);
-  }
+  //   ///将定位参数设置给定位插件
+  //   _locationPlugin.setLocationOption(locationOption);
+  // }
 
-  ///开始定位
-  void _startLocation() {
-    ///开始定位之前设置定位参数
-    _setLocationOption();
-    _locationPlugin.startLocation();
-  }
+  // ///开始定位
+  // void _startLocation() {
+  //   ///开始定位之前设置定位参数
+  //   _setLocationOption();
+  //   _locationPlugin.startLocation();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -410,11 +411,11 @@ class _HomePageState extends State<HomePage>
 
 //头部的tabbar
 class TabBarItem extends StatefulWidget {
-  Alignment? bottomAlignment;
-  int itemtype;
-  String title;
-  int itemindex;
-  TabController? tabController;
+  final Alignment? bottomAlignment;
+  final int itemtype;
+  final String title;
+  final int itemindex;
+  final TabController? tabController;
 
   TabBarItem({
     super.key,
@@ -423,9 +424,7 @@ class TabBarItem extends StatefulWidget {
     this.title = "",
     this.itemindex = 0,
     this.tabController,
-  }) {
-    //print(this.title);
-  }
+  });
 
   @override
   _TabBarItemState createState() =>
@@ -439,12 +438,14 @@ class _TabBarItemState extends State<TabBarItem> {
   final int _itemindex;
   late ActivityDataBloc _activityDataBloc;
   late CityActivityDataBloc _cityActivityDataBloc;
+  String title = "";
+
   _TabBarItemState(this._bottomAlignment, this._itemtype, this._itemindex);
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    title = widget.title;
     _activityDataBloc = BlocProvider.of<ActivityDataBloc>(context);
     _cityActivityDataBloc = BlocProvider.of<CityActivityDataBloc>(context);
   }
@@ -464,7 +465,7 @@ class _TabBarItemState extends State<TabBarItem> {
       child: Column(
         children: <Widget>[
           Text(
-            widget.title,
+            title,
             style: TextStyle(
               fontSize: _itemindex == _currentIndex ? 16 : 14,
               fontWeight: _itemindex == _currentIndex
@@ -515,10 +516,10 @@ class _TabBarItemState extends State<TabBarItem> {
                       Global.saveProfile();
                     }
 
-                    widget.title = Global.profile.locationName;
+                    title = Global.profile.locationName;
                     setState(() {
-                      if (widget.title.length > 3) {
-                        widget.title = widget.title.substring(0, 3);
+                      if (title.length > 3) {
+                        title = title.substring(0, 3);
                       }
                     });
                   }
@@ -556,7 +557,7 @@ class _TabBarItemState extends State<TabBarItem> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: widget.title.length >= 3 ? 17 : 10),
+              margin: EdgeInsets.only(left: title.length >= 3 ? 17 : 10),
               alignment: Alignment.bottomLeft,
               child: Text(
                 _itemindex == _currentIndex ? "—" : "",

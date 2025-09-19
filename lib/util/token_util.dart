@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_apns/flutter_apns.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:push_message_register/push_message_register.dart';
 
 import '../service/userservice.dart';
@@ -19,6 +21,9 @@ class TokenUtil {
   final UserService _userService = UserService();
   String _brand = "other";
   final ImHelper _imHelper = ImHelper();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> getDeviceToken() async {
     await _getDeviceToken();
@@ -58,28 +63,83 @@ class TokenUtil {
         _brand = await PushMessageRegister.registerApi(apikey);
       }
 
-      if (Platform.isIOS || _brand == "other") {
-        PushConnector connector = createPushConnector();
-        _registerFcmOrApns(connector);
+      if ((!kIsWeb && Platform.isIOS) || _brand == "other") {
+        await _initializeFirebaseMessaging();
       }
     }
   }
 
-  Future<void> _registerFcmOrApns(connector) async {
-    connector.configure(
-      onLaunch: (data) => onPush('onLaunch', data),
-      onResume: (data) => onPush('onResume', data),
-      onMessage: (data) => onPush('onMessage', data),
-      onBackgroundMessage: _onBackgroundMessage,
+  Future<void> _initializeFirebaseMessaging() async {
+    // 请求通知权限
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      announcement: false,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
     );
-    connector.token.addListener(() {
-      Global.devicetoken = connector.token.value;
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // 初始化本地通知
+      await _initializeLocalNotifications();
+
+      // 获取FCM token
+      String? token = await _firebaseMessaging.getToken();
+      if (token != null) {
+        Global.devicetoken = token;
+        _updatePushToken(token);
+      }
+
+      // 监听token刷新
+      _firebaseMessaging.onTokenRefresh.listen((String token) {
+        Global.devicetoken = token;
+        _updatePushToken(token);
+      });
+
+      // 设置消息处理器
+      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
+
+      // 检查应用启动时的消息
+      RemoteMessage? initialMessage = await _firebaseMessaging
+          .getInitialMessage();
+      if (initialMessage != null) {
+        await _handleBackgroundMessage(initialMessage);
+      }
+    }
+  }
+
+  Future<void> _initializeLocalNotifications() async {
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+
+    const InitializationSettings settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    await _localNotifications.initialize(
+      settings,
+      onDidReceiveNotificationResponse: _handleNotificationResponse,
+    );
+  }
+
+  void _updatePushToken(String token) {
+    if (Global.profile.user != null) {
       if (Platform.isIOS) {
         _userService.updatePushToken(
           Global.profile.user!.uid,
           Global.profile.user!.token!,
           "ios",
-          connector.token.value,
+          token,
           (error, msg) {},
         );
       } else {
@@ -87,40 +147,65 @@ class TokenUtil {
           Global.profile.user!.uid,
           Global.profile.user!.token!,
           "fcm",
-          connector.token.value,
+          token,
           (error, msg) {
             ShowMessage.showToast(msg);
           },
         );
       }
-    });
-    connector.requestNotificationPermissions();
-
-    if (connector is ApnsPushConnector) {
-      connector.shouldPresent = (x) async {
-        final remote = RemoteMessage.fromMap(x.payload);
-        return remote.category == 'MEETING_INVITATION';
-      };
-      connector.setNotificationCategories([
-        UNNotificationCategory(
-          identifier: 'MEETING_INVITATION',
-          actions: [
-            UNNotificationAction(
-              identifier: 'ACCEPT_ACTION',
-              title: 'Accept',
-              options: UNNotificationActionOptions.values,
-            ),
-            UNNotificationAction(
-              identifier: 'DECLINE_ACTION',
-              title: 'Decline',
-              options: [],
-            ),
-          ],
-          intentIdentifiers: [],
-          options: UNNotificationCategoryOptions.values,
-        ),
-      ]);
     }
+  }
+
+  Future<void> _handleForegroundMessage(RemoteMessage message) async {
+    // 在前台显示本地通知
+    await _showLocalNotification(message);
+    await onPush('onMessage', message);
+  }
+
+  Future<void> _handleBackgroundMessage(RemoteMessage message) async {
+    await onPush('onResume', message);
+  }
+
+  void _handleNotificationResponse(NotificationResponse response) async {
+    if (response.payload != null) {
+      // 处理通知点击
+      await deeplinkNav(response.payload!);
+    }
+  }
+
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription:
+              'This channel is used for important notifications.',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    String title = message.notification?.title ?? '新消息';
+    String body = message.notification?.body ?? '';
+    String payload = message.data.toString();
+
+    await _localNotifications.show(
+      message.hashCode,
+      title,
+      body,
+      details,
+      payload: payload,
+    );
   }
 
   Future<dynamic> onPush(String name, RemoteMessage payload) async {
@@ -139,9 +224,6 @@ class TokenUtil {
 
     return Future.value(true);
   }
-
-  Future<dynamic> _onBackgroundMessage(RemoteMessage data) =>
-      onPush('onBackgroundMessage', data);
 
   Future<void> deeplinkNav(String deeplink) async {
     //微信中打开app

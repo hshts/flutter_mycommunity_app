@@ -264,7 +264,9 @@ class _SharedRelationListState extends State<SharedRelationList> {
                                                 right: 10,
                                               ),
                                               child: badges.Badge(
-                                                toAnimate: false,
+                                                showBadge: true,
+                                                badgeAnimation: badges
+                                                    .BadgeAnimation.slide(),
                                                 badgeContent: Text(
                                                   item.unreadcount >= 100
                                                       ? "..."

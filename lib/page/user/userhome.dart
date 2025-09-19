@@ -99,6 +99,7 @@ class _MyHomeState extends State<MyHome> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
+                          padding: EdgeInsets.only(top: 6),
                           child: Text(
                             '我的活动',
                             style: TextStyle(
@@ -107,7 +108,6 @@ class _MyHomeState extends State<MyHome> {
                               fontSize: 16,
                             ),
                           ),
-                          padding: EdgeInsets.only(top: 6),
                         ),
                         SizedBox(height: 20),
                         Padding(
@@ -179,8 +179,9 @@ class _MyHomeState extends State<MyHome> {
                                 '分享的',
                                 icon: _newSharedCount > 0
                                     ? badges.Badge(
-                                        alignment: Alignment.centerLeft,
-                                        toAnimate: false,
+                                        showBadge: true,
+                                        badgeAnimation:
+                                            badges.BadgeAnimation.slide(),
                                         badgeContent: Text(
                                           _newSharedCount > 99
                                               ? '...'
@@ -216,6 +217,7 @@ class _MyHomeState extends State<MyHome> {
                         ),
                         SizedBox(height: 20),
                         Container(
+                          padding: EdgeInsets.only(top: 6),
                           child: Text(
                             '我的订单',
                             style: TextStyle(
@@ -224,7 +226,6 @@ class _MyHomeState extends State<MyHome> {
                               fontSize: 16,
                             ),
                           ),
-                          padding: EdgeInsets.only(top: 6),
                         ),
                         SizedBox(height: 20),
                         Padding(
@@ -236,8 +237,9 @@ class _MyHomeState extends State<MyHome> {
                                 '待付款',
                                 icon: _pendingOrderCount > 0
                                     ? badges.Badge(
-                                        alignment: Alignment.centerLeft,
-                                        toAnimate: false,
+                                        showBadge: true,
+                                        badgeAnimation:
+                                            badges.BadgeAnimation.slide(),
                                         badgeContent: Text(
                                           _pendingOrderCount > 99
                                               ? '...'
@@ -280,8 +282,9 @@ class _MyHomeState extends State<MyHome> {
                                 '待收货',
                                 icon: _finishOrderCount > 0
                                     ? badges.Badge(
-                                        alignment: Alignment.centerLeft,
-                                        toAnimate: false,
+                                        showBadge: true,
+                                        badgeAnimation:
+                                            badges.BadgeAnimation.slide(),
                                         badgeContent: Text(
                                           _finishOrderCount > 99
                                               ? '...'
@@ -324,8 +327,9 @@ class _MyHomeState extends State<MyHome> {
                                 '待评价',
                                 icon: _countActivityEvaluate > 0
                                     ? badges.Badge(
-                                        alignment: Alignment.centerLeft,
-                                        toAnimate: false,
+                                        showBadge: true,
+                                        badgeAnimation:
+                                            badges.BadgeAnimation.slide(),
                                         badgeContent: Text(
                                           _countActivityEvaluate > 99
                                               ? '...'
@@ -566,6 +570,7 @@ class _MyHomeState extends State<MyHome> {
                 ],
               ),
               Align(
+                alignment: Alignment.centerRight,
                 child: InkWell(
                   child: Padding(
                     padding: EdgeInsets.only(right: 5),
@@ -583,7 +588,6 @@ class _MyHomeState extends State<MyHome> {
                     Navigator.pushNamed(context, '/MyProfile');
                   },
                 ),
-                alignment: Alignment.centerRight,
               ),
             ],
           ),
@@ -596,7 +600,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '收藏商家',
                   icon: Text(
-                    '${_collectioncount}',
+                    '$_collectioncount',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -612,7 +616,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '历史浏览',
                   icon: Text(
-                    '${_countHistory}',
+                    '$_countHistory',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -628,7 +632,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '关注',
                   icon: Text(
-                    '${CommonUtil.getNum(Global.profile.user!.following!)}',
+                    CommonUtil.getNum(Global.profile.user!.following!),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -646,7 +650,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '粉丝',
                   icon: Text(
-                    '${CommonUtil.getNum(Global.profile.user!.followers!)}',
+                    CommonUtil.getNum(Global.profile.user!.followers!),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,

@@ -7,24 +7,24 @@ part of 'suggest.dart';
 // **************************************************************************
 
 Suggest _$SuggestFromJson(Map<String, dynamic> json) => Suggest(
-      json['suggestid'] as String,
-      json['content'] as String,
-      json['images'] as String,
-      json['createtime'] as String,
-      json['commentcount'] as int,
-      json['likenum'] as int,
-      json['user'] == null
-          ? null
-          : User.fromJson(json['user'] as Map<String, dynamic>),
-    );
+  json['suggestid'] as String,
+  json['content'] as String,
+  json['images'] as String,
+  json['createtime'] as String,
+  (json['commentcount'] as num).toInt(),
+  (json['likenum'] as num).toInt(),
+  json['user'] == null
+      ? null
+      : User.fromJson(json['user'] as Map<String, dynamic>),
+)..islike = json['islike'] as bool;
 
 Map<String, dynamic> _$SuggestToJson(Suggest instance) => <String, dynamic>{
-      'suggestid': instance.suggestid,
-      'content': instance.content,
-      'images': instance.images,
-      'createtime': instance.createtime,
-      'commentcount': instance.commentcount,
-      'likenum': instance.likenum,
-      'user': instance.user,
-      'islike': instance.islike,
-    };
+  'suggestid': instance.suggestid,
+  'content': instance.content,
+  'images': instance.images,
+  'createtime': instance.createtime,
+  'commentcount': instance.commentcount,
+  'likenum': instance.likenum,
+  'user': instance.user,
+  'islike': instance.islike,
+};

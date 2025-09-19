@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:extended_text/extended_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -143,7 +142,8 @@ class _RelationListState extends State<RelationList> {
                 children: [
                   sysMessage.newlithumbup_count > 0
                       ? badges.Badge(
-                          toAnimate: false,
+                          showBadge: true,
+                          badgeAnimation: badges.BadgeAnimation.slide(),
                           badgeContent: Text(
                             sysMessage.newlithumbup_count > 99
                                 ? '...'
@@ -175,7 +175,8 @@ class _RelationListState extends State<RelationList> {
                 children: [
                   sysMessage.follow_count > 0
                       ? badges.Badge(
-                          toAnimate: false,
+                          showBadge: true,
+                          badgeAnimation: badges.BadgeAnimation.slide(),
                           badgeContent: Text(
                             sysMessage.follow_count > 99
                                 ? '...'
@@ -207,7 +208,8 @@ class _RelationListState extends State<RelationList> {
                 children: [
                   sysMessage.commentreply_count > 0
                       ? badges.Badge(
-                          toAnimate: false,
+                          showBadge: true,
+                          badgeAnimation: badges.BadgeAnimation.slide(),
                           badgeContent: Text(
                             sysMessage.commentreply_count > 99
                                 ? '...'
@@ -409,7 +411,9 @@ class _RelationListState extends State<RelationList> {
                                   : Container(
                                       margin: EdgeInsets.only(right: 10),
                                       child: badges.Badge(
-                                        toAnimate: false,
+                                        showBadge: true,
+                                        badgeAnimation:
+                                            badges.BadgeAnimation.slide(),
                                         badgeContent: Text(
                                           item.unreadcount >= 100
                                               ? "..."

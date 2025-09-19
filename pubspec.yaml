@@ -20,18 +20,18 @@ dependencies:
   sqflite: ^2.0.1 #本地数据库
   steel_crypt: ^3.0.0+1 #加解密
   encrypt: ^5.0.1 #加解密
-  fluwx: ^5.7.2 #微信分享带支付
+  fluwx: ^3.8.1+1 #微信分享带支付
   flutter_bloc: ^9.1.1
   equatable: ^2.0.3 #对象比较
-  tobias: ^5.2.0 #支付宝sdk
+  tobias: ^2.2.0 #支付宝sdk
   flutter_app_badger: ^1.3.0 #桌面图标提醒
   badges: ^3.1.2 #消息提醒小红点
   flutter_screenutil: ^5.0.1+2 #屏幕尺寸转换
   cached_network_image: ^3.2.0 #图片缓存
   flutter_staggered_grid_view: ^0.4.0 #瀑布流
-  amap_flutter_location: ^3.0.0 #高德地图
-  amap_flutter_map: ^3.0.0 #高德地图
-  amap_flutter_base: ^3.0.0 #高德地图
+  # amap_flutter_location: ^3.0.0 #高德地图
+  # amap_flutter_map: ^3.0.0 #高德地图
+  # x_amap_base: ^2.0.0+2 #高德地图
   permission_handler: ^12.0.1 #权限申请
   flutter_downloader: ^1.7.2 #下载更新
   web_socket_channel: ^3.0.3 #websocket链接
@@ -45,7 +45,8 @@ dependencies:
   extended_text_field: ^16.0.2 #文字处理
   extended_text: ^15.0.2 #文字处理
   flutter_cache_manager: ^3.3.0 #图片缓存管理
-  firebase_messaging: ^12.0.3 #消息推送
+  firebase_messaging: ^15.1.4 #消息推送
+  flutter_local_notifications: ^17.2.3 #本地通知
   audioplayers: ^6.5.1 #声音播放
   audio_session: ^0.2.2 #声音播放
   flutter_html: ^3.0.0 #html
@@ -60,7 +61,7 @@ dependencies:
   rate_in_stars: ^0.0.2 #显示星星
   flutter_sound: ^9.1.1 #录音
   uni_links: ^0.5.1 #外部打开app识别uri
-  flutter_apns: ^1.5.4 #ios apns推送和googlefcm推送
+  # flutter_apns: ^1.5.4 #ios apns推送和googlefcm推送
   sign_in_with_apple: ^7.0.1 #ios账号登录
   video_player: ^2.2.7 #视频播放
   wechat_assets_picker: ^9.8.0

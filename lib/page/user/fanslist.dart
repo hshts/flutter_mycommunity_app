@@ -11,10 +11,12 @@ import '../../global.dart';
 
 class MyFansUser extends StatefulWidget {
   final Object? arguments;
-  int uid = 0;
-  MyFansUser({super.key, this.arguments}) {
-    uid = (arguments as Map)["uid"];
-  }
+  final int uid;
+  MyFansUser({super.key, this.arguments})
+    : uid = (() {
+        final Map<dynamic, dynamic>? m = arguments is Map ? arguments : null;
+        return (m != null && m["uid"] is int) ? m["uid"] as int : 0;
+      })();
 
   @override
   _MyFansUserState createState() => _MyFansUserState();
@@ -199,7 +201,7 @@ class _MyFansUserState extends State<MyFansUser> {
                 ),
                 leading: NoCacheCircleHeadImage(
                   imageUrl:
-                      element.profilepicture! ?? Global.profile.profilePicture!,
+                      element.profilepicture ?? Global.profile.profilePicture!,
                   width: 50,
                   uid: element.uid,
                 ),

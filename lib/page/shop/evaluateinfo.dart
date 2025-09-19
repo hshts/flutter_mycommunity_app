@@ -11,12 +11,12 @@ import '../../common/iconfont.dart';
 import '../../widget/circle_headimage.dart';
 
 class EvaluateInfo extends StatefulWidget {
-  Object? arguments;
-  late EvaluateActivity evaluateActivity;
+  final Object? arguments;
+  final EvaluateActivity evaluateActivity;
 
-  EvaluateInfo({super.key, this.arguments}) {
-    evaluateActivity = (arguments as Map)["evaluateActivity"];
-  }
+  EvaluateInfo({super.key, this.arguments})
+    : evaluateActivity =
+          (arguments as Map)["evaluateActivity"] as EvaluateActivity;
 
   @override
   _EvaluateInfoState createState() => _EvaluateInfoState();

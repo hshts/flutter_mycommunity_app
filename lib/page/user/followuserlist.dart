@@ -192,7 +192,7 @@ class _MyFollowUserState extends State<MyFollowUser> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      element.signature ?? 'Ta很神秘',
+                      element.signature.isEmpty ? 'Ta很神秘' : element.signature,
                       maxLines: 2,
                       style: TextStyle(color: Colors.black87, fontSize: 13),
                     ),
@@ -206,7 +206,7 @@ class _MyFollowUserState extends State<MyFollowUser> {
                 ),
                 leading: NoCacheCircleHeadImage(
                   imageUrl:
-                      element.profilepicture! ?? Global.profile.profilePicture!,
+                      element.profilepicture ?? Global.profile.profilePicture!,
                   width: 50,
                   uid: element.uid,
                 ),

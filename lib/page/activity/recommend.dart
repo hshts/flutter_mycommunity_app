@@ -14,7 +14,7 @@ import '../../util/imhelper_util.dart';
 import '../../global.dart';
 
 class Recommend extends StatefulWidget {
-  bool isPop; //是否从其他页面pop回来
+  final bool isPop; //是否从其他页面pop回来
   final Function? parentJumpShop;
 
   Recommend({super.key, this.isPop = false, this.parentJumpShop});
@@ -270,7 +270,7 @@ class _RecommendState extends State<Recommend>
       padding: EdgeInsets.only(top: 3),
       addAutomaticKeepAlives: true,
       primary: false,
-      shrinkWrap: false,
+      shrinkWrap: true,
       crossAxisCount: 2,
       mainAxisSpacing: 0.0,
       crossAxisSpacing: 0.0,

@@ -308,7 +308,7 @@ class _MomentReportState extends State<MomentReport> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _voice != "" ? buildSound() : buildImage(),
-          _categorys.length > 0
+          _categorys.isNotEmpty
               ? SizedBox(
                   height: 30,
                   child: ListView.builder(
@@ -326,10 +326,17 @@ class _MomentReportState extends State<MomentReport> {
                             top: 3,
                             bottom: 3,
                           ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
+                            border: Border.all(width: 1, color: Colors.black45),
+                          ),
                           child: Row(
                             children: [
                               Text(
-                                '#' + _categorys[position],
+                                '#${_categorys[position]}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -342,16 +349,6 @@ class _MomentReportState extends State<MomentReport> {
                                 size: 14,
                               ),
                             ],
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              new Radius.circular(8.0),
-                            ),
-                            border: new Border.all(
-                              width: 1,
-                              color: Colors.black45,
-                            ),
                           ),
                         ),
                         onTap: () {
@@ -376,10 +373,10 @@ class _MomentReportState extends State<MomentReport> {
                     child: Icon(
                       IconFont.icon_luyin2,
                       size: 26,
-                      color: _images.length == 0 ? Colors.black : Colors.grey,
+                      color: _images.isEmpty ? Colors.black : Colors.grey,
                     ),
                     onTap: () {
-                      if (_images.length > 0) {
+                      if (_images.isNotEmpty) {
                         return;
                       }
 

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:tobias/tobias.dart' as tobias;
@@ -11,32 +10,29 @@ import '../../util/showmessage_util.dart';
 import '../../widget/circle_headimage.dart';
 
 class OrderInfo extends StatefulWidget {
-  Object? arguments;
+  final Object? arguments;
+  final String specsid;
+  final String specsname;
+  final int productNum;
+  final num saleprice; //选中显示的价格
+  final String actid;
+  final String title;
+  final String brand;
+  final String pic;
+  final String goodpriceid;
+  final String orderid;
 
-  String specsid = "";
-  String specsname = "";
-  int productNum = 0;
-  num saleprice = 0; //选中显示的价格
-  String actid = "";
-  String title = "";
-  String brand = "";
-  String pic = "";
-  String goodpriceid = "";
-  String orderid = "";
-
-  OrderInfo({super.key, required this.arguments}) {
-    goodpriceid = (arguments as Map)["goodpriceid"];
-    title = (arguments as Map)["title"];
-    brand = (arguments as Map)["brand"];
-    pic = (arguments as Map)["pic"];
-    specsid = (arguments as Map)["specsid"];
-    productNum = (arguments as Map)["productNum"];
-    specsname = (arguments as Map)["specsname"];
-    saleprice = (arguments as Map)["saleprice"];
-    orderid = (arguments as Map)["orderid"];
-
-    actid = (arguments as Map)["actid"] ?? "";
-  }
+  OrderInfo({super.key, required this.arguments})
+    : goodpriceid = (arguments as Map)["goodpriceid"] ?? "",
+      title = (arguments as Map)["title"] ?? "",
+      brand = (arguments as Map)["brand"] ?? "",
+      pic = (arguments as Map)["pic"] ?? "",
+      specsid = (arguments as Map)["specsid"] ?? "",
+      productNum = (arguments as Map)["productNum"] ?? 0,
+      specsname = (arguments as Map)["specsname"] ?? "",
+      saleprice = (arguments as Map)["saleprice"] ?? 0,
+      orderid = (arguments as Map)["orderid"] ?? "",
+      actid = (arguments as Map)["actid"] ?? "";
 
   @override
   _OrderInfoState createState() => _OrderInfoState();

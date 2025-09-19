@@ -442,7 +442,7 @@ class _BlockPuzzleCaptchaPageState extends State<BlockPuzzleCaptchaPage>
   }
 
   ///底部，滑动区域
-  Container _bottomContainer() {
+  Widget _bottomContainer() {
     return baseSize.width > 0
         ? SizedBox(
             height: 70,

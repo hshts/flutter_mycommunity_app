@@ -31,8 +31,7 @@ class MyLoadingProgress extends StatelessWidget {
     this.alpha = 0.6,
     this.textColor = Colors.grey,
     required this.child,
-  }) : //assert(child != null),
-       assert(loading != null);
+  });
 
   @override
   Widget build(BuildContext context) {

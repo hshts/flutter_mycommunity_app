@@ -8,16 +8,26 @@ import '../../service/imservice.dart';
 import '../../global.dart';
 
 class MemberList extends StatefulWidget {
-  Object? arguments;
-  String cid = "";
-  int status = 0;
-  int reporttype = 0;
+  final Object? arguments;
+  final String cid;
+  final int status;
+  final int reporttype;
 
-  MemberList({super.key, this.arguments}) {
-    cid = (arguments as Map)["cid"];
-    status = (arguments as Map)["status"];
-    reporttype = (arguments as Map)["reporttype"];
-  }
+  MemberList({super.key, this.arguments})
+    : cid = (() {
+        final Map<dynamic, dynamic>? m = arguments is Map ? arguments : null;
+        return (m != null && m["cid"] is String) ? m["cid"] as String : "";
+      })(),
+      status = (() {
+        final Map<dynamic, dynamic>? m = arguments is Map ? arguments : null;
+        return (m != null && m["status"] is int) ? m["status"] as int : 0;
+      })(),
+      reporttype = (() {
+        final Map<dynamic, dynamic>? m = arguments is Map ? arguments : null;
+        return (m != null && m["reporttype"] is int)
+            ? m["reporttype"] as int
+            : 0;
+      })();
 
   @override
   _MemberListState createState() => _MemberListState();
@@ -282,7 +292,7 @@ class _MemberListState extends State<MemberList> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    element.signature ?? 'Ta很神秘',
+                    (element.signature.isEmpty ? 'Ta很神秘' : element.signature),
                     maxLines: 2,
                     style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),

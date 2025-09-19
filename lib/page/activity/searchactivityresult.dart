@@ -13,13 +13,11 @@ import '../../widget/shareview.dart';
 import '../../service/activity.dart';
 
 class SearchActivityResultPage extends StatefulWidget {
-  Object? arguments;
-  String content = "";
-  SearchActivityResultPage({super.key, this.arguments}) {
-    if (arguments != null) {
-      content = (arguments as Map)["content"];
-    }
-  }
+  final Object? arguments;
+  final String content;
+
+  SearchActivityResultPage({super.key, this.arguments})
+    : content = arguments != null ? (arguments as Map)["content"] : "";
 
   @override
   _SearchActivityResultPageState createState() =>
@@ -308,7 +306,7 @@ class _SearchActivityResultPageState extends State<SearchActivityResultPage> {
       padding: EdgeInsets.only(top: 0),
       addAutomaticKeepAlives: true,
       primary: false,
-      shrinkWrap: false,
+      shrinkWrap: true,
       crossAxisCount: 2,
       mainAxisSpacing: 0.0,
       crossAxisSpacing: 0.0,

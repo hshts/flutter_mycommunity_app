@@ -10,13 +10,13 @@ import '../../util/showmessage_util.dart';
 import '../../global.dart';
 
 class JoinCommunity extends StatefulWidget {
-  Object? arguments;
-  String timeline_id = "";
-  String oldmembers = "";
-  JoinCommunity({super.key, this.arguments}) {
-    timeline_id = (arguments as Map)["timeline_id"];
-    oldmembers = (arguments as Map)["oldmembers"];
-  }
+  final Object? arguments;
+  final String timeline_id;
+  final String oldmembers;
+
+  JoinCommunity({super.key, this.arguments})
+    : timeline_id = arguments != null ? (arguments as Map)["timeline_id"] : "",
+      oldmembers = arguments != null ? (arguments as Map)["oldmembers"] : "";
 
   @override
   _JoinCommunityState createState() => _JoinCommunityState();
@@ -221,7 +221,7 @@ class _JoinCommunityState extends State<JoinCommunity> {
             ListTile(
               title: Row(
                 children: [
-                  RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+                  RoundCheckBox(value: selectItem.contains(user.uid)),
                   SizedBox(width: 10),
                   NoCacheClipRRectOhterHeadImage(
                     imageUrl: user.profilepicture!,
@@ -237,7 +237,7 @@ class _JoinCommunityState extends State<JoinCommunity> {
                 ],
               ),
               onTap: () {
-                if (!(selectItem.indexOf(user.uid) >= 0)) {
+                if (!(selectItem.contains(user.uid))) {
                   selectItem.add(user.uid);
                   selectItemName.add(user.username);
                 } else {

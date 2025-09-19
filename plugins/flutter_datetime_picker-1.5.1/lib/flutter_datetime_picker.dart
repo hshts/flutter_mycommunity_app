@@ -508,7 +508,6 @@ class _BottomPickerLayout extends SingleChildLayoutDelegate {
   });
 
   final double progress;
-  final int? itemCount;
   final bool? showTitleActions;
   final DatePickerTheme theme;
   final double bottomPadding;

@@ -18,13 +18,13 @@ class Post {
 }
 
 class SearchProduct extends StatefulWidget {
-  Object? arguments;
-  String contentDef = "商家活动内容";
-  SearchProduct({super.key, this.arguments}) {
-    if (arguments != null && (arguments as Map)["content"] != null) {
-      contentDef = (arguments as Map)["content"];
-    }
-  }
+  final Object? arguments;
+  final String contentDef;
+
+  SearchProduct({super.key, this.arguments})
+    : contentDef = (arguments != null && (arguments as Map)["content"] != null)
+          ? (arguments as Map)["content"] ?? ""
+          : "商家活动内容";
 
   @override
   _SearchProductState createState() => _SearchProductState();

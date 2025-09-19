@@ -9,22 +9,22 @@ part of 'redpacket.dart';
 RedPacketModel _$RedPacketModelFromJson(Map<String, dynamic> json) =>
     RedPacketModel(
       json['redpacketid'] as String,
-      json['uid'] as int,
+      (json['uid'] as num).toInt(),
       (json['amount'] as num).toDouble(),
-      json['redpackettype'] as int,
-      json['redpacketstatus'] as int,
-      json['redpacketnum'] as int,
+      (json['redpackettype'] as num).toInt(),
+      (json['redpacketstatus'] as num).toInt(),
+      (json['redpacketnum'] as num).toInt(),
       json['createtime'] as String,
       json['timeline_id'] as String,
       json['content'] as String,
       json['username'] as String,
       json['profilepicture'] as String,
       json['original_order_id'] as String,
-      json['touid'] as int,
-      json['tocreatetime'] != null ? json['tocreatetime'] as String : "",
-      json['tofund'] != null ? (json['tofund']as num).toDouble() : 0,
+      (json['touid'] as num).toInt(),
+      json['tocreatetime'] as String,
+      (json['tofund'] as num).toDouble(),
       json['isexpire'] as bool,
-      json['currentnum'] as int,
+      (json['currentnum'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RedPacketModelToJson(RedPacketModel instance) =>

@@ -8,27 +8,27 @@ part of 'grouprelation.dart';
 
 GroupRelation _$GroupRelationFromJson(Map<String, dynamic> json) =>
     GroupRelation(
-      json['id'] as int?,
-      json['timeline_id'] as String,
-      json['readindex'] as int?,
-      json['unreadcount'] as int,
-      json['group_name1'] as String?,
-      json['clubicon'] as String?,
-      json['name'] as String?,
-      json['newmsgtime'],
-      json['newmsg'],
-      json['timelineType'] as int?,
-      json['relationtype'] as int?,
-      json['status'] as int?,
-      json['locked'] as int?,
-      json['memberupdatetime'] as String?,
-      json['isnotservice'] as int?,
-      json['source_id'] as String?,
-      json['goodpriceid'] != null ? json['goodpriceid'] as String : "",
-    )
-      ..uid = json['uid'] as int?
+        (json['id'] as num?)?.toInt(),
+        json['timeline_id'] as String,
+        (json['readindex'] as num?)?.toInt(),
+        (json['unreadcount'] as num).toInt(),
+        json['group_name1'] as String?,
+        json['clubicon'] as String?,
+        json['name'] as String?,
+        json['newmsgtime'],
+        json['newmsg'],
+        (json['timelineType'] as num?)?.toInt(),
+        (json['relationtype'] as num?)?.toInt(),
+        (json['status'] as num?)?.toInt(),
+        (json['locked'] as num?)?.toInt(),
+        json['memberupdatetime'] as String?,
+        (json['isnotservice'] as num?)?.toInt(),
+        json['source_id'] as String?,
+        json['goodpriceid'] as String,
+      )
+      ..uid = (json['uid'] as num?)?.toInt()
       ..jointime = json['jointime'] as String?
-      ..istop = json['istop'] as int?
+      ..istop = (json['istop'] as num?)?.toInt()
       ..oldmemberupdatetime = json['oldmemberupdatetime'] as String?;
 
 Map<String, dynamic> _$GroupRelationToJson(GroupRelation instance) =>

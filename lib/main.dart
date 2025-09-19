@@ -1,14 +1,17 @@
+// ignore_for_file: library_private_types_in_public_api, avoid_print
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-// import 'package:fluwx/fluwx.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:tobias/tobias.dart' as tobias;
+import 'package:tobias/tobias.dart';
 
 import 'global.dart';
 import 'bloc/activity/activity_city_bloc.dart';
@@ -31,7 +34,7 @@ void main() {
 
   _initFluwx();
 
-  if (Platform.isAndroid) {
+  if (!kIsWeb && Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -45,26 +48,22 @@ void main() {
 
 Future<void> _initFluwx() async {
   try {
-    // TODO: 需要重新实现微信检测和初始化逻辑
-    // bool weixin = await isWeChatInstalled;
-    bool weixin = false; // 临时设置为false避免编译错误
-    bool alipay = true; // 假设支付宝已安装，实际项目中可能需要其他检测方式
+    bool weixin = await fluwx.isWeChatInstalled;
+    bool alipay = await isAliPayInstalled();
     Global.isWeChatInstalled = weixin;
     Global.isAliPayInstalled = alipay;
-
-    // TODO: 需要重新实现微信API注册逻辑
-    // if (weixin) {
-    //   await registerWxApi(
-    //     appId: "wx08bd2f7c9a87beee",
-    //     doOnAndroid: true,
-    //     doOnIOS: true,
-    //     universalLink: "https://www.chulaiwanba.com/",
-    //   );
-    // }
+    if (weixin) {
+      await fluwx.registerWxApi(
+        appId: "wx08bd2f7c9a87beee",
+        doOnAndroid: true,
+        doOnIOS: true,
+        universalLink: "https://www.chulaiwanba.com/",
+      );
+    }
   } catch (e) {
-    print('Failed to initialize WeChat: $e');
+    print('fluwx初始化失败: $e');
     Global.isWeChatInstalled = false;
-    Global.isAliPayInstalled = true;
+    Global.isAliPayInstalled = false;
   }
 }
 
@@ -101,20 +100,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //  应用程序处于闲置状态并且没有收到用户的输入事件。
         //注意这个状态，在切换到后台时候会触发，所以流程应该是先冻结窗口，然后停止UI
         break;
-      case AppLifecycleState.hidden:
-        // 应用程序被隐藏状态
-        break;
       case AppLifecycleState.paused:
-        // await getExtMsg(); // TODO: 实现getExtMsg方法
+        // String? actid = await getExtMsg();
         //      应用程序处于不可见状态
         break;
       case AppLifecycleState.resumed:
         //进入应用时不会触发该状态
         //应用程序处于可见状态，并且可以响应用户的输入事件。它相当于 Android 中Activity的onResume。
         if (Global.isWeChatInstalled) {
-          // String? actid = await getExtMsg(); // TODO: 实现getExtMsg方法
-          /*
-          if (actid != "") {
+          String? actid = await fluwx.getExtMsg();
+
+          if (actid != null && actid != "") {
             if (actid.contains("^_^")) {
               actid = actid.split("^_^")[0].toString();
               Navigator.pushNamed(
@@ -124,11 +120,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               );
             }
           }
-          */
         }
         break;
       case AppLifecycleState.detached:
         //当前页面即将退出
+        break;
+      case AppLifecycleState.hidden:
+        //应用程序处于隐藏状态
         break;
     }
   }
@@ -152,6 +150,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           create: (BuildContext context) => activitybloc.ActivityDataBloc(),
         ),
       ],
+
       child: RefreshConfiguration(
         headerBuilder: () => MaterialClassicHeader(
           distance: 100,
@@ -176,10 +175,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
               backgroundColor: Colors.white,
             ),
-            primarySwatch: Colors.blue,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Global.profile.backColor ?? Colors.blue,
-              brightness: Brightness.light,
+            primaryColor: Global.profile.backColor,
+            splashColor: Color.fromRGBO(0, 0, 0, 0),
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              secondary: Colors.black,
             ),
             canvasColor: Colors.grey.shade100,
             //画布颜色
@@ -257,9 +256,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (isagree != null && isagree.toString() == "1") {
       return true;
     } else {
-      if (Platform.isIOS) {
+      if (kIsWeb) {
+        return true; // Web 平台默认同意隐私协议
+      } else if (!kIsWeb && Platform.isIOS) {
         return true;
-      } else if (Platform.isAndroid) {
+      } else if (!kIsWeb && Platform.isAndroid) {
         return false;
       }
     }

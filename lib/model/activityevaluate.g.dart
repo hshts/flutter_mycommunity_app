@@ -8,12 +8,12 @@ part of 'activityevaluate.dart';
 
 ActivityEvaluate _$ActivityEvaluateFromJson(Map<String, dynamic> json) =>
     ActivityEvaluate(
-      actevaluateid: json['actevaluateid'] as int?,
+      actevaluateid: (json['actevaluateid'] as num?)?.toInt(),
       activity: json['activity'] == null
           ? null
           : Activity.fromJson(json['activity'] as Map<String, dynamic>),
       createtime: json['createtime'] as String?,
-      evaluatestatus: json['evaluatestatus'] as int?,
+      evaluatestatus: (json['evaluatestatus'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ActivityEvaluateToJson(ActivityEvaluate instance) =>

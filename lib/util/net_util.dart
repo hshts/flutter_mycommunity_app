@@ -9,11 +9,11 @@ class NetUtil {
 
   ///通用全局单例，第一次使用时初始化
   NetUtil._internal() {
-    _dio ??= new Dio(
-      new BaseOptions(
+    _dio ??= Dio(
+      BaseOptions(
         baseUrl: Global.serviceurl,
-        connectTimeout: 5000,
-        receiveTimeout: 3000,
+        connectTimeout: Duration(milliseconds: 5000),
+        receiveTimeout: Duration(milliseconds: 3000),
       ),
     );
   }
@@ -177,7 +177,7 @@ class NetUtil {
       case DioExceptionType.cancel:
         ShowMessage.showToast("请求取消!");
         break;
-      case DioExceptionType.connectTimeout:
+      case DioExceptionType.connectionTimeout:
         ShowMessage.showToast("连接超时!");
 
         break;
@@ -190,7 +190,7 @@ class NetUtil {
         break;
 
       default:
-        if (error.message.contains("Network is unreachable")) {
+        if (error.message?.contains("Network is unreachable") == true) {
           ShowMessage.showToast("网络不给力，请再试一下!");
         } else {
           ShowMessage.showToast("网络不给力，请再试一下!");

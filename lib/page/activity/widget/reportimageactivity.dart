@@ -6,18 +6,15 @@ import '../../../util/showmessage_util.dart';
 import '../../../widget/captcha/block_puzzle_captcha.dart';
 
 class ReportImageActivity extends StatefulWidget {
-  String actid = "";
-  int sourcetype = 0; //0活动 1商品 2 聊天
-  Object? arguments;
-  int touid = 0;
+  final String actid;
+  final int sourcetype; //0活动 1商品 2 聊天
+  final Object? arguments;
+  final int touid;
 
-  ReportImageActivity({super.key, this.arguments}) {
-    if (arguments != null) {
-      actid = (arguments as Map)["actid"];
-      sourcetype = (arguments as Map)["sourcetype"];
-      touid = (arguments as Map)["touid"];
-    }
-  }
+  ReportImageActivity({super.key, this.arguments})
+    : actid = arguments != null ? (arguments as Map)["actid"] : "",
+      sourcetype = arguments != null ? (arguments as Map)["sourcetype"] : 0,
+      touid = arguments != null ? (arguments as Map)["touid"] : 0;
 
   @override
   _ReportImageActivityState createState() => _ReportImageActivityState();

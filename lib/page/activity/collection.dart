@@ -135,7 +135,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
       padding: EdgeInsets.only(top: 0),
       addAutomaticKeepAlives: true,
       primary: false,
-      shrinkWrap: false,
+      shrinkWrap: true,
       crossAxisCount: 2,
       mainAxisSpacing: 0.0,
       crossAxisSpacing: 0.0,

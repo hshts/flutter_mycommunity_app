@@ -160,7 +160,7 @@ class _BugListState extends State<BugList> {
   List<Widget> buildBugContent() {
     List<Widget> widgets = [];
     widgets.add(SizedBox(height: 10));
-    bugs.forEach((e) {
+    for (var e in bugs) {
       widgets.add(
         Card(
           elevation: 0,
@@ -299,7 +299,7 @@ class _BugListState extends State<BugList> {
           ),
         ),
       );
-    });
+    }
 
     return widgets;
   }

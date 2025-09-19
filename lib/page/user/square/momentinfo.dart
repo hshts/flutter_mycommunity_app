@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../service/imservice.dart';
 import '../../../model/bugsuggestion/moment.dart';
@@ -19,14 +18,11 @@ import '../../../widget/shareview.dart';
 import '../../../global.dart';
 
 class MomentInfo extends StatefulWidget {
-  String momentid = "";
-  Object? arguments;
+  final String momentid;
+  final Object? arguments;
 
-  MomentInfo({super.key, this.arguments}) {
-    if (arguments != null) {
-      momentid = (arguments as Map)["momentid"];
-    }
-  }
+  MomentInfo({super.key, this.arguments})
+    : momentid = arguments != null ? (arguments as Map)["momentid"] : "";
 
   @override
   _MomentInfoState createState() => _MomentInfoState();
@@ -150,7 +146,7 @@ class _MomentInfoState extends State<MomentInfo> {
   }
 
   Container buildHeadInfo() {
-    return SizedBox(
+    return Container(
       height: 70,
       child: Row(
         children: <Widget>[
@@ -1091,9 +1087,7 @@ class _MomentInfoState extends State<MomentInfo> {
               if (temreplyid > 0) {
                 for (var e in listComments) {
                   if (e.commentid == commentid) {
-                    if (e.replys == null) {
-                      e.replys = [];
-                    }
+                    e.replys ??= [];
                     e.replys!.add(
                       CommentReply(
                         temreplyid,

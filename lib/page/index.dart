@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 // import 'dart:isolate'; // 未使用，已移除
-import 'dart:ui';
 
 import 'package:badges/badges.dart' as badges;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +31,7 @@ class IndexPage extends StatefulWidget {
   final Object? arguments;
   final bool isPop;
 
-  IndexPage({super.key, this.arguments}) : isPop = arguments != null;
+  const IndexPage({super.key, this.arguments}) : isPop = arguments != null;
 
   @override
   _IndexPageState createState() => _IndexPageState();
@@ -58,9 +56,6 @@ class _IndexPageState extends State<IndexPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
-    FToast().init(context); //初始化提示框，其他页面需要使用
-    ScreenUtil.init(context, designSize: Size(360, 690));
     _appUpdate();
     _getCategoryType();
 
@@ -71,7 +66,11 @@ class _IndexPageState extends State<IndexPage> {
         if (Global.profile.user != null) {
           if (!indexkey.currentState!.isEndDrawerOpen) {
             print(Global.profile.user!.subject);
-            _selectList = Global.profile.user!.subject.split(",");
+            if (Global.profile.user!.subject.isNotEmpty) {
+              _selectList = Global.profile.user!.subject.split(",");
+            } else {
+              _selectList = [];
+            }
             setState(() {});
           }
         }
@@ -84,18 +83,26 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    FToast().init(context); //初始化提示框，其他页面需要使用
+    ScreenUtil.init(context, designSize: Size(360, 690));
+  }
+
   Future<void> _appUpdate() async {
     _appInfo = await _commonJSONService.getSysVersionConfig();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     if (_appInfo != null && packageInfo.version != _appInfo!.versionName) {
       //版本不匹配就更新
-      if (Platform.isAndroid) {
+      if (!kIsWeb && Platform.isAndroid) {
         if (_appInfo!.androidUpdate!) {
           _isshowUpdate(_appInfo!.apkUrl!);
         }
       }
 
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         if (_appInfo!.iosUpdate!) {
           _isshowUpdate("https://itunes.apple.com/cn/app/id1570133391");
         }
@@ -134,6 +141,8 @@ class _IndexPageState extends State<IndexPage> {
                   },
                 ),
                 Container(
+                  alignment: Alignment.center,
+                  color: Colors.white,
                   child: Text(
                     '发现新版本:${_appInfo!.versionName}',
                     style: TextStyle(
@@ -142,8 +151,6 @@ class _IndexPageState extends State<IndexPage> {
                       decoration: TextDecoration.none,
                     ),
                   ),
-                  alignment: Alignment.center,
-                  color: Colors.white,
                 ),
                 SizedBox(height: 19),
                 Text(
@@ -162,6 +169,10 @@ class _IndexPageState extends State<IndexPage> {
                     Expanded(
                       child: Container(
                         height: 39,
+                        decoration: BoxDecoration(
+                          color: Global.defredcolor,
+                          borderRadius: BorderRadius.all(Radius.circular(39)),
+                        ),
                         child: TextButton(
                           child: Text(
                             '立即更新',
@@ -171,10 +182,6 @@ class _IndexPageState extends State<IndexPage> {
                             AppupdateUtil.launcherApp(appurl);
                             Navigator.of(context).pop();
                           },
-                        ),
-                        decoration: BoxDecoration(
-                          color: Global.defredcolor,
-                          borderRadius: BorderRadius.all(Radius.circular(39)),
                         ),
                       ),
                     ),
@@ -241,7 +248,11 @@ class _IndexPageState extends State<IndexPage> {
       if (Global.profile.user != null) {
         if (!indexkey.currentState!.isEndDrawerOpen) {
           print(Global.profile.user!.subject);
-          _selectList = Global.profile.user!.subject.split(",");
+          if (Global.profile.user!.subject.isNotEmpty) {
+            _selectList = Global.profile.user!.subject.split(",");
+          } else {
+            _selectList = [];
+          }
         }
       }
 
@@ -279,7 +290,7 @@ class _IndexPageState extends State<IndexPage> {
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.only(top: 50, left: 15),
               child: Text(
-                _selectList.length > 0
+                _selectList.isNotEmpty
                     ? '选择几个你感兴趣的话题(${_selectList.length}/5)'
                     : '选择几个你感兴趣的话题',
                 style: TextStyle(
@@ -289,7 +300,9 @@ class _IndexPageState extends State<IndexPage> {
                 ),
               ),
             ),
-            Expanded(child: ListView(children: drawerchildren)),
+            Expanded(
+              child: ListView(shrinkWrap: true, children: drawerchildren),
+            ),
             Container(
               margin: EdgeInsets.only(right: 10),
               alignment: Alignment.centerRight,

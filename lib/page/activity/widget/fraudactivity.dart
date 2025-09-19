@@ -13,18 +13,15 @@ import '../../../widget/captcha/block_puzzle_captcha.dart';
 import '../../../widget/my_divider.dart';
 
 class FraudActivity extends StatefulWidget {
-  String actid = "";
-  int sourcetype = 0;
-  Object? arguments;
-  int touid = 0;
+  final String actid;
+  final int sourcetype;
+  final Object? arguments;
+  final int touid;
 
-  FraudActivity({super.key, this.arguments}) {
-    if (arguments != null) {
-      actid = (arguments as Map)["actid"];
-      sourcetype = (arguments as Map)["sourcetype"];
-      touid = (arguments as Map)["touid"];
-    }
-  }
+  FraudActivity({super.key, this.arguments})
+    : actid = arguments != null ? (arguments as Map)["actid"] : "",
+      sourcetype = arguments != null ? (arguments as Map)["sourcetype"] : 0,
+      touid = arguments != null ? (arguments as Map)["touid"] : 0;
 
   @override
   _FraudActivityState createState() => _FraudActivityState();

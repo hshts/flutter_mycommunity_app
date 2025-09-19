@@ -12,9 +12,10 @@ import 'widget/photoviewgallery.dart';
 
 class MyActivity extends StatefulWidget {
   final User user;
-  bool isScroll;
-  bool isAppbar; //是否有appbar的页面，默认是在个人主页中使用的无appbar
-  Function? srollChange;
+  final bool isScroll;
+  final bool isAppbar; //是否有appbar的页面，默认是在个人主页中使用的无appbar
+  final Function? srollChange;
+
   MyActivity({
     super.key,
     required this.user,

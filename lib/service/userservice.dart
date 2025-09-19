@@ -140,24 +140,22 @@ class UserService {
     String authCode = "";
     if (authurl.isNotEmpty) {
       Map ret = await tobias.aliPayAuth(authurl);
-      if (ret != null) {
-        if (ret["result"] != null) {
-          String responsestr = ret["result"].toString();
-          List<String> parms = responsestr.split('&');
-          for (int i = 0; i < parms.length; i++) {
-            if (parms[i].contains("auth_code")) {
-              authCode = parms[i].split('=')[1];
-              FormData formData = FormData.fromMap({"auth_code": authCode});
+      if (ret["result"] != null) {
+        String responsestr = ret["result"].toString();
+        List<String> parms = responsestr.split('&');
+        for (int i = 0; i < parms.length; i++) {
+          if (parms[i].contains("auth_code")) {
+            authCode = parms[i].split('=')[1];
+            FormData formData = FormData.fromMap({"auth_code": authCode});
 
-              await NetUtil.getInstance().post(formData, "/AliPay/loginali", (
-                Map<String, dynamic> data,
-              ) {
-                if (data["data"]["user"].toString() != "") {
-                  user = User.fromJson(data["data"]["user"]);
-                  user!.token = data["data"]["token"].toString();
-                }
-              }, errorCallBack);
-            }
+            await NetUtil.getInstance().post(formData, "/AliPay/loginali", (
+              Map<String, dynamic> data,
+            ) {
+              if (data["data"]["user"].toString() != "") {
+                user = User.fromJson(data["data"]["user"]);
+                user!.token = data["data"]["token"].toString();
+              }
+            }, errorCallBack);
           }
         }
       }
@@ -178,28 +176,26 @@ class UserService {
     String authCode = "";
     if (authurl.isNotEmpty) {
       Map ret = await tobias.aliPayAuth(authurl);
-      if (ret != null) {
-        if (ret["result"] != null) {
-          String responsestr = ret["result"].toString();
-          List<String> parms = responsestr.split('&');
-          for (int i = 0; i < parms.length; i++) {
-            if (parms[i].contains("auth_code")) {
-              authCode = parms[i].split('=')[1];
-              FormData formData = FormData.fromMap({
-                "uid": uid,
-                "token": token,
-                "auth_code": authCode,
-                "confirm": confirm,
-              });
+      if (ret["result"] != null) {
+        String responsestr = ret["result"].toString();
+        List<String> parms = responsestr.split('&');
+        for (int i = 0; i < parms.length; i++) {
+          if (parms[i].contains("auth_code")) {
+            authCode = parms[i].split('=')[1];
+            FormData formData = FormData.fromMap({
+              "uid": uid,
+              "token": token,
+              "auth_code": authCode,
+              "confirm": confirm,
+            });
 
-              await NetUtil.getInstance().post(formData, "/AliPay/updateali", (
-                Map<String, dynamic> data,
-              ) {
-                if (data["data"] != "") {
-                  user = User.fromJson(data["data"]);
-                }
-              }, errorCallBack);
-            }
+            await NetUtil.getInstance().post(formData, "/AliPay/updateali", (
+              Map<String, dynamic> data,
+            ) {
+              if (data["data"] != "") {
+                user = User.fromJson(data["data"]);
+              }
+            }, errorCallBack);
           }
         }
       }

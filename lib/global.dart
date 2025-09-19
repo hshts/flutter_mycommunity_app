@@ -58,12 +58,12 @@ class Global {
   static Future init(BuildContext context) async {
     mainContext = context;
     _prefs = await SharedPreferences.getInstance();
-    var profile = _prefs!.getString("profile");
-    if (profile != null) {
+    var profileString = _prefs!.getString("profile");
+    if (profileString != null) {
       try {
-        profile = Profile.fromJson(jsonDecode(profile));
+        var profile = Profile.fromJson(jsonDecode(profileString));
         if (profile.user != null) {
-          NetworkManager.init(profile.user, mainContext!);
+          NetworkManager.init(profile.user!, mainContext!);
         }
       } catch (e) {
         //print(e);

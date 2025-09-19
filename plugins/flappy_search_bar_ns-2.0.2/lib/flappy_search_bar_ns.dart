@@ -33,12 +33,12 @@ class SearchBarController<T> {
 
   void setTextController(
       TextEditingController searchQueryController, minimunChars) {
-    this._searchQueryController = searchQueryController;
+    _searchQueryController = searchQueryController;
     minimumChars = minimunChars;
   }
 
   void setListener(_ControllerListener controllerListener) {
-    this._controllerListener = controllerListener;
+    _controllerListener = controllerListener;
   }
 
   void clear() {

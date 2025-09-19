@@ -15,7 +15,6 @@ const List<String> wPopupMenuActions = [
 class WPopupMenu extends StatefulWidget {
   const WPopupMenu({
     super.key,
-    Key? key,
     required this.onValueChanged,
     required this.actions,
     required this.child,

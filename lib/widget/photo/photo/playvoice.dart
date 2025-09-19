@@ -13,11 +13,10 @@ class PlayVoice extends StatefulWidget {
   final String voice;
   final String voiceurl;
   final int time;
-  int temtime;
+
   PlayVoice(this.voice, {super.key})
     : voiceurl = voice.split(",")[0],
-      time = int.parse(voice.split(",")[1]),
-      temtime = int.parse(voice.split(",")[1]);
+      time = int.parse(voice.split(",")[1]);
 
   @override
   _PlayVoiceState createState() => _PlayVoiceState();
@@ -26,16 +25,17 @@ class PlayVoice extends StatefulWidget {
 class _PlayVoiceState extends State<PlayVoice> {
   bool _isplaying = false;
   final AudioPlayer _player = AudioPlayer();
+  late int temtime;
 
   @override
   initState() {
-    // TODO: implement initState
     super.initState();
+    temtime = widget.time;
     _player.onPositionChanged.listen((Duration p) {
       if (_isplaying) {
         if (widget.time != p.inSeconds) {
           setState(() {
-            widget.temtime = widget.time - p.inSeconds;
+            temtime = widget.time - p.inSeconds;
           });
         }
       }
@@ -77,7 +77,7 @@ class _PlayVoiceState extends State<PlayVoice> {
                   ),
             SizedBox(width: 10),
             Text(
-              '${widget.temtime}s',
+              '${temtime}s',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
@@ -128,12 +128,12 @@ class _PlayVoiceState extends State<PlayVoice> {
 
   Future<void> startPlayer(String filepath) async {
     try {
-      widget.temtime = widget.time;
+      temtime = widget.time;
       _isplaying = true;
       _player.onPlayerComplete.listen((event) {
         setState(() {
           _isplaying = false;
-          widget.temtime = widget.time;
+          temtime = widget.time;
         });
       });
       await _player.play(DeviceFileSource(filepath));
@@ -146,7 +146,7 @@ class _PlayVoiceState extends State<PlayVoice> {
     try {
       _isplaying = false;
       await _player.stop();
-      widget.temtime = widget.time;
+      temtime = widget.time;
       setState(() {});
     } catch (err) {
       print('error: $err');

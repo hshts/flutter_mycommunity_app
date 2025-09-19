@@ -7,7 +7,7 @@ import '../util/showmessage_util.dart';
 import '../global.dart';
 
 class InterestSel extends StatefulWidget {
-  List<String> interest = [];
+  final List<String> interest;
 
   InterestSel(this.interest, {super.key});
 
@@ -50,7 +50,7 @@ class _InterestSelState extends State<InterestSel> {
             ],
           ),
           MyDivider(),
-          Container(
+          SizedBox(
             height: 230,
             child: GridView.count(
               shrinkWrap: true,
@@ -92,16 +92,17 @@ class _InterestSelState extends State<InterestSel> {
                       ),
                     ),
                     onPressed: () async {
-                      UserService userService = new UserService();
+                      UserService userService = UserService();
                       String strInterest = "";
                       for (String v in widget.interest) {
-                        strInterest = strInterest + v + ",";
+                        strInterest = "$strInterest$v,";
                       }
-                      if (strInterest != "")
+                      if (strInterest != "") {
                         strInterest = strInterest.substring(
                           0,
                           strInterest.length - 1,
                         );
+                      }
                       bool ret = await userService.updateInterest(
                         Global.profile.user!.token!,
                         Global.profile.user!.uid,
@@ -142,7 +143,7 @@ class _InterestSelState extends State<InterestSel> {
               name,
               style: TextStyle(
                 fontSize: 14,
-                color: widget.interest.indexOf(val) >= 0
+                color: widget.interest.contains(val)
                     ? Global.profile.fontColor
                     : Colors.black,
               ),

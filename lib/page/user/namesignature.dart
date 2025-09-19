@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,16 +6,26 @@ import '../../bloc/user/authentication_bloc.dart';
 import '../../util/showmessage_util.dart';
 
 class NameAndSignature extends StatelessWidget {
-  Object? arguments;
+  final Object? arguments;
   final TextEditingController _textEditingController = TextEditingController();
-  String _type = "";
-  String _content = "";
-  NameAndSignature({super.key, this.arguments}) {
-    _type = (arguments as Map)["type"].toString();
-    _content = (arguments as Map)["content"] == null
-        ? ""
-        : (arguments as Map)["content"].toString();
-    _textEditingController.text = _content ?? "";
+  final String _type;
+  final String _content;
+  NameAndSignature({super.key, this.arguments})
+    : _type = (() {
+        if (arguments is Map) {
+          final m = arguments;
+          return m["type"]?.toString() ?? "";
+        }
+        return "";
+      })(),
+      _content = (() {
+        if (arguments is Map) {
+          final m = arguments;
+          return m["content"]?.toString() ?? "";
+        }
+        return "";
+      })() {
+    _textEditingController.text = _content;
   }
 
   @override

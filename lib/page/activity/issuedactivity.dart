@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
+// import 'package:amap_flutter_location/amap_flutter_location.dart';
+// import 'package:amap_flutter_location/amap_location_option.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart'
@@ -22,37 +22,59 @@ import '../../widget/loadingprogress.dart';
 import '../../global.dart';
 
 class IssuedActivity extends StatefulWidget {
-  double mincost = 0.00;
-  double maxcost = 0.00;
+  final double mincost;
+  final double maxcost;
 
-  String provinceCode = "allCode";
-  String city = "allCode";
-  String address = "";
-  String addresstitle = "";
-  double lat = 0;
-  double lng = 0;
-  double cost = 0;
-  String content = "";
-  String actimagespath = "";
-  String goodpriceid = "";
-  Object? arguments;
+  final String provinceCode;
+  final String city;
+  final String address;
+  final String addresstitle;
+  final double lat;
+  final double lng;
+  final double cost;
+  final String content;
+  final String actimagespath;
+  final String goodpriceid;
+  final Object? arguments;
 
-  IssuedActivity({super.key, required this.arguments}) {
-    if (arguments != null) {
-      mincost = (arguments as Map)["mincost"];
-      maxcost = (arguments as Map)["maxcost"];
-
-      provinceCode = (arguments as Map)["provinceCode"];
-      city = (arguments as Map)["city"];
-      address = (arguments as Map)["address"];
-      addresstitle = (arguments as Map)["addresstitle"];
-      lat = (arguments as Map)["lat"];
-      lng = (arguments as Map)["lng"];
-      content = (arguments as Map)["content"];
-      goodpriceid = (arguments as Map)["goodpriceid"];
-      actimagespath = (arguments as Map)["pic"];
-    }
-  }
+  IssuedActivity({super.key, required this.arguments})
+    : mincost =
+          (arguments is Map
+              ? (arguments['mincost'] as num?)?.toDouble()
+              : null) ??
+          0.0,
+      maxcost =
+          (arguments is Map
+              ? (arguments['maxcost'] as num?)?.toDouble()
+              : null) ??
+          0.0,
+      provinceCode =
+          (arguments is Map ? (arguments['provinceCode'] as String?) : null) ??
+          'allCode',
+      city =
+          (arguments is Map ? (arguments['city'] as String?) : null) ??
+          'allCode',
+      address =
+          (arguments is Map ? (arguments['address'] as String?) : null) ?? '',
+      addresstitle =
+          (arguments is Map ? (arguments['addresstitle'] as String?) : null) ??
+          '',
+      lat =
+          (arguments is Map ? (arguments['lat'] as num?)?.toDouble() : null) ??
+          0.0,
+      lng =
+          (arguments is Map ? (arguments['lng'] as num?)?.toDouble() : null) ??
+          0.0,
+      cost =
+          (arguments is Map ? (arguments['cost'] as num?)?.toDouble() : null) ??
+          0.0,
+      content =
+          (arguments is Map ? (arguments['content'] as String?) : null) ?? '',
+      goodpriceid =
+          (arguments is Map ? (arguments['goodpriceid'] as String?) : null) ??
+          '',
+      actimagespath =
+          (arguments is Map ? (arguments['pic'] as String?) : null) ?? '';
 
   @override
   _IssuedActivityState createState() => _IssuedActivityState();
@@ -87,8 +109,9 @@ class _IssuedActivityState extends State<IssuedActivity> {
   final List<String> _oldImagesUrl = [];
   final int _paytype = 0;
   StreamSubscription<Map<String, Object>>? _locationListener;
-  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
-  late Map<String, Object> _locationResult;
+  // final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
+
+  // Removed unused _locationResult field
 
   @override
   void dispose() {
@@ -101,7 +124,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
     }
 
     ///销毁定位
-    _locationPlugin.destroy();
+    // _locationPlugin.destroy();
     super.dispose();
   }
 
@@ -197,7 +220,7 @@ class _IssuedActivityState extends State<IssuedActivity> {
               SizedBox(height: 6),
               buildGridView(),
               SizedBox(height: 9),
-              buildLocation(),
+              // buildLocation(),
               // buildAge(),
               buildIsPubilc(),
             ],
@@ -209,155 +232,153 @@ class _IssuedActivityState extends State<IssuedActivity> {
   }
 
   //活动位置
-  Container buildLocation() {
-    return Container(
-      color: Colors.white,
-      child: ListTile(
-        onTap: () async {
-          _contentfocusNode.unfocus();
-          if (_locationListener != null) {
-            _startLocation();
-          }
+  // Container buildLocation() {
+  //   return Container(
+  //     color: Colors.white,
+  //     child: ListTile(
+  //       onTap: () async {
+  //         _contentfocusNode.unfocus();
+  //         if (_locationListener != null) {
+  //           _startLocation();
+  //         }
 
-          if (_locationListener == null) {
-            bool locationStatus =
-                await PermissionUtil.requestLocationPermisson();
-            if (locationStatus) {
-              _locationListener = _locationPlugin.onLocationChanged().listen((
-                Map<String, Object> result,
-              ) {
-                setState(() {
-                  _locationResult = result;
-                  if (result["longitude"] != "" && result["adCode"] != "") {
-                    Global.profile.lat = double.parse(
-                      result["latitude"].toString(),
-                    );
-                    Global.profile.lng = double.parse(
-                      result["longitude"].toString(),
-                    );
+  //         if (_locationListener == null) {
+  //           bool locationStatus =
+  //               await PermissionUtil.requestLocationPermisson();
+  //           // if (locationStatus) {
+  //           //   _locationListener = _locationPlugin.onLocationChanged().listen((
+  //           //     Map<String, Object> result,
+  //           //   ) {
+  //           //     setState(() {
+  //           //       if (result["longitude"] != "" && result["adCode"] != "") {
+  //           //         Global.profile.lat = double.parse(
+  //           //           result["latitude"].toString(),
+  //           //         );
+  //           //         Global.profile.lng = double.parse(
+  //           //           result["longitude"].toString(),
+  //           //         );
 
-                    Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(
-                      result["adCode"].toString(),
-                    );
-                    Global.profile.locationName = result["city"].toString();
+  //           //         Global.profile.locationCode = CommonUtil.getCityNameByGaoDe(
+  //           //           result["adCode"].toString(),
+  //           //         );
+  //           //         Global.profile.locationName = result["city"].toString();
 
-                    if (Global.profile.locationGoodPriceCode == null ||
-                        Global.profile.locationGoodPriceCode == "") {
-                      Global.profile.locationGoodPriceCode =
-                          CommonUtil.getCityNameByGaoDe(
-                            result["adCode"].toString(),
-                          );
-                      Global.profile.locationGoodPriceName = result["city"]
-                          .toString();
-                    }
+  //           //         if (Global.profile.locationGoodPriceCode == "") {
+  //           //           Global.profile.locationGoodPriceCode =
+  //           //               CommonUtil.getCityNameByGaoDe(
+  //           //                 result["adCode"].toString(),
+  //           //               );
+  //           //           Global.profile.locationGoodPriceName = result["city"]
+  //           //               .toString();
+  //           //         }
 
-                    Global.saveProfile();
+  //           //         Global.saveProfile();
 
-                    Navigator.pushNamed(
-                      context,
-                      '/MapLocationPicker',
-                      arguments: {
-                        "lat": Global.profile.lat,
-                        "lng": Global.profile.lng,
-                        "citycode": Global.profile.locationCode,
-                        "isMapImage": false,
-                      },
-                    ).then((dynamic value) {
-                      if (value != null) {
-                        setState(() {
-                          _addresstitle = value["title"];
-                          _address = value["address"];
-                          _city = CommonUtil.getCityNameByGaoDe(
-                            value["adCode"],
-                          );
-                          _provinceCode = value["provinceCode"];
-                          _lat = value["latitude"];
-                          _lng = value["longitude"];
-                        });
-                      }
-                    });
-                  }
-                });
-              });
+  //           //         Navigator.pushNamed(
+  //           //           context,
+  //           //           '/MapLocationPicker',
+  //           //           arguments: {
+  //           //             "lat": Global.profile.lat,
+  //           //             "lng": Global.profile.lng,
+  //           //             "citycode": Global.profile.locationCode,
+  //           //             "isMapImage": false,
+  //           //           },
+  //           //         ).then((dynamic value) {
+  //           //           if (value != null) {
+  //           //             setState(() {
+  //           //               _addresstitle = value["title"];
+  //           //               _address = value["address"];
+  //           //               _city = CommonUtil.getCityNameByGaoDe(
+  //           //                 value["adCode"],
+  //           //               );
+  //           //               _provinceCode = value["provinceCode"];
+  //           //               _lat = value["latitude"];
+  //           //               _lng = value["longitude"];
+  //           //             });
+  //           //           }
+  //           //         });
+  //           //       }
+  //           //     });
+  //           //   });
 
-              _startLocation();
-            }
-          }
-        },
-        title: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text("位置", style: TextStyle(color: Colors.black87, fontSize: 14)),
-              SizedBox(width: 15),
-              Expanded(
-                child: Text(
-                  (_addresstitle.isNotEmpty) ? _addresstitle : '默认商家所在位置',
-                  style: TextStyle(color: Colors.black45, fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
-                  textDirection: TextDirection.rtl,
-                ),
-              ),
-            ],
-          ),
-        ),
-        trailing: Icon(Icons.keyboard_arrow_right),
-      ),
-    );
-  }
+  //           //   _startLocation();
+  //           // }
+  //         }
+  //       },
+  //       title: Container(
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: <Widget>[
+  //             Text("位置", style: TextStyle(color: Colors.black87, fontSize: 14)),
+  //             SizedBox(width: 15),
+  //             Expanded(
+  //               child: Text(
+  //                 (_addresstitle.isNotEmpty) ? _addresstitle : '默认商家所在位置',
+  //                 style: TextStyle(color: Colors.black45, fontSize: 14),
+  //                 overflow: TextOverflow.ellipsis,
+  //                 textDirection: TextDirection.rtl,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       trailing: Icon(Icons.keyboard_arrow_right),
+  //     ),
+  //   );
+  // }
 
-  void _setLocationOption() {
-    AMapLocationOption locationOption = new AMapLocationOption();
+  // void _setLocationOption() {
+  //   //     AMapLocationOption locationOption = AMapLocationOption();
 
-    ///是否单次定位
-    locationOption.onceLocation = true;
+  //   ///是否单次定位
+  //   locationOption.onceLocation = true;
 
-    ///是否需要返回逆地理信息
-    locationOption.needAddress = true;
+  //   ///是否需要返回逆地理信息
+  //   locationOption.needAddress = true;
 
-    ///逆地理信息的语言类型
-    locationOption.geoLanguage = GeoLanguage.DEFAULT;
+  //   ///逆地理信息的语言类型
+  //   //     locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-    locationOption.desiredLocationAccuracyAuthorizationMode =
-        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+  //   locationOption.desiredLocationAccuracyAuthorizationMode =
+  //       AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+  //   locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-    ///设置Android端连续定位的定位间隔
-    locationOption.locationInterval = 2000;
+  //   ///设置Android端连续定位的定位间隔
+  //   locationOption.locationInterval = 2000;
 
-    ///设置Android端的定位模式<br>
-    ///可选值：<br>
-    ///<li>[AMapLocationMode.Battery_Saving]</li>
-    ///<li>[AMapLocationMode.Device_Sensors]</li>
-    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+  //   ///设置Android端的定位模式<br>
+  //   ///可选值：<br>
+  //   //     ///<li>[AMapLocationMode.Battery_Saving]</li>
+  //   //     ///<li>[AMapLocationMode.Device_Sensors]</li>
+  //   //     ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+  //   //     locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-    ///设置iOS端的定位最小更新距离<br>
-    locationOption.distanceFilter = -1;
+  //   ///设置iOS端的定位最小更新距离<br>
+  //   locationOption.distanceFilter = -1;
 
-    ///设置iOS端期望的定位精度
-    /// 可选值：<br>
-    /// <li>[DesiredAccuracy.Best] 最高精度</li>
-    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+  //   ///设置iOS端期望的定位精度
+  //   /// 可选值：<br>
+  //   //     /// <li>[DesiredAccuracy.Best] 最高精度</li>
+  //   //     /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+  //   //     /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+  //   //     /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+  //   //     /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+  //   //     locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-    ///设置iOS端是否允许系统暂停定位
-    locationOption.pausesLocationUpdatesAutomatically = false;
+  //   ///设置iOS端是否允许系统暂停定位
+  //   locationOption.pausesLocationUpdatesAutomatically = false;
 
-    ///将定位参数设置给定位插件
-    _locationPlugin.setLocationOption(locationOption);
-  }
+  //   ///将定位参数设置给定位插件
+  //   _locationPlugin.setLocationOption(locationOption);
+  // }
 
-  ///开始定位
-  void _startLocation() {
-    ///开始定位之前设置定位参数
-    _setLocationOption();
-    _locationPlugin.startLocation();
-  }
+  // ///开始定位
+  // void _startLocation() {
+  //   ///开始定位之前设置定位参数
+  //   _setLocationOption();
+  //   _locationPlugin.startLocation();
+  // }
 
   ListTile buildAge() {
     return ListTile(

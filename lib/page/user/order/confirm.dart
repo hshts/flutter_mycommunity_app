@@ -108,7 +108,7 @@ class _MyOrderConfirmState extends State<MyOrderConfirm>
                 ),
                 SizedBox(height: 12),
                 InkWell(
-                  child: Container(
+                  child: SizedBox(
                     height: 109,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +129,7 @@ class _MyOrderConfirmState extends State<MyOrderConfirm>
                                   : SizedBox.shrink(),
                               SizedBox(width: 10),
                               Expanded(
-                                child: Container(
+                                child: SizedBox(
                                   height: 109,
                                   child: Column(
                                     mainAxisAlignment:

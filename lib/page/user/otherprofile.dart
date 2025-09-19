@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -23,10 +22,10 @@ import 'square/mymoment.dart';
 
 class OtherProfile extends StatefulWidget {
   final Object? arguments;
-  int uid = 0;
-  OtherProfile({super.key, this.arguments}) {
-    uid = (arguments as Map)["uid"];
-  }
+  final int uid;
+
+  OtherProfile({super.key, this.arguments})
+    : uid = arguments != null ? (arguments as Map)["uid"] : 0;
 
   @override
   _OtherProfileState createState() => _OtherProfileState();
@@ -758,7 +757,7 @@ class _OtherProfileState extends State<OtherProfile>
         children: <Widget>[
           Padding(padding: EdgeInsets.only(left: 10)),
           Text(
-            "${user!.username}",
+            user!.username,
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -1041,16 +1040,14 @@ class _OtherProfileState extends State<OtherProfile>
       Global.profile.user!.uid,
       timelineId,
     );
-    if (groupRelation == null) {
-      groupRelation = await _userService.joinSingle(
-        timelineId,
-        Global.profile.user!.uid,
-        user!.uid,
-        Global.profile.user!.token!,
-        captchaVerification,
-        errorCallBack,
-      );
-    }
+    groupRelation ??= await _userService.joinSingle(
+      timelineId,
+      Global.profile.user!.uid,
+      user!.uid,
+      Global.profile.user!.token!,
+      captchaVerification,
+      errorCallBack,
+    );
     if (groupRelation != null) {
       List<GroupRelation> groupRelations = [];
       groupRelations.add(groupRelation);

@@ -9,5 +9,6 @@ class Skuspecs {
 
   Skuspecs(this.specsid, this.goodpriceid, this.spdata, this.cost, this.pic);
 
-  factory Skuspecs.fromJson(Map<String, dynamic> json) => _$SkuspecsFromJson(json);
+  factory Skuspecs.fromJson(Map<String, dynamic> json) =>
+      _$SkuspecsFromJson(json);
 }

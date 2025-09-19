@@ -7,11 +7,11 @@ part of 'searchresult.dart';
 // **************************************************************************
 
 SearchResult _$SearchResultFromJson(Map<String, dynamic> json) => SearchResult(
-      json['id'] as int?,
-      json['content'] as String?,
-      json['updatetime'] as String?,
-      json['searchnum'] as int?,
-    );
+  (json['id'] as num?)?.toInt(),
+  json['content'] as String?,
+  json['updatetime'] as String?,
+  (json['searchnum'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$SearchResultToJson(SearchResult instance) =>
     <String, dynamic>{

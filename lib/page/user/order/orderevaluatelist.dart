@@ -89,7 +89,7 @@ class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
               children: [
                 SizedBox(height: 12),
                 InkWell(
-                  child: Container(
+                  child: SizedBox(
                     height: 109,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,7 +110,7 @@ class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
                                   : SizedBox.shrink(),
                               SizedBox(width: 10),
                               Expanded(
-                                child: Container(
+                                child: SizedBox(
                                   height: 109,
                                   child: Column(
                                     mainAxisAlignment:

@@ -15,61 +15,68 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
   final UserService _userService = UserService();
   final ActivityService _activityService = ActivityService();
 
-  MyFollowBloc() : super(PostInitial());
-
-  // @override
-  // // TODO: implement initialState
-  // MyFollowState get initialState => PostInitial();
   List<User> users = [];
   List<Activity> activitys = [];
 
-  @override
-  Stream<MyFollowState> mapEventToState(MyFollowEvent event) async* {
+  MyFollowBloc() : super(PostInitial()) {
+    on<PostFetched>(_onPostFetched);
+    on<PostActvityFetched>(_onPostActivityFetched);
+    on<PostCommunityFetched>(_onPostCommunityFetched);
+    on<Refreshed>(_onRefreshed);
+  }
+
+  Future<void> _onPostFetched(
+    PostFetched event,
+    Emitter<MyFollowState> emit,
+  ) async {
     final currentState = state;
     try {
-      if (event is PostFetched) {
-        if (currentState is PostInitial) {
-          if (event.user == null) {
-            yield NoLogin();
-            return;
-          }
-          yield PostLoading();
-          users = await _userService.getFollowUsers(
-            0,
-            event.user!.uid,
-            event.user!.token!,
-          );
-          if (users.isNotEmpty) {
-            activitys = await _activityService.getActivityListByFollow(
-              0,
-              users,
-            );
-          }
-          yield PostSuccess(
+      if (currentState is PostInitial) {
+        if (event.user == null) {
+          emit(NoLogin());
+          return;
+        }
+        emit(PostLoading());
+        users = await _userService.getFollowUsers(
+          0,
+          event.user!.uid,
+          event.user!.token!,
+        );
+        if (users.isNotEmpty) {
+          activitys = await _activityService.getActivityListByFollow(0, users);
+        }
+        emit(
+          PostSuccess(
             users: users,
             activitys: activitys,
             hasReachedActivityMax: false,
             hasReachedUserMax: false,
-          );
-          return;
-        }
-        //加载更多
+          ),
+        );
       }
+    } catch (_) {
+      emit(PostFailure());
+    }
+  }
 
-      if (event is PostActvityFetched) {
-        if (currentState is PostSuccess &&
-            !currentState.hasReachedActivityMax) {
-          int currentindex = 0;
-          currentindex += currentState.activitys.length;
-          if (currentState.users.isNotEmpty) {
-            activitys = await _activityService.getActivityListByFollow(
-              currentindex,
-              currentState.users,
-            );
-          }
+  Future<void> _onPostActivityFetched(
+    PostActvityFetched event,
+    Emitter<MyFollowState> emit,
+  ) async {
+    final currentState = state;
+    try {
+      if (currentState is PostSuccess && !currentState.hasReachedActivityMax) {
+        int currentindex = currentState.activitys.length;
+        if (currentState.users.isNotEmpty) {
+          activitys = await _activityService.getActivityListByFollow(
+            currentindex,
+            currentState.users,
+          );
+        }
 
-          if (activitys.isNotEmpty) currentState.activitys.addAll(activitys);
-          yield activitys.isEmpty
+        if (activitys.isNotEmpty) currentState.activitys.addAll(activitys);
+        emit(
+          activitys.isEmpty
               ? currentState.copyWith(hasReachedActivityMax: true)
               : PostSuccess(
                   users: currentState.users,
@@ -77,30 +84,39 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
                   hasReachedActivityMax: false,
                   hasReachedUserMax: currentState.hasReachedUserMax,
                   time: DateTime.now().toString(),
-                );
-          return;
-        }
+                ),
+        );
       }
-      if (event is PostCommunityFetched) {
-        if (currentState is PostSuccess && !currentState.hasReachedUserMax) {
-          int currentindex = 0;
-          currentindex += currentState.users.length;
+    } catch (_) {
+      emit(PostFailure());
+    }
+  }
 
-          users = await _userService.getFollowUsers(
-            currentindex,
-            event.user.uid,
-            event.user.token!,
+  Future<void> _onPostCommunityFetched(
+    PostCommunityFetched event,
+    Emitter<MyFollowState> emit,
+  ) async {
+    final currentState = state;
+    try {
+      if (currentState is PostSuccess && !currentState.hasReachedUserMax) {
+        int currentindex = currentState.users.length;
+
+        users = await _userService.getFollowUsers(
+          currentindex,
+          event.user.uid,
+          event.user.token!,
+        );
+        if (users.isNotEmpty) {
+          currentState.users.addAll(users);
+          activitys = await _activityService.getActivityListByFollow(
+            0,
+            currentState.users,
           );
-          if (users.isNotEmpty) {
-            currentState.users.addAll(users);
-            activitys = await _activityService.getActivityListByFollow(
-              0,
-              currentState.users,
-            );
-            currentState.activitys.clear();
-            currentState.activitys.addAll(activitys);
-          }
-          yield users.isEmpty
+          currentState.activitys.clear();
+          currentState.activitys.addAll(activitys);
+        }
+        emit(
+          users.isEmpty
               ? currentState.copyWith(hasReachedUserMax: true)
               : PostSuccess(
                   users: currentState.users,
@@ -108,29 +124,37 @@ class MyFollowBloc extends Bloc<MyFollowEvent, MyFollowState> {
                   hasReachedUserMax: false,
                   hasReachedActivityMax: currentState.hasReachedActivityMax,
                   time: DateTime.now().toString(),
-                );
-          return;
-        }
-      }
-
-      if (event is Refreshed) {
-        users = await _userService.getFollowUsers(
-          0,
-          event.user.uid,
-          event.user.token!,
+                ),
         );
-        if (users.isNotEmpty) {
-          activitys = await _activityService.getActivityListByFollow(0, users);
-        }
-        yield PostSuccess(
+      }
+    } catch (_) {
+      emit(PostFailure());
+    }
+  }
+
+  Future<void> _onRefreshed(
+    Refreshed event,
+    Emitter<MyFollowState> emit,
+  ) async {
+    try {
+      users = await _userService.getFollowUsers(
+        0,
+        event.user.uid,
+        event.user.token!,
+      );
+      if (users.isNotEmpty) {
+        activitys = await _activityService.getActivityListByFollow(0, users);
+      }
+      emit(
+        PostSuccess(
           users: users,
           activitys: activitys,
           hasReachedActivityMax: false,
           hasReachedUserMax: false,
-        );
-      }
+        ),
+      );
     } catch (_) {
-      yield PostFailure();
+      emit(PostFailure());
     }
   }
 

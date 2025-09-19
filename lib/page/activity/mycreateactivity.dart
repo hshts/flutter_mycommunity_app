@@ -190,7 +190,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                                   ? SizedBox(width: 10)
                                   : SizedBox.shrink(),
                               Expanded(
-                                child: Container(
+                                child: SizedBox(
                                   height: e.coverimg != null && e.coverimg != ""
                                       ? 119
                                       : 80,

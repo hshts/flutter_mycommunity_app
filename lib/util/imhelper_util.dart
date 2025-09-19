@@ -98,7 +98,7 @@ class ImHelper {
             Global.profile.user!.uid.toString(),
             0,
           );
-      if (localGrouprelations != null && localGrouprelations.length > 0) {
+      if (localGrouprelations != null && localGrouprelations.isNotEmpty) {
         for (GroupRelation local in localGrouprelations) {
           if (!timelineIds.contains(local.timeline_id)) {
             await dbClient.rawUpdate(
@@ -312,10 +312,6 @@ class ImHelper {
       ],
     );
 
-    if (result == null) {
-      return result;
-    }
-
     return result;
   }
 
@@ -324,13 +320,11 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    if (sourceId != null) {
-      //0文本 1 系统 2 图片 3声音 4地图 5分享
-      result = await dbClient.rawUpdate(
-        'UPDATE ${TableHelper.im_timeline_sync_relation} set content="你撤回了一条消息",sender=0,contenttype=0 where source_id=?',
-        [sourceId],
-      );
-    }
+    //0文本 1 系统 2 图片 3声音 4地图 5分享
+    result = await dbClient.rawUpdate(
+      'UPDATE ${TableHelper.im_timeline_sync_relation} set content="你撤回了一条消息",sender=0,contenttype=0 where source_id=?',
+      [sourceId],
+    );
 
     return result;
   }
@@ -340,13 +334,11 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    if (sourceId != null) {
-      //0文本 1 系统 2 图片 3声音 4地图 5分享
-      result = await dbClient.rawUpdate(
-        'UPDATE ${TableHelper.im_timeline_sync_relation} set content=?,sender=0,contenttype=0 where source_id=?',
-        [content, sourceId],
-      );
-    }
+    //0文本 1 系统 2 图片 3声音 4地图 5分享
+    result = await dbClient.rawUpdate(
+      'UPDATE ${TableHelper.im_timeline_sync_relation} set content=?,sender=0,contenttype=0 where source_id=?',
+      [content, sourceId],
+    );
 
     return result;
   }
@@ -356,12 +348,10 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    if (sourceId != null) {
-      result = await dbClient.rawUpdate(
-        'UPDATE ${TableHelper.im_group_relation} set newmsg=? where source_id=?',
-        [content, sourceId],
-      );
-    }
+    result = await dbClient.rawUpdate(
+      'UPDATE ${TableHelper.im_group_relation} set newmsg=? where source_id=?',
+      [content, sourceId],
+    );
 
     return result;
   }
@@ -613,7 +603,7 @@ class ImHelper {
   Future<List<CommentReply>?> getSysNotice(int current, int offset) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
-      "SELECT * FROM ${TableHelper.t_Comment_Reply} where  touid=${Global.profile.user!.uid} and isread=0 and type = '${ReplyMsgType.sysnotice}' order by touid asc, replycreatetime desc limit ${current},${offset}",
+      "SELECT * FROM ${TableHelper.t_Comment_Reply} where  touid=${Global.profile.user!.uid} and isread=0 and type = '${ReplyMsgType.sysnotice}' order by touid asc, replycreatetime desc limit $current,$offset",
     );
     if (maps.isEmpty) {
       return null;
@@ -695,9 +685,9 @@ class ImHelper {
       " where  uid=$uid and actid='$actid' ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["actid"]);
-    });
+    }
     fun(actids);
     return 1;
   }
@@ -746,10 +736,10 @@ class ImHelper {
       " where  uid=$uid and goodpriceid='$goodpriceid' and status=$status ",
     );
     List<String> goodpriceids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       goodpriceids.add(element["goodpriceid"]);
       ret = true;
-    });
+    }
     return ret;
   }
 
@@ -766,9 +756,9 @@ class ImHelper {
       " where  uid=$uid and actid='$actid' and type=$type ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["actid"]);
-    });
+    }
     fun(actids);
     return 1;
   }
@@ -814,9 +804,9 @@ class ImHelper {
       " where  uid=$uid and actid='$actid' and type=$type",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["actid"]);
-    });
+    }
     fun(actids);
     return 1;
   }
@@ -896,11 +886,11 @@ class ImHelper {
       " where  localuid=$uid",
     );
     List<Activity> activitys = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       activitys.add(
         Activity.fromMapCollectionTable(element as Map<String, dynamic>),
       );
-    });
+    }
     return activitys;
   }
 
@@ -972,9 +962,9 @@ class ImHelper {
       " where  uid=$uid and productid=$productid",
     );
     List<int> productids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       productids.add(element["productid"]);
-    });
+    }
     fun(productids);
     return 1;
   }
@@ -1052,9 +1042,9 @@ class ImHelper {
       " where  localuid=$uid and goodpriceid='$goodpriceid'",
     );
     List<String> goodpriceids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       goodpriceids.add(element["goodpriceid"]);
-    });
+    }
     fun(goodpriceids);
     return "";
   }
@@ -1066,9 +1056,9 @@ class ImHelper {
       " where  localuid=$uid",
     );
     List<String> goodpriceids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       goodpriceids.add(element["goodpriceid"]);
-    });
+    }
     return maps.length;
   }
 
@@ -1079,9 +1069,9 @@ class ImHelper {
       " where  localuid=$uid",
     );
     List<GoodPiceModel> goodpriceids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       goodpriceids.add(GoodPiceModel.fromMap(element as Map<String, dynamic>));
-    });
+    }
     return goodpriceids;
   }
 
@@ -1113,9 +1103,9 @@ class ImHelper {
       " where  localuid=$uid and actid='$actid' ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["actid"]);
-    });
+    }
     fun(actids);
     return 1;
   }
@@ -1176,9 +1166,9 @@ class ImHelper {
       " where  uid=$uid and commentid=$commentid ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["commentid"]);
-    });
+    }
     return actids;
   }
 
@@ -1238,9 +1228,9 @@ class ImHelper {
       " where  uid=$uid and commentid=$commentid ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["actid"]);
-    });
+    }
     return actids;
   }
 
@@ -1309,9 +1299,9 @@ class ImHelper {
       " where  uid=$uid and commentid=$commentid and type=$type ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["commentid"]);
-    });
+    }
     return actids;
   }
 
@@ -1371,9 +1361,9 @@ class ImHelper {
       " where  uid=$uid and evaluateid=$evaluateid ",
     );
     List<String> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["evaluateid"]);
-    });
+    }
     return actids;
   }
 
@@ -1643,9 +1633,9 @@ class ImHelper {
       " where  uid=$uid and follow=$follow ",
     );
     List<int> uids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       uids.add(element["follow"]);
-    });
+    }
     return uids;
   }
 
@@ -1657,9 +1647,9 @@ class ImHelper {
       " where  uid=$uid",
     );
     List<int> actids = [];
-    maps.forEach((element) {
+    for (var element in maps) {
       actids.add(element["follow"]);
-    });
+    }
     return actids;
   }
 

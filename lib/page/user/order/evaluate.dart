@@ -1,7 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:ff_stars/ff_stars.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../global.dart';
@@ -14,12 +13,15 @@ import '../../../util/common_util.dart';
 import '../../../util/showmessage_util.dart';
 
 class Evaluate extends StatefulWidget {
-  Object? arguments;
-  late Order order;
+  final Object? arguments;
+  final Order order;
 
-  Evaluate({super.key, this.arguments}) {
-    order = (arguments as Map)["order"];
-  }
+  Evaluate({super.key, this.arguments})
+    : assert(
+        arguments is Map && (arguments)['order'] != null,
+        'Evaluate requires an order in arguments',
+      ),
+      order = (arguments as Map)['order'] as Order;
 
   @override
   _EvaluateState createState() => _EvaluateState();
@@ -286,9 +288,11 @@ class _EvaluateState extends State<Evaluate> {
     try {
       resultList = await AssetPicker.pickAssets(
         context,
-        maxAssets: _imageMax,
-        selectedAssets: _images,
-        requestType: RequestType.image,
+        pickerConfig: AssetPickerConfig(
+          maxAssets: _imageMax,
+          selectedAssets: _images,
+          requestType: RequestType.image,
+        ),
       );
     } on Exception catch (e) {
       print(e.toString());

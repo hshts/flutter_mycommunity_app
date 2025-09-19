@@ -70,7 +70,7 @@ class _ListViewCity extends State<ListViewCity> {
           Navigator.of(context).pop<Map>(map);
         },
         title: Text(_citydata[_citykey[index]]["name"]),
-        trailing: new Icon(Icons.keyboard_arrow_right),
+        trailing: Icon(Icons.keyboard_arrow_right),
       ),
     );
   }

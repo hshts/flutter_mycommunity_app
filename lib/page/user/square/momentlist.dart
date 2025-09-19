@@ -277,6 +277,7 @@ class _MomentListState extends State<MomentList> {
                     ),
                   )
                 : ListView(
+                    shrinkWrap: true,
                     addAutomaticKeepAlives: true,
                     children: _buildMomentContent(),
                   ),

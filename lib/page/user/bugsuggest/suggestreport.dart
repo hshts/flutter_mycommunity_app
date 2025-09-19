@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../model/aliyun/securitytoken.dart';
@@ -13,15 +12,22 @@ import '../../../service/imservice.dart';
 import '../../../service/aliyun.dart';
 import '../../../global.dart';
 
-
 class SuggestReport extends StatefulWidget {
   final String timeline_id;
   final int reporttype; //0拼玩活动 1 社团 2私聊天  3团购
   final Object? arguments;
 
   SuggestReport({super.key, this.arguments})
-      : timeline_id = (arguments != null && (arguments is Map && arguments.containsKey("timeline_id"))) ? arguments["timeline_id"] : "",
-        reporttype = (arguments != null && (arguments is Map && arguments.containsKey("reporttype"))) ? arguments["reporttype"] : 0;
+    : timeline_id =
+          (arguments != null &&
+              (arguments is Map && arguments.containsKey("timeline_id")))
+          ? arguments["timeline_id"]
+          : "",
+      reporttype =
+          (arguments != null &&
+              (arguments is Map && arguments.containsKey("reporttype")))
+          ? arguments["reporttype"]
+          : 0;
 
   @override
   _SuggestReportState createState() => _SuggestReportState();

@@ -112,12 +112,14 @@ class _NumberControllerWidgetState extends State<NumberControllerWidget> {
               return;
             }
             num--;
-            if (widget.removeValueChanged != null)
+            if (widget.removeValueChanged != null) {
               widget.removeValueChanged!(num);
+            }
           }
           textController.text = '$num';
-          if (widget.updateValueChanged != null)
+          if (widget.updateValueChanged != null) {
             widget.updateValueChanged!(num);
+          }
         },
       ),
     );

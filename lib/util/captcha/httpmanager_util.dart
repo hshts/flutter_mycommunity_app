@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'dart:collection';
 
@@ -49,7 +47,7 @@ class HttpManager {
     ///设置头部
     option.headers = headers;
 
-    option.sendTimeout = 15000;
+    option.sendTimeout = Duration(milliseconds: 15000);
 
     //获取token
     var mirrorToken = "";

@@ -7,6 +7,7 @@ library;
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Progress Indicator. Used in loading data.
@@ -28,7 +29,7 @@ class PlatformProgressIndicator extends StatelessWidget {
   final double? value;
   final Brightness? brightness;
 
-  bool get isAppleOS => Platform.isIOS || Platform.isMacOS;
+  bool get isAppleOS => !kIsWeb && (Platform.isIOS || Platform.isMacOS);
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'dart:math';
-import 'dart:ui' show lerpDouble, ImageFilter;
 
 const int _kMaxDroppedSwipePageForwardAnimationTime = 800; // Milliseconds.
 const int _kMaxPageBackAnimationTime = 300; // Milliseconds.

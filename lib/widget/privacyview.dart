@@ -93,6 +93,6 @@ class _PrivacyViewState extends State<PrivacyView> {
     if (key == null) {
       return null;
     }
-    return {'key': '$key', 'index': currentIndex};
+    return {'key': key, 'index': currentIndex};
   }
 }

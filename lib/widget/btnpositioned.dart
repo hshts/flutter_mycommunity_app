@@ -46,12 +46,12 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
   @override
   void initState() {
     super.initState();
-    btnTop = widget.btnTop != null ? widget.btnTop : null;
-    right = widget.right != null ? widget.right : null;
-    left = widget.left != null ? widget.left : null;
-    image = widget.image != null ? widget.image : null;
-    btnOpacity = widget.opacity != null ? widget.opacity : null;
-    size = widget.size != null ? widget.size : 20;
+    btnTop = widget.btnTop;
+    right = widget.right;
+    left = widget.left;
+    image = widget.image;
+    btnOpacity = widget.opacity;
+    size = widget.size ?? 20;
   }
 
   @override
@@ -77,9 +77,7 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
               iconSize: size!,
               icon: Image.asset(image!),
               onPressed: () {
-                if (widget != null && widget.actionFunction != null) {
-                  widget.actionFunction();
-                }
+                widget.actionFunction();
               },
             ),
       ),

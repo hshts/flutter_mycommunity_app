@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
+// import 'package:amap_flutter_location/amap_flutter_location.dart';
+// import 'package:amap_flutter_location/amap_location_option.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:extended_text_field/extended_text_field.dart';
@@ -62,21 +62,15 @@ enum Initialized {
 }
 
 class MyMessage extends StatefulWidget {
-  Object? arguments;
-  late GroupRelation groupRelation;
-  String sharedcontent = "";
-  String localsharedcontent = "";
+  final Object? arguments;
+  final GroupRelation groupRelation;
+  final String sharedcontent;
+  final String localsharedcontent;
 
-  MyMessage({super.key, this.arguments}) {
-    groupRelation = (arguments as Map)["GroupRelation"];
-    if ((arguments as Map)["sharedcontent"] != null) {
-      sharedcontent = (arguments as Map)["sharedcontent"];
-    }
-
-    if ((arguments as Map)["localsharedcontent"] != null) {
-      localsharedcontent = (arguments as Map)["localsharedcontent"];
-    }
-  }
+  MyMessage({super.key, this.arguments})
+    : groupRelation = (arguments as Map)["GroupRelation"] as GroupRelation,
+      sharedcontent = (arguments)["sharedcontent"] as String? ?? "",
+      localsharedcontent = (arguments)["localsharedcontent"] as String? ?? "";
 
   @override
   _MyMessageState createState() => _MyMessageState();
@@ -131,7 +125,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   double _pagestatus = 0;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   int _relationStatus = 1; //1正常 2拉黑
-  final bool _btnActivityLocked = true; //活动开始、取消开始重复点击判断
+  // removed unused _btnActivityLocked to satisfy analyzer
   GoodPiceModel? _goodprice;
   Widget _activityinfo = Column(
     children: [
@@ -149,7 +143,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
   String _localpath = ""; //本地url
   int _contenttype = 0; //消息内容类型 文本 图片
   StreamSubscription<Map<String, Object>>? _locationListener;
-  final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
+  // final AMapFlutterLocation _locationPlugin = AMapFlutterLocation();
 
   _MyMessageState();
 
@@ -212,106 +206,105 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
     }
   }
 
-  void _setLocationOption() {
-    AMapLocationOption locationOption = new AMapLocationOption();
+  // void _setLocationOption() {
+  //   //     AMapLocationOption locationOption = AMapLocationOption();
 
-    ///是否单次定位
-    locationOption.onceLocation = true;
+  //   ///是否单次定位
+  //   locationOption.onceLocation = true;
 
-    ///是否需要返回逆地理信息
-    locationOption.needAddress = true;
+  //   ///是否需要返回逆地理信息
+  //   locationOption.needAddress = true;
 
-    ///逆地理信息的语言类型
-    locationOption.geoLanguage = GeoLanguage.DEFAULT;
+  //   ///逆地理信息的语言类型
+  //   //     locationOption.geoLanguage = GeoLanguage.DEFAULT;
 
-    locationOption.desiredLocationAccuracyAuthorizationMode =
-        AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
+  //   locationOption.desiredLocationAccuracyAuthorizationMode =
+  //       AMapLocationAccuracyAuthorizationMode.ReduceAccuracy;
 
-    locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
+  //   locationOption.fullAccuracyPurposeKey = "AMapLocationScene";
 
-    ///设置Android端连续定位的定位间隔
-    locationOption.locationInterval = 2000;
+  //   ///设置Android端连续定位的定位间隔
+  //   locationOption.locationInterval = 2000;
 
-    ///设置Android端的定位模式<br>
-    ///可选值：<br>
-    ///<li>[AMapLocationMode.Battery_Saving]</li>
-    ///<li>[AMapLocationMode.Device_Sensors]</li>
-    ///<li>[AMapLocationMode.Hight_Accuracy]</li>
-    locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
+  //   ///设置Android端的定位模式<br>
+  //   ///可选值：<br>
+  //   //     ///<li>[AMapLocationMode.Battery_Saving]</li>
+  //   //     ///<li>[AMapLocationMode.Device_Sensors]</li>
+  //   //     ///<li>[AMapLocationMode.Hight_Accuracy]</li>
+  //   //     locationOption.locationMode = AMapLocationMode.Hight_Accuracy;
 
-    ///设置iOS端的定位最小更新距离<br>
-    locationOption.distanceFilter = -1;
+  //   ///设置iOS端的定位最小更新距离<br>
+  //   locationOption.distanceFilter = -1;
 
-    ///设置iOS端期望的定位精度
-    /// 可选值：<br>
-    /// <li>[DesiredAccuracy.Best] 最高精度</li>
-    /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
-    /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
-    /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
-    /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
-    locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
+  //   ///设置iOS端期望的定位精度
+  //   /// 可选值：<br>
+  //   //     /// <li>[DesiredAccuracy.Best] 最高精度</li>
+  //   //     /// <li>[DesiredAccuracy.BestForNavigation] 适用于导航场景的高精度 </li>
+  //   //     /// <li>[DesiredAccuracy.NearestTenMeters] 10米 </li>
+  //   //     /// <li>[DesiredAccuracy.Kilometer] 1000米</li>
+  //   //     /// <li>[DesiredAccuracy.ThreeKilometers] 3000米</li>
+  //   //     locationOption.desiredAccuracy = DesiredAccuracy.HundredMeters;
 
-    ///设置iOS端是否允许系统暂停定位
-    locationOption.pausesLocationUpdatesAutomatically = false;
+  //   ///设置iOS端是否允许系统暂停定位
+  //   locationOption.pausesLocationUpdatesAutomatically = false;
 
-    ///将定位参数设置给定位插件
-    _locationPlugin.setLocationOption(locationOption);
-  }
+  //   ///将定位参数设置给定位插件
+  //   _locationPlugin.setLocationOption(locationOption);
+  // }
 
-  ///开始定位
-  void _startLocation() {
-    ///开始定位之前设置定位参数
-    _setLocationOption();
-    _locationPlugin.startLocation();
-  }
+  // ///开始定位
+  // void _startLocation() {
+  //   ///开始定位之前设置定位参数
+  //   _setLocationOption();
+  //   _locationPlugin.startLocation();
+  // }
 
-  Future<bool> _initlocation() async {
-    bool ret = await PermissionUtil.requestLocationPermisson();
+  // Future<bool> _initlocation() async {
+  //   bool ret = await PermissionUtil.requestLocationPermisson();
 
-    if (ret) {
-      _locationListener ??= _locationPlugin.onLocationChanged().listen((
-        Map<String, Object> result,
-      ) {
-        Map<String, Object>? _locationResult = result;
-        if (_locationResult != null) {
-          if (result["longitude"] != "" && result["adCode"] != "") {
-            Navigator.pushNamed(
-              context,
-              '/MapLocationPicker',
-              arguments: {
-                "lat": double.parse(result["latitude"].toString()),
-                "lng": double.parse(result["longitude"].toString()),
-                "citycode": CommonUtil.getCityNameByGaoDe(
-                  result["adCode"].toString(),
-                ),
-                "isMapImage": true,
-              },
-            ).then((dynamic value) {
-              if (value != null) {
-                if (value["image"] == null) {
-                  ShowMessage.showToast("获取地图失败,请重试");
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  return;
-                }
-                locationImage(
-                  value["image"],
-                  value["address"],
-                  value["title"],
-                  value["latitude"].toString(),
-                  value["longitude"].toString(),
-                );
-              }
-              setState(() {
-                FocusScope.of(context).requestFocus(FocusNode());
-              });
-            });
-          }
-        }
-      });
-    }
+  //   if (ret) {
+  //     _locationListener ??= _locationPlugin.onLocationChanged().listen((
+  //       Map<String, Object> result,
+  //     ) {
+  //       {
+  //         if (result["longitude"] != "" && result["adCode"] != "") {
+  //           Navigator.pushNamed(
+  //             context,
+  //             '/MapLocationPicker',
+  //             arguments: {
+  //               "lat": double.parse(result["latitude"].toString()),
+  //               "lng": double.parse(result["longitude"].toString()),
+  //               "citycode": CommonUtil.getCityNameByGaoDe(
+  //                 result["adCode"].toString(),
+  //               ),
+  //               "isMapImage": true,
+  //             },
+  //           ).then((dynamic value) {
+  //             if (value != null) {
+  //               if (value["image"] == null) {
+  //                 ShowMessage.showToast("获取地图失败,请重试");
+  //                 FocusScope.of(context).requestFocus(FocusNode());
+  //                 return;
+  //               }
+  //               locationImage(
+  //                 value["image"],
+  //                 value["address"],
+  //                 value["title"],
+  //                 value["latitude"].toString(),
+  //                 value["longitude"].toString(),
+  //               );
+  //             }
+  //             setState(() {
+  //               FocusScope.of(context).requestFocus(FocusNode());
+  //             });
+  //           });
+  //         }
+  //       }
+  //     });
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   Future<void> startRecorder() async {
     try {
@@ -581,9 +574,9 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         "${md5.convert(_recordFilepath.codeUnits)}.mp4",
         Global.profile.user!.uid,
       );
-      msg = "|sound: ${_recorderTime}#${soundUrl}|";
+      msg = "|sound: $_recorderTime#$soundUrl|";
       String localmsg =
-          "|sound: ${_recorderTime}#${securityToken.host + "/" + soundUrl}|"; //本地保存的url
+          "|sound: $_recorderTime#${"${securityToken.host}/$soundUrl"}|"; //本地保存的url
       _recorderTime = 0;
       await sendMessage(msg, 3, localmsg, _recordFilepath, "");
     }
@@ -828,8 +821,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       _locationListener!.cancel();
     }
 
-    ///销毁定位
-    _locationPlugin.destroy();
+    // ///销毁定位
+    // _locationPlugin.destroy();
 
     if (_recordtimer != null) _recordtimer!.cancel();
 
@@ -1417,7 +1410,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       alignment: Alignment.center,
       child: Text(
         '${sendTime.month}月${sendTime.day}日 '
-        '${sendTime.hour}:${sendTime.minute < 10 ? ('0' + sendTime.minute.toString()) : sendTime.minute}',
+        '${sendTime.hour}:${sendTime.minute < 10 ? ('0${sendTime.minute}') : sendTime.minute}',
         style: TextStyle(color: Colors.black45, fontSize: 13),
       ),
     );
@@ -1549,8 +1542,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .split('#');
       String sharedtype = sharedinfo[0]; //分享类型 0 活动 1商品
       String contentid = sharedinfo[1];
-      String content = sharedinfo[2];
-      String image = sharedinfo[3];
+      // removed unused local variables content/image
 
       widContent = SizedBox(
         width: _pageWidth - 20,
@@ -1619,7 +1611,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
                 if (redpacket == null) return;
                 //弹出红包三种状态  1已经领取  2红包过期 3还没有领
-                if (redpacket.touid != null && redpacket.touid > 0) {
+                if (redpacket.touid > 0) {
                   //1已经领取
                   _imHelper.updateReceiveRedPacket(
                     timeLineSync.content!,
@@ -1657,7 +1649,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Container(
                           alignment: Alignment.center,
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red.shade400,
                             borderRadius: BorderRadius.all(
                               Radius.circular(9.0),
@@ -1684,7 +1676,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Container(
                           alignment: Alignment.center,
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red.shade400,
                             borderRadius: BorderRadius.all(
                               Radius.circular(9.0),
@@ -1771,7 +1763,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             decoration: BoxDecoration(color: Colors.grey.shade100),
             child: InkWell(
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   color: isImg ? null : Colors.cyan,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15.0),
@@ -1926,8 +1918,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           .split('#');
       String sharedtype = sharedinfo[0]; //分享类型 0 活动 1商品
       String contentid = sharedinfo[1];
-      String content = sharedinfo[2];
-      String image = sharedinfo[3];
+      // removed unused local variables content/image
 
       widContent = SizedBox(
         width: _pageWidth - 20,
@@ -1994,7 +1985,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
 
                 if (redpacket == null) return;
                 //弹出红包三种状态  1已经领取  2红包过期 3还没有领
-                if (redpacket.touid != null && redpacket.touid > 0) {
+                if (redpacket.touid > 0) {
                   //1已经领取
                   _imHelper.updateReceiveRedPacket(
                     timeLineSync.content!,
@@ -2017,7 +2008,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Container(
                           alignment: Alignment.center,
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red.shade400,
                             borderRadius: BorderRadius.all(
                               Radius.circular(9.0),
@@ -2045,7 +2036,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Container(
                           alignment: Alignment.center,
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red.shade400,
                             borderRadius: BorderRadius.all(
                               Radius.circular(9.0),
@@ -2073,7 +2064,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         child: Container(
                           alignment: Alignment.center,
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red.shade400,
                             borderRadius: BorderRadius.all(
                               Radius.circular(9.0),
@@ -2562,16 +2553,25 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       padding: const EdgeInsets.all(1.0),
       children: [
         GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () async {
+            bool isQuit = await _isQuitActivity();
+            if (isQuit) {
+              return;
+            }
+            loadAssets();
+            //insertText(text);
+          },
           child: Column(
             children: <Widget>[
               Container(
                 width: 50,
                 height: 50,
-                child: Icon(IconFont.icon_xiangce2),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(IconFont.icon_xiangce2),
               ),
               SizedBox(height: 10),
               Align(
@@ -2582,27 +2582,26 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               ),
             ],
           ),
+        ),
+        GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             bool isQuit = await _isQuitActivity();
             if (isQuit) {
               return;
             }
-            loadAssets();
-            //insertText(text);
+            pickImage();
           },
-        ),
-        GestureDetector(
           child: Column(
             children: <Widget>[
               Container(
                 width: 50,
                 height: 50,
-                child: Icon(IconFont.icon_paizhao1),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(IconFont.icon_paizhao1),
               ),
               SizedBox(height: 10),
               Align(
@@ -2613,26 +2612,28 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               ),
             ],
           ),
+        ),
+        GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             bool isQuit = await _isQuitActivity();
             if (isQuit) {
               return;
             }
-            pickImage();
+            //insertText(text);
+            // await _initlocation();
+            // _startLocation();
           },
-        ),
-        GestureDetector(
           child: Column(
             children: <Widget>[
               Container(
                 width: 50,
                 height: 50,
-                child: Icon(IconFont.icon_weizhi1),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(IconFont.icon_weizhi1),
               ),
               SizedBox(height: 10),
               Align(
@@ -2643,38 +2644,8 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          behavior: HitTestBehavior.translucent,
-          onTap: () async {
-            bool isQuit = await _isQuitActivity();
-            if (isQuit) {
-              return;
-            }
-            //insertText(text);
-            await _initlocation();
-            _startLocation();
-          },
         ),
         GestureDetector(
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: 50,
-                height: 50,
-                child: Icon(IconFont.icon_huodong2),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              SizedBox(height: 10),
-              Align(
-                child: Text(
-                  '活动',
-                  style: TextStyle(color: Colors.black54, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             //insertText(text);
@@ -2691,28 +2662,28 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               ShowMessage.showToast('这不是一个活动群');
             }
           },
-        ),
-        GestureDetector(
           child: Column(
             children: <Widget>[
               Container(
                 width: 50,
                 height: 50,
-                child: Icon(IconFont.icon_pintu_huabanfuben),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(IconFont.icon_huodong2),
               ),
               SizedBox(height: 10),
               Align(
                 child: Text(
-                  '红包',
+                  '活动',
                   style: TextStyle(color: Colors.black54, fontSize: 13),
                 ),
               ),
             ],
           ),
+        ),
+        GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             bool isQuit = await _isQuitActivity();
@@ -2728,11 +2699,31 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
               },
             ).then((value) {
               if (value != null &&
-                  value.toString().indexOf("|sendredpacket:") >= 0) {
+                  value.toString().contains("|sendredpacket:")) {
                 _sendRedPacket(value.toString());
               }
             });
           },
+          child: Column(
+            children: <Widget>[
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(IconFont.icon_pintu_huabanfuben),
+              ),
+              SizedBox(height: 10),
+              Align(
+                child: Text(
+                  '红包',
+                  style: TextStyle(color: Colors.black54, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -8,16 +8,18 @@ import '../../service/activity.dart';
 import '../../global.dart';
 
 class ManageActivityMember extends StatefulWidget {
-  Object? arguments;
-  List<User> members = [];
-  String actid = "";
-  ManageActivityMember({super.key, this.arguments}) {
-    members = (arguments as Map)["members"];
-    for (int i = 0; i < members.length; i++) {
-      members[i].isFollow = false;
-    }
-    actid = (arguments as Map)["actid"];
-  }
+  final Object? arguments;
+  final List<User> members;
+  final String actid;
+
+  ManageActivityMember({super.key, this.arguments})
+    : members = arguments != null
+          ? List<User>.from((arguments as Map)["members"]).map((user) {
+              user.isFollow = false;
+              return user;
+            }).toList()
+          : [],
+      actid = arguments != null ? (arguments as Map)["actid"] : "";
 
   @override
   _ManageActivityMemberState createState() => _ManageActivityMemberState();

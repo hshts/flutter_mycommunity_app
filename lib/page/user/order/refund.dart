@@ -6,7 +6,6 @@ import '../../../service/gpservice.dart';
 import '../../../widget/circle_headimage.dart';
 import '../../../model/grouppurchase/goodpice_model.dart';
 import '../../../util/showmessage_util.dart';
-import '../../../util/imhelper_util.dart';
 import '../../../global.dart';
 
 class MyOrderRefund extends StatefulWidget {
@@ -94,7 +93,7 @@ class _MyOrderRefundState extends State<MyOrderRefund> {
               //设置四周边框
             ),
             child: InkWell(
-              child: Container(
+              child: SizedBox(
                 height: 109,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,7 +114,7 @@ class _MyOrderRefundState extends State<MyOrderRefund> {
                               : SizedBox.shrink(),
                           SizedBox(width: 10),
                           Expanded(
-                            child: Container(
+                            child: SizedBox(
                               height: 109,
                               child: Column(
                                 mainAxisAlignment:

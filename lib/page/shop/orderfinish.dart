@@ -5,18 +5,17 @@ import '../../../widget/my_divider.dart';
 import 'package:flutter/material.dart';
 
 class OrderFinish extends StatefulWidget {
-  Object? arguments;
-  late GoodPiceModel goodPiceModel;
-  int productnum = 0;
-  double gpprice = 0;
-  String ordertime = "";
+  final Object? arguments;
+  final GoodPiceModel goodPiceModel;
+  final int productnum;
+  final double gpprice;
+  final String ordertime;
 
-  OrderFinish({super.key, this.arguments}) {
-    goodPiceModel = (arguments as Map)["goodprice"];
-    productnum = (arguments as Map)["productnum"];
-    gpprice = (arguments as Map)["gpprice"];
-    ordertime = (arguments as Map)["ordertime"];
-  }
+  OrderFinish({super.key, this.arguments})
+    : goodPiceModel = (arguments as Map)["goodprice"],
+      productnum = (arguments as Map)["productnum"] ?? 0,
+      gpprice = ((arguments as Map)["gpprice"] ?? 0).toDouble(),
+      ordertime = (arguments as Map)["ordertime"] ?? "";
 
   @override
   _OrderFinishState createState() => _OrderFinishState();

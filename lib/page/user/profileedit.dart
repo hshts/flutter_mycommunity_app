@@ -464,8 +464,10 @@ class _MyProfileEditState extends State<MyProfileEdit> {
           if (Platform.isAndroid) {
             List<AssetEntity>? resultList = await AssetPicker.pickAssets(
               context,
-              maxAssets: 1,
-              requestType: RequestType.image,
+              pickerConfig: AssetPickerConfig(
+                maxAssets: 1,
+                requestType: RequestType.image,
+              ),
             );
 
             if (resultList != null && resultList.isNotEmpty) {
@@ -477,25 +479,27 @@ class _MyProfileEditState extends State<MyProfileEdit> {
         }
       }
       if (imageFile != null) {
-        croppedFile = await ImageCropper().cropImage(
+        CroppedFile? result = await ImageCropper().cropImage(
           maxWidth: 750,
           maxHeight: 750,
           compressQuality: 19,
           sourcePath: imageFile!.path,
-          aspectRatioPresets: [CropAspectRatioPreset.square],
-          androidUiSettings: AndroidUiSettings(
-            toolbarTitle: '裁剪',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: true,
-          ),
-          iosUiSettings: IOSUiSettings(
-            title: '裁剪',
-            minimumAspectRatio: 1.0,
-            aspectRatioLockEnabled: true,
-          ),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: '裁剪',
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: true,
+            ),
+            IOSUiSettings(
+              title: '裁剪',
+              minimumAspectRatio: 1.0,
+              aspectRatioLockEnabled: true,
+            ),
+          ],
         );
+        croppedFile = result != null ? File(result.path) : null;
         if (croppedFile != null) {
           String ossimagpath = "";
           String serverossimg = "";

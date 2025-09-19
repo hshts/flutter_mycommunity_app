@@ -664,7 +664,7 @@ class _ActivityState extends State<ActivityInfo> {
     double initheigth = 0;
 
     List<String> wh = _activity!.coverimgwh.split(',');
-    if (wh.length > 0) {
+    if (wh.isNotEmpty) {
       initheigth = getImageWH(_activity!);
     }
 
@@ -1176,9 +1176,7 @@ class _ActivityState extends State<ActivityInfo> {
       if (temreplyid > 0) {
         for (var e in _listComments) {
           if (e.commentid == commentid) {
-            if (e.replys == null) {
-              e.replys = [];
-            }
+            e.replys ??= [];
             e.replys!.add(
               CommentReply(
                 temreplyid,

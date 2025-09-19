@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import '../../widget/my_divider.dart';
 
 class ReportActivity extends StatefulWidget {
-  String actid = "";
-  int sourcetype = 0;
-  int touid = 0;
-  Object? arguments;
+  final String actid;
+  final int sourcetype;
+  final int touid;
+  final Object? arguments;
 
-  ReportActivity({super.key, this.arguments}) {
-    if (arguments != null) {
-      actid = (arguments as Map)["actid"];
-      sourcetype = (arguments as Map)["sourcetype"];
-      touid = (arguments as Map)["touid"];
-    }
-  }
+  ReportActivity({super.key, this.arguments})
+    : actid = arguments != null ? (arguments as Map)["actid"] ?? "" : "",
+      sourcetype = arguments != null
+          ? (arguments as Map)["sourcetype"] ?? 0
+          : 0,
+      touid = arguments != null ? (arguments as Map)["touid"] ?? 0 : 0;
 
   @override
   _ReportActivityState createState() => _ReportActivityState();

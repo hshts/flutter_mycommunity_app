@@ -1,4 +1,4 @@
-import 'package:amap_flutter_base/amap_flutter_base.dart';
+// import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
@@ -26,15 +26,55 @@ import '../../global.dart';
 
 ///渐变 APP var
 class GoodPriceInfo extends StatefulWidget {
-  Object? arguments;
-  late GoodPiceModel goodPiceModel;
+  final Object? arguments;
+  final GoodPiceModel goodPiceModel;
 
   @override
   State<StatefulWidget> createState() => GoodPriceInfoState();
 
-  GoodPriceInfo({super.key, required this.arguments}) {
-    if (arguments != null) goodPiceModel = (arguments as Map)["goodprice"];
-  }
+  GoodPriceInfo({super.key, required this.arguments})
+    : goodPiceModel = (() {
+        if (arguments is Map) {
+          final m = arguments;
+          final v = m["goodprice"];
+          if (v is GoodPiceModel) return v;
+        }
+        // 回退：构造一个占位对象，避免空
+        return GoodPiceModel(
+          "", // goodpriceid
+          "", // title
+          "", // content
+          0, // category
+          "", // brand
+          1, // discount
+          "", // endtime
+          "", // createtime
+          "", // albumpics
+          "", // pic
+          0, // collectionnum
+          0, // sellnum
+          "", // province
+          "", // city
+          0, // uid
+          "", // username
+          "", // profilepicture
+          0, // likenum
+          0, // unlikenum
+          0, // commentnum
+          1, // productstatus
+          0, // satisfactionrate
+          0, // activitycount
+          "", // tag
+          "", // msg
+          "", // addresstitle
+          "", // address
+          0, // lat
+          0, // lng
+          0, // mincost
+          0, // maxcost
+          0, // evaluatenum
+        );
+      })();
 }
 
 class GoodPriceInfoState extends State<GoodPriceInfo> {
@@ -280,7 +320,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   showModalBottomSheet(
                     context: context,
                     builder: (BuildContext context) {
-                      return new Column(
+                      return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           InkWell(
@@ -302,9 +342,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   Global.profile.user!.token!,
                                   errorCallBack,
                                 );
-                                if (ret)
+                                if (ret) {
                                   widget.goodPiceModel.likenum =
                                       widget.goodPiceModel.likenum - 1;
+                                }
                               } else {
                                 //先取消不赞，在点赞
                                 if (isUnLike) {
@@ -315,9 +356,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                         Global.profile.user!.token!,
                                         errorCallBack,
                                       );
-                                  if (ret)
+                                  if (ret) {
                                     widget.goodPiceModel.unlikenum =
                                         widget.goodPiceModel.unlikenum - 1;
+                                  }
                                 }
                                 bool ret = await _gpService.updateGoodPriceLike(
                                   widget.goodPiceModel.goodpriceid,
@@ -325,9 +367,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   Global.profile.user!.token!,
                                   errorCallBack,
                                 );
-                                if (ret)
+                                if (ret) {
                                   widget.goodPiceModel.likenum =
                                       widget.goodPiceModel.likenum + 1;
+                                }
                               }
                               if (widget.goodPiceModel.likenum +
                                       widget.goodPiceModel.unlikenum >
@@ -353,9 +396,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   Global.profile.user!.token!,
                                   errorCallBack,
                                 );
-                                if (ret)
+                                if (ret) {
                                   widget.goodPiceModel.unlikenum =
                                       widget.goodPiceModel.unlikenum - 1;
+                                }
                               } else {
                                 if (isLike) {
                                   bool ret = await _gpService.delGoodPriceLike(
@@ -364,9 +408,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                     Global.profile.user!.token!,
                                     errorCallBack,
                                   );
-                                  if (ret)
+                                  if (ret) {
                                     widget.goodPiceModel.likenum =
                                         widget.goodPiceModel.likenum - 1;
+                                  }
                                 }
                                 bool ret = await _gpService.updateUnLike(
                                   widget.goodPiceModel.goodpriceid,
@@ -374,9 +419,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   Global.profile.user!.token!,
                                   errorCallBack,
                                 );
-                                if (ret)
+                                if (ret) {
                                   widget.goodPiceModel.unlikenum =
                                       widget.goodPiceModel.unlikenum + 1;
+                                }
                               }
 
                               if (widget.goodPiceModel.likenum +
@@ -505,6 +551,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 child: Container(
                   margin: EdgeInsets.all(8),
                   alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Global.profile.backColor,
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -514,10 +564,6 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ],
-                  ),
-                  decoration: BoxDecoration(
-                    color: Global.profile.backColor,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
                   ),
                 ),
                 onTap: () {
@@ -671,7 +717,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             ),
           ),
           child: Text(
-            '${widget.goodPiceModel.brand}',
+            widget.goodPiceModel.brand,
             style: TextStyle(color: Colors.white, fontSize: 10),
           ),
         ),
@@ -865,15 +911,16 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   Widget buildLocation() {
     return InkWell(
       onTap: () {
-        LatLng latLng = LatLng(
-          widget.goodPiceModel.lat,
-          widget.goodPiceModel.lng,
-        );
+        // LatLng functionality removed - amap dependencies removed
+        // LatLng latLng = LatLng(
+        //   widget.goodPiceModel.lat,
+        //   widget.goodPiceModel.lng,
+        // );
         Navigator.pushNamed(
           context,
           '/MapLocationShowNav',
           arguments: {
-            "LatLng": latLng,
+            // "LatLng": latLng,
             "title": widget.goodPiceModel.addresstitle,
             "address": widget.goodPiceModel.address,
           },
@@ -1293,7 +1340,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   //获取商品评价
   Widget buildEvaluateList() {
     List<Widget> evaluateContent = [];
-    int index = 1;
+    // int index = 1; // 未使用变量
     _evaluates.map((e) {
       evaluateContent.add(
         Padding(
@@ -1466,7 +1513,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           ),
         ),
       );
-      index++;
+      // index++;
     }).toList();
     return evaluateContent.isEmpty
         ? Center(
@@ -1578,7 +1625,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                           sortComment(_comments, _ordertype);
                           setState(() {});
                         } else {
-                          errorHandle(commentid ?? 0, touid, null);
+                          errorHandle(commentid, touid, null);
                         }
                       } else {
                         int temreplyid = await _gpService.updateCommentReply(
@@ -1619,7 +1666,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
                           setState(() {});
                         } else {
-                          errorHandle(commentid ?? 0, touid, touser);
+                          errorHandle(commentid, touid, touser);
                         }
                       }
                     } else {

@@ -1575,7 +1575,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxReplyid(ReplyMsgType.commentmsg);
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_commentindex) {
+    if (temsequenceId > userNotice.read_commentindex) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1623,7 +1623,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_bugcomment) {
+    if (temsequenceId > userNotice.read_bugcomment) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1677,8 +1677,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_suggestcomment) {
+    if (temsequenceId > userNotice.read_suggestcomment) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1732,8 +1731,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_momentcomment) {
+    if (temsequenceId > userNotice.read_momentcomment) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1787,8 +1785,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_goodpricecommentindex) {
+    if (temsequenceId > userNotice.read_goodpricecommentindex) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1844,7 +1841,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(0); //0是活动的点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_actlike) {
+    if (temsequenceId > userNotice.read_actlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1892,7 +1889,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(3); //3bug
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_buglike) {
+    if (temsequenceId > userNotice.read_buglike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1937,7 +1934,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(4); //0是活动的点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_suggestlike) {
+    if (temsequenceId > userNotice.read_suggestlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -1982,7 +1979,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(8); //0是活动的点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_momentlike) {
+    if (temsequenceId > userNotice.read_momentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2026,7 +2023,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(1); //0是活动的点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_commentlike) {
+    if (temsequenceId > userNotice.read_commentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2073,8 +2070,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(7); //7是goodprice点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_goodpricecommentlike) {
+    if (temsequenceId > userNotice.read_goodpricecommentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2121,7 +2117,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(2); //0是活动的点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_evaluate) {
+    if (temsequenceId > userNotice.read_evaluate) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2168,8 +2164,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(5); //5是bugcomment点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_bugcommentlike) {
+    if (temsequenceId > userNotice.read_bugcommentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2216,8 +2211,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(6); //5是bugcomment点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_suggestcommentlike) {
+    if (temsequenceId > userNotice.read_suggestcommentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2264,8 +2258,7 @@ class ActivityService {
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     var temsequenceId = await imhelper.getMaxLikeID(9); //5是momentcomment点赞
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_momentcommentlike) {
+    if (temsequenceId > userNotice.read_momentcommentlike) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2313,7 +2306,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxFollowid();
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_follow) {
+    if (temsequenceId > userNotice.read_follow) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2367,7 +2360,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxReplyid(ReplyMsgType.replymsg);
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_replyindex) {
+    if (temsequenceId > userNotice.read_replyindex) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2420,8 +2413,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_goodpricereplyindex) {
+    if (temsequenceId > userNotice.read_goodpricereplyindex) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2477,7 +2469,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxReplyid(ReplyMsgType.bugreplymsg);
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_bugreply) {
+    if (temsequenceId > userNotice.read_bugreply) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2532,7 +2524,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_suggestreply) {
+    if (temsequenceId > userNotice.read_suggestreply) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2587,8 +2579,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.unread_momentreply) {
+    if (temsequenceId > userNotice.unread_momentreply) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2638,8 +2629,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxReplyid(ReplyMsgType.sysnotice);
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_sysnoticeindex) {
+    if (temsequenceId > userNotice.read_sysnoticeindex) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2886,7 +2876,7 @@ class ActivityService {
     var temsequenceId = await imhelper.getMaxReplyid(ReplyMsgType.evaluatemsg);
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null && temsequenceId > userNotice.read_evaluate) {
+    if (temsequenceId > userNotice.read_evaluate) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({
@@ -2941,8 +2931,7 @@ class ActivityService {
     );
 
     ///如果本地已储存的数据大于服务器则使用本地最新数据id
-    if (temsequenceId != null &&
-        temsequenceId > userNotice.read_evaluatereply) {
+    if (temsequenceId > userNotice.read_evaluatereply) {
       sequenceId = temsequenceId;
     }
     FormData formData = FormData.fromMap({

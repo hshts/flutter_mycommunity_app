@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 
 import '../service/commonjson.dart';
 import '../global.dart';
@@ -79,16 +78,21 @@ class _HtmlContentState extends State<HtmlContent> {
                   border: Border(bottom: BorderSide(color: Colors.grey)),
                 ),
                 "th": Style(
-                  padding: EdgeInsets.all(6),
+                  padding: HtmlPaddings.all(6),
                   backgroundColor: Colors.grey,
                 ),
-                "td": Style(padding: EdgeInsets.all(6)),
+                "td": Style(padding: HtmlPaddings.all(6)),
                 "var": Style(fontFamily: 'serif'),
               },
 
-              onImageError: (exception, stackTrace) {
-                print(exception);
-              },
+              extensions: [
+                TagExtension(
+                  tagsToExtend: {"img"},
+                  builder: (context) {
+                    return Container();
+                  },
+                ),
+              ],
             ),
           ],
         ),

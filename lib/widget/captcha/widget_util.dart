@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'object_utils.dart';
 /**
  * @Author: thl
  * @GitHub: https://github.com/Sky24n
@@ -30,15 +29,13 @@ class WidgetUtil {
     if (_hasMeasured) return;
     WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       var box = context.findRenderObject() as RenderParagraph;
-      if (box.semanticBounds != null) {
-        if (isOnce) _hasMeasured = true;
-        double width = box.semanticBounds.width;
-        double height = box.semanticBounds.height;
-        if (_width != width || _height != height) {
-          _width = width;
-          _height = height;
-          onCallBack(box.semanticBounds);
-        }
+      if (isOnce) _hasMeasured = true;
+      double width = box.semanticBounds.width;
+      double height = box.semanticBounds.height;
+      if (_width != width || _height != height) {
+        _width = width;
+        _height = height;
+        onCallBack(box.semanticBounds);
       }
     });
   }

@@ -12,11 +12,11 @@ import '../../model/grouppurchase/goodpice_model.dart';
 import '../../global.dart';
 
 class SearchProductResultPage extends StatefulWidget {
-  Object? arguments;
-  String content = "";
-  SearchProductResultPage({super.key, this.arguments}) {
-    content = (arguments as Map)["content"];
-  }
+  final Object? arguments;
+  final String content;
+
+  SearchProductResultPage({super.key, this.arguments})
+    : content = arguments != null ? (arguments as Map)["content"] : "";
 
   @override
   _SearchProductResultPageState createState() =>
@@ -369,7 +369,8 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        SizedBox(
+                          height: 40,
                           child: Text(
                             goodPiceModel.title,
                             maxLines: 2,
@@ -378,7 +379,6 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          height: 40,
                         ),
                         SizedBox(height: 6),
                         tag,
@@ -399,15 +399,8 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                                 right: 5,
                               ),
                               alignment: Alignment.center,
-                              child: Text(
-                                '${goodPiceModel.brand}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
                               decoration: BoxDecoration(
-                                borderRadius: new BorderRadius.circular(
+                                borderRadius: BorderRadius.circular(
                                   (5.0),
                                 ), // 圆角度
                                 gradient: LinearGradient(
@@ -417,6 +410,13 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                                     Global.profile.backColor!,
                                     Colors.deepOrange,
                                   ],
+                                ),
+                              ),
+                              child: Text(
+                                goodPiceModel.brand,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
                                 ),
                               ),
                             ),

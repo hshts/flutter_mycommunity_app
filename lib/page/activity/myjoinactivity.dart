@@ -192,7 +192,7 @@ class _MyJoinActivityState extends State<MyJoinActivity>
                                   ? SizedBox(width: 10)
                                   : SizedBox.shrink(),
                               Expanded(
-                                child: Container(
+                                child: SizedBox(
                                   height: e.coverimg != null && e.coverimg != ""
                                       ? 119
                                       : 80,

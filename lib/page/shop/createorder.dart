@@ -11,16 +11,13 @@ import '../../global.dart';
 import 'widget/numberwidget.dart';
 
 class CreateOrder extends StatefulWidget {
-  Object? arguments;
-  late GoodPiceModel goodPiceModel;
-  late String actid;
+  final Object? arguments;
+  final GoodPiceModel goodPiceModel;
+  final String actid;
 
-  CreateOrder({super.key, required this.arguments}) {
-    if (arguments != null) {
-      goodPiceModel = (arguments as Map)["goodprice"];
-      actid = (arguments as Map)["actid"];
-    }
-  }
+  CreateOrder({super.key, required this.arguments})
+    : goodPiceModel = (arguments as Map)["goodprice"],
+      actid = (arguments as Map)["actid"] ?? "";
   @override
   _CreateOrderPageState createState() => _CreateOrderPageState();
 }

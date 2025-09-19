@@ -1,5 +1,4 @@
 import 'package:flappy_search_bar_ns/flappy_search_bar_ns.dart' as search_bar;
-import 'package:flappy_search_bar_ns/flappy_search_bar_ns.dart';
 import 'package:flappy_search_bar_ns/scaled_tile.dart';
 import 'package:flappy_search_bar_ns/search_bar_style.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +18,13 @@ class Post {
 }
 
 class SearchMoment extends StatefulWidget {
-  Object? arguments;
-  String contentDef = "动态内容";
-  SearchMoment({super.key, this.arguments}) {
-    if (arguments != null && (arguments as Map)["content"] != null) {
-      contentDef = (arguments as Map)["content"];
-    }
-  }
+  final Object? arguments;
+  final String contentDef;
+
+  SearchMoment({super.key, this.arguments})
+    : contentDef = arguments != null && (arguments as Map)["content"] != null
+          ? (arguments as Map)["content"]
+          : "动态内容";
 
   @override
   _SearchMomentState createState() => _SearchMomentState();

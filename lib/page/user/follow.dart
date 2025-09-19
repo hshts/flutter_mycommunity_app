@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../bloc/user/myfollow_bloc.dart';
@@ -294,7 +293,7 @@ class _MyFollowState extends State<MyFollow> {
       padding: EdgeInsets.only(top: 0),
       addAutomaticKeepAlives: true,
       primary: false,
-      shrinkWrap: false,
+      shrinkWrap: true,
       crossAxisCount: 2,
       mainAxisSpacing: 0.0,
       crossAxisSpacing: 0.0,

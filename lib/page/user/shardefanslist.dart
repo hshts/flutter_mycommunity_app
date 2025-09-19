@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -11,20 +10,19 @@ import '../../widget/my_divider.dart';
 import '../../global.dart';
 
 class ShardeFansList extends StatefulWidget {
-  Object? arguments;
-  String content = ""; //描述内容
-  String contentid = ""; //根据类型匹配的id
-  String image = ""; //图片
-  String localimg = ""; //本地图片路径带有http
-  String sharedtype = ""; //分享类型 0 活动 1商品 2拼玩
+  final Object? arguments;
+  final String content; //描述内容
+  final String contentid; //根据类型匹配的id
+  final String image; //图片
+  final String localimg; //本地图片路径带有http
+  final String sharedtype; //分享类型 0 活动 1商品 2拼玩
 
-  ShardeFansList({super.key, this.arguments}) {
-    content = (arguments as Map)["content"];
-    contentid = (arguments as Map)["contentid"];
-    image = (arguments as Map)["image"];
-    localimg = (arguments as Map)["localimg"];
-    sharedtype = (arguments as Map)["sharedtype"];
-  }
+  ShardeFansList({super.key, this.arguments})
+    : content = arguments != null ? (arguments as Map)["content"] : "",
+      contentid = arguments != null ? (arguments as Map)["contentid"] : "",
+      image = arguments != null ? (arguments as Map)["image"] : "",
+      localimg = arguments != null ? (arguments as Map)["localimg"] : "",
+      sharedtype = arguments != null ? (arguments as Map)["sharedtype"] : "";
 
   @override
   _ShardeFansListState createState() => _ShardeFansListState();
@@ -89,8 +87,6 @@ class _ShardeFansListState extends State<ShardeFansList> {
 
       userlist.add(members[i]);
     }
-
-    return userlist;
 
     return userlist;
   }
@@ -268,7 +264,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
             ListTile(
               title: Row(
                 children: [
-                  RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+                  RoundCheckBox(value: selectItem.contains(user.uid)),
                   SizedBox(width: 10),
                   NoCacheClipRRectOhterHeadImage(
                     imageUrl: user.profilepicture!,
@@ -284,7 +280,7 @@ class _ShardeFansListState extends State<ShardeFansList> {
                 ],
               ),
               onTap: () {
-                if (!(selectItem.indexOf(user.uid) >= 0)) {
+                if (!(selectItem.contains(user.uid))) {
                   selectItem.add(user.uid);
                   selectItemName.add(user.username);
                 } else {

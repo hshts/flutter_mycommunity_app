@@ -8,16 +8,15 @@ import '../../service/imservice.dart';
 import '../../global.dart';
 
 class RedPacket extends StatefulWidget {
-  Object? arguments;
-  String timeline_id = "";
-  int timeline_type = 0;
+  final Object? arguments;
+  final String timeline_id;
+  final int timeline_type;
 
-  RedPacket({super.key, this.arguments}) {
-    if (arguments != null) {
-      timeline_id = (arguments as Map)["timeline_id"];
-      timeline_type = (arguments as Map)["timeline_type"];
-    }
-  }
+  RedPacket({super.key, this.arguments})
+    : timeline_id = arguments != null ? (arguments as Map)["timeline_id"] : "",
+      timeline_type = arguments != null
+          ? (arguments as Map)["timeline_type"]
+          : 0;
 
   @override
   _RedPacketState createState() => _RedPacketState();

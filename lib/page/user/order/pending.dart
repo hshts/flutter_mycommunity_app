@@ -124,7 +124,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
               children: [
                 SizedBox(height: 12),
                 InkWell(
-                  child: Container(
+                  child: SizedBox(
                     height: 109,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,7 +145,7 @@ class _MyOrderPendingState extends State<MyOrderPending> {
                                   : SizedBox.shrink(),
                               SizedBox(width: 10),
                               Expanded(
-                                child: Container(
+                                child: SizedBox(
                                   height: 109,
                                   child: Column(
                                     mainAxisAlignment:
@@ -399,24 +399,22 @@ class _MyOrderPendingState extends State<MyOrderPending> {
       uid,
       timelineId,
     );
-    if (groupRelation == null) {
-      groupRelation = await _userService.joinSingleCustomer(
-        timelineId,
-        uid,
-        touid,
-        Global.profile.user!.token!,
-        vcode,
-        (String statusCode, String msg) {
-          if (statusCode == "-1008") {
-            _loadingBlockPuzzle(context, touid: touid);
-            return;
-          } else {
-            ShowMessage.showToast(msg);
-          }
-        },
-        isCustomer: 1,
-      );
-    }
+    groupRelation ??= await _userService.joinSingleCustomer(
+      timelineId,
+      uid,
+      touid,
+      Global.profile.user!.token!,
+      vcode,
+      (String statusCode, String msg) {
+        if (statusCode == "-1008") {
+          _loadingBlockPuzzle(context, touid: touid);
+          return;
+        } else {
+          ShowMessage.showToast(msg);
+        }
+      },
+      isCustomer: 1,
+    );
     if (groupRelation != null) {
       List<GroupRelation> groupRelations = [];
       groupRelations.add(groupRelation);

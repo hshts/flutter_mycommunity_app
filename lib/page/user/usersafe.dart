@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -578,24 +577,22 @@ class _MyUserIdEditState extends State<MyUserId> {
       uid,
       timelineId,
     );
-    if (groupRelation == null) {
-      groupRelation = await _userService.joinSingleCustomer(
-        timelineId,
-        uid,
-        customuid,
-        Global.profile.user!.token!,
-        vcode,
-        (String statusCode, String msg) {
-          if (statusCode == "-1008") {
-            loadingBlockPuzzle(context);
-            return;
-          } else {
-            ShowMessage.showToast(msg);
-          }
-        },
-        isCustomer: 1,
-      );
-    }
+    groupRelation ??= await _userService.joinSingleCustomer(
+      timelineId,
+      uid,
+      customuid,
+      Global.profile.user!.token!,
+      vcode,
+      (String statusCode, String msg) {
+        if (statusCode == "-1008") {
+          loadingBlockPuzzle(context);
+          return;
+        } else {
+          ShowMessage.showToast(msg);
+        }
+      },
+      isCustomer: 1,
+    );
     if (groupRelation != null) {
       List<GroupRelation> groupRelations = [];
       groupRelations.add(groupRelation);

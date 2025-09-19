@@ -1,7 +1,9 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -216,10 +218,10 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           )
                         : SizedBox.shrink(),
-                    Platform.isIOS && Global.isAliPayInstalled
+                    !kIsWeb && Platform.isIOS && Global.isAliPayInstalled
                         ? SizedBox(width: 39)
                         : SizedBox.shrink(),
-                    Platform.isIOS
+                    !kIsWeb && Platform.isIOS
                         ? IconButton(
                             onPressed: () async {
                               if (!_isagree) {
@@ -350,24 +352,21 @@ class _LoginPageState extends State<LoginPage> {
                 width: _myCountry.length > 2
                     ? (_myCountry.length > 3 ? 89 : 79)
                     : 69,
-                child: InkWell(
-                  child: Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            "+ $_myCountry",
-                            style: TextStyle(
-                              color: Colors.black45,
-                              fontSize: 19,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                child: GestureDetector(
+                  // child: Container(
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          "+ $_myCountry",
+                          style: TextStyle(color: Colors.black45, fontSize: 19),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Icon(Icons.keyboard_arrow_down, color: Colors.black45),
-                      ],
-                    ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down, color: Colors.black45),
+                    ],
                   ),
+                  // ),
                   onTap: () {
                     Navigator.pushNamed(context, '/PhoneCountryCodeView').then((
                       val,
@@ -876,10 +875,10 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       child: TextButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
+                          backgroundColor: WidgetStateProperty.all(
                             Global.defredcolor,
                           ),
-                          shape: MaterialStateProperty.all(
+                          shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18.67),
                             ),

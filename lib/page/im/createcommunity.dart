@@ -233,7 +233,7 @@ class _CreateCommunityState extends State<CreateCommunity> {
                   setState(() {});
                 },
                 child: Text(
-                  selectItem.length > 0 ? '完成(${selectItem.length})' : '完成',
+                  selectItem.isNotEmpty ? '完成(${selectItem.length})' : '完成',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -255,7 +255,7 @@ class _CreateCommunityState extends State<CreateCommunity> {
         ListTile(
           title: Row(
             children: [
-              RoundCheckBox(value: selectItem.indexOf(user.uid) >= 0),
+              RoundCheckBox(value: selectItem.contains(user.uid)),
               SizedBox(width: 10),
               NoCacheClipRRectOhterHeadImage(
                 imageUrl: user.profilepicture!,
@@ -271,7 +271,7 @@ class _CreateCommunityState extends State<CreateCommunity> {
             ],
           ),
           onTap: () {
-            if (!(selectItem.indexOf(user.uid) >= 0)) {
+            if (!(selectItem.contains(user.uid))) {
               selectItem.add(user.uid);
               selectItemName.add(user.username);
             } else {
@@ -305,39 +305,37 @@ class _CreateCommunityState extends State<CreateCommunity> {
     ).then((value) async {
       if (value != null) {
         if (value == "Camera") {
-          PickedFile? image = await _picker.getImage(
-            source: ImageSource.camera,
-          );
-          imageFile = File(image.path);
+          XFile? image = await _picker.pickImage(source: ImageSource.camera);
+          imageFile = image != null ? File(image.path) : null;
         } else if (value == "Gallery") {
-          PickedFile? image = await _picker.getImage(
-            source: ImageSource.gallery,
-          );
-          imageFile = File(image.path);
+          XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+          imageFile = image != null ? File(image.path) : null;
         } else {
           return;
         }
       }
       if (imageFile != null) {
-        croppedFile = await ImageCropper().cropImage(
+        CroppedFile? result = await ImageCropper().cropImage(
           maxWidth: 750,
           maxHeight: 750,
           compressQuality: 30,
           sourcePath: imageFile!.path,
-          aspectRatioPresets: [CropAspectRatioPreset.square],
-          androidUiSettings: AndroidUiSettings(
-            toolbarTitle: '裁剪',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: true,
-          ),
-          iosUiSettings: IOSUiSettings(
-            title: '裁剪',
-            minimumAspectRatio: 1.0,
-            aspectRatioLockEnabled: true,
-          ),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: '裁剪',
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: true,
+            ),
+            IOSUiSettings(
+              title: '裁剪',
+              minimumAspectRatio: 1.0,
+              aspectRatioLockEnabled: true,
+            ),
+          ],
         );
+        croppedFile = result != null ? File(result.path) : null;
         if (croppedFile != null) {
           String ossimagpath = "";
           //转成png格式

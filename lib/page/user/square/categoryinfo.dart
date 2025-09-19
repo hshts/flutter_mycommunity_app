@@ -2,35 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../service/commonjson.dart';
-import '../../../widget/my_divider.dart';
 import '../../../widget/multinormalselectchip.dart';
 import '../../../global.dart';
 
 class CategoryInfo extends StatefulWidget {
-  Object? arguments;
-  List<String> _selectList = [];
+  final List<String> initialSelectList;
+
+  CategoryInfo(this.initialSelectList, {super.key});
 
   @override
   _CategoryInfoState createState() => _CategoryInfoState();
-
-  CategoryInfo(this._selectList, {super.key});
 }
 
 class _CategoryInfoState extends State<CategoryInfo> {
   final CommonJSONService _commonJSONService = CommonJSONService();
   final controller = TextEditingController();
   final subject = PublishSubject<String>();
+
+  List<String> _selectList = [];
   List<String> allList = [];
   String _newtype = "";
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
+    _selectList = List.from(widget.initialSelectList);
     _commonJSONService.getActivityTypes(_getList);
     subject.stream
         .debounceTime(Duration(milliseconds: 1000))
         .listen(_textChanged);
-    super.initState();
   }
 
   @override
@@ -74,8 +74,8 @@ class _CategoryInfoState extends State<CategoryInfo> {
         onPressed: () async {
           String types = "";
 
-          for (int i = 0; i < widget._selectList.length; i++) {
-            types += "${widget._selectList[i]},";
+          for (int i = 0; i < _selectList.length; i++) {
+            types += "${_selectList[i]},";
           }
           if (types.isNotEmpty) {
             types = types.substring(0, types.length - 1);
@@ -93,9 +93,11 @@ class _CategoryInfoState extends State<CategoryInfo> {
       margin: EdgeInsets.only(top: 15),
       child: MyMultiNormalSelectChip(
         allList,
-        selectList: widget._selectList,
+        selectList: _selectList,
         onSelectionChanged: (selectedList) {
-          widget._selectList = selectedList;
+          setState(() {
+            _selectList = selectedList;
+          });
         },
       ),
     );

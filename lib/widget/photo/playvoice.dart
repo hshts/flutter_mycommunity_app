@@ -34,7 +34,7 @@ class _PlayVoiceState extends State<PlayVoice> {
   initState() {
     // TODO: implement initState
     super.initState();
-    _player.onAudioPositionChanged.listen((Duration p) {
+    _player.onPositionChanged.listen((Duration p) {
       if (_isplaying) {
         if (widget.time != p.inSeconds) {
           setState(() {
@@ -124,7 +124,7 @@ class _PlayVoiceState extends State<PlayVoice> {
         ShowMessage.showToast('文件不存在');
       },
       () async {
-        await _player.play(localPath, isLocal: true);
+        await _player.play(DeviceFileSource(localPath));
       },
     );
   }
@@ -133,14 +133,14 @@ class _PlayVoiceState extends State<PlayVoice> {
     try {
       widget.temtime = widget.time;
       _isplaying = true;
-      _player.onPlayerCompletion.listen((event) {
+      _player.onPlayerComplete.listen((event) {
         setState(() {
           _isplaying = false;
           widget.temtime = widget.time;
         });
       });
       // Check whether the user wants to use the audio player features
-      await _player.play(filepath, isLocal: true);
+      await _player.play(UrlSource(widget.voiceurl));
       // await flutterSoundModule.setVolume(1.0);
     } catch (err) {
       print('error: $err');
