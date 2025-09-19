@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 // import 'dart:isolate'; // 未使用，已移除
@@ -300,9 +302,7 @@ class _IndexPageState extends State<IndexPage> {
                 ),
               ),
             ),
-            Expanded(
-              child: ListView(shrinkWrap: true, children: drawerchildren),
-            ),
+            Expanded(child: ListView(children: drawerchildren)),
             Container(
               margin: EdgeInsets.only(right: 10),
               alignment: Alignment.centerRight,
@@ -388,8 +388,6 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    _buildDarw();
-
     return Scaffold(
       key: indexkey,
       endDrawer: _buildDarw(),
@@ -406,7 +404,7 @@ class _IndexPageState extends State<IndexPage> {
           return BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             unselectedItemColor: Colors.black54,
-            selectedItemColor: Global.profile.backColor,
+            selectedItemColor: Global.profile.backColor ?? Global.defredcolor,
             selectedFontSize: 12,
             unselectedFontSize: 12,
             currentIndex: _currentIndex,
@@ -419,7 +417,7 @@ class _IndexPageState extends State<IndexPage> {
                 ),
                 activeIcon: Icon(
                   IconFont.icon_shouye1,
-                  color: Global.profile.backColor,
+                  color: Global.profile.backColor ?? Global.defredcolor,
                   size: 23,
                 ),
                 label: '首页',
@@ -432,7 +430,7 @@ class _IndexPageState extends State<IndexPage> {
                 ),
                 activeIcon: Icon(
                   IconFont.icon_icon_shangcheng_mian,
-                  color: Global.profile.backColor,
+                  color: Global.profile.backColor ?? Global.defredcolor,
                   size: 23,
                 ),
                 label: '活动',
@@ -445,7 +443,7 @@ class _IndexPageState extends State<IndexPage> {
                 ),
                 activeIcon: Icon(
                   IconFont.icon_yumaobi_tianchong,
-                  color: Global.profile.backColor,
+                  color: Global.profile.backColor ?? Global.defredcolor,
                   size: 23,
                 ),
                 label: '动态',
@@ -470,7 +468,7 @@ class _IndexPageState extends State<IndexPage> {
                       ),
                 activeIcon: Icon(
                   IconFont.icon_xiaoxi,
-                  color: Global.profile.backColor,
+                  color: Global.profile.backColor ?? Global.defredcolor,
                   size: 23,
                 ),
                 label: '消息',
@@ -495,7 +493,7 @@ class _IndexPageState extends State<IndexPage> {
                       ),
                 activeIcon: Icon(
                   IconFont.icon_navbar_wode_xuanzhong,
-                  color: Global.profile.backColor,
+                  color: Global.profile.backColor ?? Global.defredcolor,
                   size: 23,
                 ),
                 label: '我的',
@@ -545,13 +543,13 @@ class IssuedActivityButton extends StatelessWidget {
             FloatingActionButton(
               heroTag: UniqueKey(),
               elevation: 0,
-              backgroundColor: Global.profile.backColor,
+              backgroundColor: Global.profile.backColor ?? Global.defredcolor,
               child: IconButton(
                 padding: EdgeInsets.only(bottom: 5),
                 icon: Icon(
                   IconFont.icon_tianjiajiahaowubiankuang,
                   size: 25,
-                  color: Global.profile.fontColor,
+                  color: Global.profile.fontColor ?? Colors.white,
                 ),
                 color: Colors.black,
                 onPressed: () {},
@@ -619,9 +617,13 @@ class RoundCheckBoxWidgetBuilder extends State<RoundCheckBox> {
       decoration: BoxDecoration(
         border: Border.all(
           width: 1,
-          color: widget.value ? Global.profile.backColor! : Color(0xff999999),
+          color: widget.value
+              ? (Global.profile.backColor ?? Global.defredcolor)
+              : Color(0xff999999),
         ),
-        color: widget.value ? Global.profile.backColor : Color(0xffffffff),
+        color: widget.value
+            ? (Global.profile.backColor ?? Global.defredcolor)
+            : Color(0xffffffff),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Center(

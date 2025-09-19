@@ -289,7 +289,20 @@ class _HomePageState extends State<HomePage>
     _title = (Global.profile.locationName.length > 3
         ? Global.profile.locationName.substring(0, 3)
         : Global.profile.locationName);
-    return WillPopScope(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) return;
+
+        if (_lastPopTime == null ||
+            DateTime.now().difference(_lastPopTime!) > Duration(seconds: 2)) {
+          _lastPopTime = DateTime.now();
+          ShowMessage.showToast('再按一次退出');
+        } else {
+          _lastPopTime = DateTime.now();
+          await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -305,18 +318,6 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      onWillPop: () async {
-        if (_lastPopTime == null ||
-            DateTime.now().difference(_lastPopTime!) > Duration(seconds: 2)) {
-          _lastPopTime = DateTime.now();
-          ShowMessage.showToast('再按一次退出');
-        } else {
-          _lastPopTime = DateTime.now();
-          await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        }
-
-        return false;
-      },
     );
   }
 
@@ -390,7 +391,7 @@ class _HomePageState extends State<HomePage>
         ),
         Expanded(
           flex: 1,
-          child: InkWell(
+          child: GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, '/SearchActivity');
             },
@@ -496,7 +497,7 @@ class _TabBarItemState extends State<TabBarItem> {
   Widget item2() {
     return Container(
       alignment: _bottomAlignment,
-      child: InkWell(
+      child: GestureDetector(
         onTap: _itemindex == _currentIndex
             ? () {
                 Navigator.pushNamed(

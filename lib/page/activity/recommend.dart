@@ -190,7 +190,7 @@ class _RecommendState extends State<Recommend>
 
   ///1.刷新  2.加载更多
   Widget reLoadData() {
-    return InkWell(
+    return GestureDetector(
       child: Center(
         child: Text(
           '轻触重试',
@@ -209,7 +209,7 @@ class _RecommendState extends State<Recommend>
     Widget maxWidget = SizedBox.shrink();
     if (state.hasReachedMax!) {
       //如果已经最大增加一个刷新按钮
-      maxWidget = InkWell(
+      maxWidget = GestureDetector(
         child: Container(
           margin: EdgeInsets.only(bottom: 60),
           padding: EdgeInsets.only(top: 30),

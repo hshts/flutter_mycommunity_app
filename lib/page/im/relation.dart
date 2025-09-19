@@ -83,7 +83,7 @@ class _RelationListState extends State<RelationList> {
         ),
         centerTitle: true,
         actions: <Widget>[
-          InkWell(
+          GestureDetector(
             child: Container(
               margin: EdgeInsets.only(right: 10),
               alignment: Alignment.center,
@@ -137,7 +137,7 @@ class _RelationListState extends State<RelationList> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            InkWell(
+            GestureDetector(
               child: Column(
                 children: [
                   sysMessage.newlithumbup_count > 0
@@ -170,7 +170,7 @@ class _RelationListState extends State<RelationList> {
                 });
               },
             ),
-            InkWell(
+            GestureDetector(
               child: Column(
                 children: [
                   sysMessage.follow_count > 0
@@ -203,7 +203,7 @@ class _RelationListState extends State<RelationList> {
                 });
               },
             ),
-            InkWell(
+            GestureDetector(
               child: Column(
                 children: [
                   sysMessage.commentreply_count > 0

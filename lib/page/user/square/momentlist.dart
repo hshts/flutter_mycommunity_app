@@ -123,7 +123,7 @@ class _MomentListState extends State<MomentList> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                child: InkWell(
+                child: GestureDetector(
                   child: Container(
                     padding: EdgeInsets.only(left: 10),
                     alignment: Alignment.center,
@@ -151,7 +151,7 @@ class _MomentListState extends State<MomentList> {
               SizedBox(width: 10),
               Container(
                 padding: EdgeInsets.only(left: 5, right: 5),
-                child: InkWell(
+                child: GestureDetector(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -277,7 +277,6 @@ class _MomentListState extends State<MomentList> {
                     ),
                   )
                 : ListView(
-                    shrinkWrap: true,
                     addAutomaticKeepAlives: true,
                     children: _buildMomentContent(),
                   ),

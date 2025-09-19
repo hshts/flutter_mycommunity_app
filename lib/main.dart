@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,6 +171,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           key: Global.mainkey,
           navigatorKey: Global.navigatorKey,
           debugShowCheckedModeBanner: false,
+          scrollBehavior: kIsWeb
+              ? const MaterialScrollBehavior().copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.mouse,
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.stylus,
+                    PointerDeviceKind.unknown,
+                  },
+                )
+              : null,
           theme: ThemeData(
             //platform: TargetPlatform.iOS,
             bottomNavigationBarTheme: BottomNavigationBarThemeData(

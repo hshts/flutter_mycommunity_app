@@ -522,7 +522,7 @@ class _MyHomeState extends State<MyHome> {
             children: [
               Row(
                 children: [
-                  InkWell(
+                  GestureDetector(
                     child: Global.profile.user != null
                         ? NoCacheClipRRectOhterHeadImage(
                             imageUrl: Global.profile.user!.profilepicture ?? "",
@@ -547,7 +547,7 @@ class _MyHomeState extends State<MyHome> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
+                      GestureDetector(
                         child: Text(
                           Global.profile.user!.username,
                           style: TextStyle(color: Colors.black87, fontSize: 15),
@@ -571,7 +571,7 @@ class _MyHomeState extends State<MyHome> {
               ),
               Align(
                 alignment: Alignment.centerRight,
-                child: InkWell(
+                child: GestureDetector(
                   child: Padding(
                     padding: EdgeInsets.only(right: 5),
                     child: Row(
