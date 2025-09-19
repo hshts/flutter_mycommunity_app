@@ -230,7 +230,7 @@ var onGenerateRoute = (RouteSettings settings) {
     //       settings: settings.copyWith(),
     //     );
     //   }
-    //   break;
+    //  //  break;
 
     // case '/MapLocationPicker': //IM地图位置选择
     //   if (!kIsWeb && Platform.isAndroid) {
@@ -244,7 +244,7 @@ var onGenerateRoute = (RouteSettings settings) {
     //       settings: settings.copyWith(),
     //     );
     //   }
-    //   break;
+    //  //  break;
 
     case '/ActivityInfo': //活动发布更多信息
       if (!kIsWeb && Platform.isAndroid) {
@@ -336,7 +336,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyFollowUser': //我关注的用户
       if (!kIsWeb && Platform.isAndroid) {
@@ -355,7 +355,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyFansUser': //我的粉丝
       if (!kIsWeb && Platform.isAndroid) {
@@ -374,7 +374,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyCollectionGoodPrice':
       if (!kIsWeb && Platform.isAndroid) {
@@ -393,7 +393,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyCollectionActivity':
       if (!kIsWeb && Platform.isAndroid) {
@@ -406,8 +406,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => MyCollectionActivity(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => MyCollectionActivity(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MyCreateActivity': //个人主页中的活动列表，创建，加入，收藏
       if (!kIsWeb && Platform.isAndroid) {
@@ -426,7 +431,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyJoinActivity': //个人主页中的活动列表，创建，加入，收藏
       if (!kIsWeb && Platform.isAndroid) {
@@ -439,8 +444,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => MyJoinActivity(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => MyJoinActivity(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MyOrderPending':
       if (!kIsWeb && Platform.isAndroid) {
@@ -459,7 +469,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyOrderFinish':
       if (!kIsWeb && Platform.isAndroid) {
@@ -478,7 +488,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyOrderRefund':
       if (!kIsWeb && Platform.isAndroid) {
@@ -497,7 +507,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/ProAndSuggestion':
       if (!kIsWeb && Platform.isAndroid) {
@@ -510,8 +520,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => ProAndSuggestion(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => ProAndSuggestion(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/BugReport':
       if (!kIsWeb && Platform.isAndroid) {
@@ -530,7 +545,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
     case '/BugInfo':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -548,7 +563,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/SuggestReport':
       if (!kIsWeb && Platform.isAndroid) {
@@ -561,8 +576,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SuggestReport(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SuggestReport(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
     case '/SuggestInfo':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -580,7 +600,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
     case '/MyReportInfo':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -598,7 +618,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/SysHelper':
       if (!kIsWeb && Platform.isAndroid) {
@@ -611,8 +631,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SysHelper(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SysHelper(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MyProfile': //我的资料页面
       if (!kIsWeb && Platform.isAndroid) {
@@ -649,7 +674,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/NameAndSignature': //昵称和个人签名
       if (!kIsWeb && Platform.isAndroid) {
@@ -662,8 +687,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => NameAndSignature(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => NameAndSignature(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MyUserId':
       if (!kIsWeb && Platform.isAndroid) {
@@ -682,7 +712,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyUpdateMobile':
       if (!kIsWeb && Platform.isAndroid) {
@@ -701,7 +731,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyExit':
       if (!kIsWeb && Platform.isAndroid) {
@@ -720,7 +750,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/OtherProfile': //其他人的个人主页
       if (!kIsWeb && Platform.isAndroid) {
@@ -733,8 +763,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => OtherProfile(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => OtherProfile(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/ReportActivity':
       if (!kIsWeb && Platform.isAndroid) {
@@ -753,7 +788,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/FraudActivity':
       if (!kIsWeb && Platform.isAndroid) {
@@ -772,7 +807,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
     case '/ReportOtherActivity':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -784,8 +819,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => ReportOtherActivity(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => ReportOtherActivity(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
     case '/ReportImageActivity':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -803,7 +843,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MyReportList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -816,8 +856,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => MyAllReportList(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => MyAllReportList(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/ThumbUpList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -836,7 +881,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/CreateCommunity': //创建社团
       if (!kIsWeb && Platform.isAndroid) {
@@ -849,8 +894,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => CreateCommunity(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => CreateCommunity(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MomentReport': //发布动态
       if (!kIsWeb && Platform.isAndroid) {
@@ -869,7 +919,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MomentInfo':
       if (!kIsWeb && Platform.isAndroid) {
@@ -882,8 +932,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => MomentInfo(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => MomentInfo(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/NewFollowList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -902,7 +957,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/NoticeList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -915,8 +970,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => NoticeList(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => NoticeList(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/GoodPriceInfo':
       if (!kIsWeb && Platform.isAndroid) {
@@ -935,7 +995,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/IssuedActivity': //用户编辑
       if (!kIsWeb && Platform.isAndroid) {
@@ -954,7 +1014,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/ShardeFansList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -967,8 +1027,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => ShardeFansList(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => ShardeFansList(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/SharedList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -981,8 +1046,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SharedList(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SharedList(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/MyMessage':
       if (!kIsWeb && Platform.isAndroid) {
@@ -995,8 +1065,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => MyMessage(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => MyMessage(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/CreateOrder':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1015,7 +1090,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/GroupMember': //查看群聊中的活动成员，退出群聊等操作
       if (!kIsWeb && Platform.isAndroid) {
@@ -1028,8 +1103,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => GroupMember(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => GroupMember(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/ManageActivityMember':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1042,8 +1122,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => ManageActivityMember(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => ManageActivityMember(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/SearchProduct':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1056,8 +1141,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SearchProduct(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SearchProduct(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/SearchProductResultPage':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1079,7 +1169,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/MemberList': //社团成员列表
       if (!kIsWeb && Platform.isAndroid) {
@@ -1098,7 +1188,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/SearchMoment':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1111,8 +1201,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SearchMoment(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SearchMoment(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/SearchMomentResultPage':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1125,8 +1220,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SearchMomentResultPage(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SearchMomentResultPage(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/JoinCommunity':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1145,7 +1245,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/OrderFinish':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1164,7 +1264,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/ActivityEvaluate': //待评价的活动列表
       if (!kIsWeb && Platform.isAndroid) {
@@ -1177,8 +1277,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => ActivityEvaluateList(),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => ActivityEvaluateList(),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/Evaluate': //评价
       if (!kIsWeb && Platform.isAndroid) {
@@ -1197,7 +1302,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/EvaluateInfo': //评价详情，评价的回复
       if (!kIsWeb && Platform.isAndroid) {
@@ -1210,8 +1315,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => EvaluateInfo(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => EvaluateInfo(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/OtherFollowUser': //其他人关注的用户
       if (!kIsWeb && Platform.isAndroid) {
@@ -1230,7 +1340,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/PhoneCountryCodeView': //手机归属地
       if (!kIsWeb && Platform.isAndroid) {
@@ -1249,7 +1359,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/SharedRelationList':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1262,8 +1372,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => SharedRelationList(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => SharedRelationList(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/RedPacket':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1282,7 +1397,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
     case '/RedPacketList':
       if (!kIsWeb && Platform.isAndroid) {
         return AnimationPageRoute(
@@ -1300,7 +1415,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/BindUser':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1313,8 +1428,13 @@ var onGenerateRoute = (RouteSettings settings) {
           builder: (_) => BindUser(arguments: settings.arguments),
           settings: settings.copyWith(),
         );
+      } else {
+        return MaterialPageRoute(
+          builder: (_) => BindUser(arguments: settings.arguments),
+          settings: settings.copyWith(),
+        );
       }
-      break;
+    //  break;
 
     case '/About':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1333,7 +1453,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/OrderInfo':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1352,7 +1472,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/OrderConfirm':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1371,7 +1491,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
 
     case '/JoinUs':
       if (!kIsWeb && Platform.isAndroid) {
@@ -1390,7 +1510,7 @@ var onGenerateRoute = (RouteSettings settings) {
           settings: settings.copyWith(),
         );
       }
-      break;
+    //  break;
   }
   return null;
 };
