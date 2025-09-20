@@ -194,7 +194,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
           children: <Widget>[
             Expanded(
               flex: 5,
-              child: InkWell(
+              child: GestureDetector(
                 child: Container(
                   child: Row(
                     children: <Widget>[

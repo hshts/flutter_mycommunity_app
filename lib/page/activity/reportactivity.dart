@@ -92,7 +92,7 @@ class _ReportActivityState extends State<ReportActivity> {
         },
         itemCount: myList.length,
       ),
-      bottomNavigationBar: InkWell(
+      bottomNavigationBar: GestureDetector(
         child: Container(
           color: Colors.white,
           height: 50,

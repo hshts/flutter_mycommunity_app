@@ -64,7 +64,7 @@ class _MomentReportState extends State<MomentReport> {
           SizedBox(
             height: 20,
             width: 66,
-            child: InkWell(
+            child: GestureDetector(
               child: Container(
                 margin: EdgeInsets.only(top: 13, bottom: 13, right: 10),
                 padding: EdgeInsets.all(5),
@@ -317,7 +317,7 @@ class _MomentReportState extends State<MomentReport> {
                     itemCount: _categorys.length,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int position) {
-                      return InkWell(
+                      return GestureDetector(
                         child: Container(
                           margin: EdgeInsets.only(right: 10),
                           padding: EdgeInsets.only(
@@ -369,7 +369,7 @@ class _MomentReportState extends State<MomentReport> {
                 children: [
                   SizedBox(width: 10),
 
-                  InkWell(
+                  GestureDetector(
                     child: Icon(
                       IconFont.icon_luyin2,
                       size: 26,
@@ -384,7 +384,7 @@ class _MomentReportState extends State<MomentReport> {
                     },
                   ),
                   SizedBox(width: 20),
-                  InkWell(
+                  GestureDetector(
                     child: Icon(
                       IconFont.icon_photo,
                       size: 26,
@@ -399,7 +399,7 @@ class _MomentReportState extends State<MomentReport> {
                   ),
                 ],
               ),
-              InkWell(
+              GestureDetector(
                 child: Container(
                   child: Text('# 加话题', style: TextStyle(fontSize: 16)),
                 ),

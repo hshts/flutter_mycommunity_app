@@ -290,7 +290,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         child: Row(
           children: [
             SizedBox(width: 10),
-            InkWell(
+            GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -323,7 +323,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          InkWell(
+                          GestureDetector(
                             child: Container(
                               margin: EdgeInsets.only(top: 20, bottom: 20),
                               alignment: Alignment.center,
@@ -387,7 +387,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                             },
                           ),
                           MyDivider(),
-                          InkWell(
+                          GestureDetector(
                             onTap: () async {
                               if (isUnLike) {
                                 bool ret = await _gpService.updateCancelUnLike(
@@ -459,7 +459,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               },
             ),
             SizedBox(width: 30),
-            InkWell(
+            GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -518,7 +518,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               },
             ),
             SizedBox(width: 30),
-            InkWell(
+            GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -547,7 +547,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             ),
             SizedBox(width: 30),
             Expanded(
-              child: InkWell(
+              child: GestureDetector(
                 child: Container(
                   margin: EdgeInsets.all(8),
                   alignment: Alignment.center,
@@ -833,7 +833,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     List<Widget> tem = [];
     for (var v in _activitys) {
       tem.add(
-        InkWell(
+        GestureDetector(
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Row(
@@ -909,7 +909,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
   //活动位置
   Widget buildLocation() {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         // LatLng functionality removed - amap dependencies removed
         // LatLng latLng = LatLng(
@@ -1024,7 +1024,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                InkWell(
+                GestureDetector(
                   child: Row(
                     children: <Widget>[
                       Icon(Icons.menu, color: Colors.black45, size: 18),
@@ -1071,7 +1071,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                InkWell(
+                GestureDetector(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -1085,7 +1085,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 width: 30,
                                 uid: v.user!.uid,
                               ),
-                              InkWell(
+                              GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
@@ -1231,7 +1231,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     List<Widget> tem = [];
     replys.map((v) {
       tem.add(
-        InkWell(
+        GestureDetector(
           child: Column(
             children: <Widget>[
               Container(
@@ -1358,7 +1358,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         width: 39,
                         uid: e.user!.uid,
                       ),
-                      InkWell(
+                      GestureDetector(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
                           child: Column(
@@ -1408,7 +1408,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   ),
                 ],
               ),
-              InkWell(
+              GestureDetector(
                 child: Column(
                   children: [
                     Container(

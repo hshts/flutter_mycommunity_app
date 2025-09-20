@@ -36,7 +36,7 @@ class _OrderFinishState extends State<OrderFinish> {
           },
         ),
         actions: [
-          InkWell(
+          GestureDetector(
             child: Container(
               padding: EdgeInsets.only(right: 10),
               alignment: Alignment.center,
@@ -85,7 +85,7 @@ class _OrderFinishState extends State<OrderFinish> {
   }
 
   Widget buildGPActivity() {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Navigator.pushReplacementNamed(
           context,

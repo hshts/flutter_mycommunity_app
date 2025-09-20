@@ -170,7 +170,7 @@ class _SuggestListState extends State<SuggestList> {
           ),
           child: Padding(
             padding: EdgeInsets.all(10),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,

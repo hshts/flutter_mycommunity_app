@@ -111,7 +111,7 @@ class NinePicture extends StatelessWidget {
     }
 
     if (list.length == 1) {
-      return InkWell(
+      return GestureDetector(
         onTap: () {
           showPhoto(context, list[0], 0);
         },
@@ -139,7 +139,7 @@ class NinePicture extends StatelessWidget {
           .asMap()
           .keys
           .map(
-            (index) => InkWell(
+            (index) => GestureDetector(
               onTap: () {
                 showPhoto(context, list[index], index);
               },

@@ -82,7 +82,7 @@ class _ShareViewState extends State<ShareView> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onLongPress: () async {
         if (Global.profile.user == null) {
           Navigator.pushNamed(context, '/Login');

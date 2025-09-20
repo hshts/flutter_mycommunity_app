@@ -89,7 +89,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                             width: 45,
                             uid: widget.evaluateActivity.user!.uid,
                           ),
-                          InkWell(
+                          GestureDetector(
                             child: Container(
                               margin: EdgeInsets.only(left: 10),
                               child: Column(
@@ -457,7 +457,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                                 width: 30,
                                 uid: v.replyuser!.uid,
                               ),
-                              InkWell(
+                              GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(

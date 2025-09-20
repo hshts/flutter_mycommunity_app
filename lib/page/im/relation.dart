@@ -460,7 +460,7 @@ class _RelationListState extends State<RelationList> {
               position: position,
               items: <PopupMenuEntry>[
                 PopupMenuItem(
-                  child: InkWell(
+                  child: GestureDetector(
                     child: Text(item.istop == 0 ? "置顶" : "取消置顶"),
                     onTap: () {
                       if (item.istop == 0) {
@@ -481,7 +481,7 @@ class _RelationListState extends State<RelationList> {
                   ),
                 ),
                 PopupMenuItem(
-                  child: InkWell(
+                  child: GestureDetector(
                     child: Text('删除'),
                     onTap: () {
                       _imBloc.add(

@@ -80,7 +80,7 @@ class WXSessionShareWebPageState extends State<WXSessionShareWebPage> {
     }
     if (widget.shareType == 1) {
       retWidget = Container(
-        child: InkWell(
+        child: GestureDetector(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

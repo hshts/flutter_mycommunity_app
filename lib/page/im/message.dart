@@ -872,7 +872,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: InkWell(
+                child: GestureDetector(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1157,10 +1157,10 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           builder: (context, state) {
             List<Widget> list = [];
             list = buildMsgContent(timeLineSyncs);
-            return InkWell(
-              focusColor: Colors.grey.shade100,
-              highlightColor: Colors.grey.shade100,
-              radius: 0.0,
+            return GestureDetector(
+              // focusColor: Colors.grey.shade100,
+              // highlightColor: Colors.grey.shade100,
+              // radius: 0.0,
               child: Column(
                 children: <Widget>[
                   Expanded(
@@ -1268,7 +1268,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              child: InkWell(
+              child: GestureDetector(
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -1332,7 +1332,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              child: InkWell(
+              child: GestureDetector(
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -1467,7 +1467,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,
@@ -1506,7 +1506,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,
@@ -1549,7 +1549,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 if (sharedtype == "0") {
                   Navigator.pushNamed(
@@ -1598,7 +1598,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () async {
                 RedPacketModel? redpacket = await _imService.getRedPacket(
                   Global.profile.user!.uid,
@@ -1761,7 +1761,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             margin: EdgeInsets.only(bottom: 10, right: 10),
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(color: Colors.grey.shade100),
-            child: InkWell(
+            child: GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
                   color: isImg ? null : Colors.cyan,
@@ -1843,7 +1843,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,
@@ -1882,7 +1882,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,
@@ -1925,7 +1925,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () {
                 if (sharedtype == "0") {
                   Navigator.pushNamed(
@@ -1972,7 +1972,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            InkWell(
+            GestureDetector(
               onTap: () async {
                 RedPacketModel? redpacket = await _imService.getRedPacket(
                   Global.profile.user!.uid,
@@ -2189,7 +2189,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             margin: EdgeInsets.only(bottom: 10),
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(color: Colors.grey.shade100),
-            child: InkWell(
+            child: GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
                   color: isImg ? null : Colors.white,
@@ -2393,7 +2393,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         _recordercomplete
-            ? InkWell(
+            ? GestureDetector(
                 child: Container(
                   height: 35,
                   width: 40,
@@ -2426,8 +2426,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 : (_recordercomplete ? "点击播放" : "点击录音"),
             style: TextStyle(color: Colors.black),
           ),
-          center: InkWell(
-            highlightColor: Colors.transparent,
+          center: GestureDetector(
             child: Container(
               child: _recordercomplete
                   ? (_player.isPlaying && _timeLineSyncplay == 0
@@ -2477,7 +2476,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
         ),
         Padding(padding: EdgeInsets.only(left: 20)),
         _recordercomplete
-            ? InkWell(
+            ? GestureDetector(
                 child: Container(
                   height: 35,
                   width: 40,
@@ -2517,7 +2516,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
             mainAxisSpacing: 15.0,
           ),
           itemBuilder: (BuildContext context, int index) {
-            return InkWell(
+            return GestureDetector(
               child: Image.asset(
                 EmojiUitl.instance.emojiMap['[${index + 1}]']!,
               ),
@@ -3256,7 +3255,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                 bottom: 10,
               ),
               color: Colors.white,
-              child: InkWell(
+              child: GestureDetector(
                 child: Column(
                   children: [
                     Row(
@@ -3313,7 +3312,7 @@ class _MyMessageState extends State<MyMessage> with TickerProviderStateMixin {
                               end: hasDeleteIcon ? 0.0 : 0,
                             ),
                             child: hasDeleteIcon
-                                ? InkWell(
+                                ? GestureDetector(
                                     onTap: (() {
                                       setState(() {
                                         /// 保证在组件build的第一帧时才去触发取消清空内容

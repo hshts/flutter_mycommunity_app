@@ -161,7 +161,7 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                   },
                 ),
                 Expanded(
-                  child: InkWell(
+                  child: GestureDetector(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -190,7 +190,7 @@ class _SearchProductResultPageState extends State<SearchProductResultPage> {
                     onTap: () {},
                   ),
                 ),
-                InkWell(
+                GestureDetector(
                   child: Container(
                     padding: EdgeInsets.only(left: 20, right: 10),
                     alignment: Alignment.centerLeft,

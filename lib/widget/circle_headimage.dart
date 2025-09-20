@@ -85,7 +85,7 @@ class NoCacheClipRRectHeadImage extends StatelessWidget {
       temimageUrl =
           '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/quality,q_90';
     }
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         height: width,
         width: width,
@@ -219,7 +219,7 @@ class CircleHeadImage extends StatelessWidget {
   Widget build(BuildContext context) {
     String temimageUrl = "";
     temimageUrl = imageUrl;
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         height: width,
         width: width,
@@ -274,7 +274,7 @@ class ClipRRectHeadImage extends StatelessWidget {
     String temimageUrl = "";
     temimageUrl = imageUrl;
 
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         height: width,
         width: width,
@@ -421,7 +421,7 @@ class ClipRRectOhterHeadImageContainerLocation extends StatelessWidget {
     String temimageUrl = "";
     temimageUrl = imageUrl;
 
-    return InkWell(
+    return GestureDetector(
       child: Container(
         height: height,
         width: width,
@@ -526,7 +526,7 @@ class ClipRRectOhterHeadImageContainerByWidth extends StatelessWidget {
     String temimageUrl = "";
     temimageUrl = imageUrl;
 
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -699,7 +699,7 @@ class ClipRRectOhterHeadImageContainerByBigImg extends StatelessWidget {
     String temimageUrl = "";
     temimageUrl = imageUrl;
 
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -742,7 +742,7 @@ class CommunityCircleHeadImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         width: width,
         child: ClipRRect(
@@ -784,7 +784,7 @@ class CommunityClipRRectHeadImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         width: width,
         child: ClipRRect(
@@ -825,7 +825,7 @@ class ActivityClipRRectHeadImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         width: width,
         child: ClipRRect(
@@ -871,7 +871,7 @@ class ActivityClipRRectHeadShortCacheImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         width: width,
         child: ClipRRect(

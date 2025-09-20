@@ -236,7 +236,7 @@ class _PlayRecorderState extends State<PlayRecorder> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _recordercomplete
-              ? InkWell(
+              ? GestureDetector(
                   child: Container(
                     height: 35,
                     width: 40,
@@ -269,8 +269,7 @@ class _PlayRecorderState extends State<PlayRecorder> {
                   : (_recordercomplete ? "点击播放" : "点击录音"),
               style: TextStyle(color: Colors.black),
             ),
-            center: InkWell(
-              highlightColor: Colors.transparent,
+            center: GestureDetector(
               child: Container(
                 child: _recordercomplete
                     ? (_player.isPlaying
@@ -319,7 +318,7 @@ class _PlayRecorderState extends State<PlayRecorder> {
           ),
           Padding(padding: EdgeInsets.only(left: 20)),
           _recordercomplete
-              ? InkWell(
+              ? GestureDetector(
                   child: Container(
                     height: 35,
                     width: 40,

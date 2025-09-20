@@ -225,7 +225,7 @@ class _MomentInfoState extends State<MomentInfo> {
           margin: EdgeInsets.only(top: 10),
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 showPhoto(context, imglist[i], i);
               },
@@ -274,7 +274,7 @@ class _MomentInfoState extends State<MomentInfo> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.menu, color: Colors.black45, size: 18),
@@ -377,7 +377,7 @@ class _MomentInfoState extends State<MomentInfo> {
                                 width: 30,
                                 uid: v.user!.uid,
                               ),
-                              InkWell(
+                              GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
@@ -535,7 +535,7 @@ class _MomentInfoState extends State<MomentInfo> {
                         position: position,
                         items: <PopupMenuEntry>[
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('删除'),
                               onTap: () async {
                                 bool ret = await imService.delMomentMessage(
@@ -564,7 +564,7 @@ class _MomentInfoState extends State<MomentInfo> {
                             ),
                           ),
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('取消'),
                               onTap: () {
                                 Navigator.pop(context);
@@ -604,7 +604,7 @@ class _MomentInfoState extends State<MomentInfo> {
     replys.map((v) {
       tem.add(
         GestureDetector(
-          child: InkWell(
+          child: GestureDetector(
             child: Column(
               children: <Widget>[
                 Container(
@@ -710,7 +710,7 @@ class _MomentInfoState extends State<MomentInfo> {
                 position: position,
                 items: <PopupMenuEntry>[
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('删除'),
                       onTap: () async {
                         bool ret = await imService.delMomentMessageReply(
@@ -738,7 +738,7 @@ class _MomentInfoState extends State<MomentInfo> {
                     ),
                   ),
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('取消'),
                       onTap: () {
                         Navigator.pop(context);

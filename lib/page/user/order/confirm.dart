@@ -107,7 +107,7 @@ class _MyOrderConfirmState extends State<MyOrderConfirm>
                   ],
                 ),
                 SizedBox(height: 12),
-                InkWell(
+                GestureDetector(
                   child: SizedBox(
                     height: 109,
                     child: Row(

@@ -34,7 +34,7 @@ class IconText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: buildContent(),
       onTap: () {
         if (onTap != null) {

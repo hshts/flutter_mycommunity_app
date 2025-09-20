@@ -44,7 +44,7 @@ class _PlayVoiceState extends State<PlayVoice> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       child: Container(
         height: 30,
         width: 110,

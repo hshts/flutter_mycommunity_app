@@ -213,7 +213,7 @@ class _BugInfoState extends State<BugInfo> {
           margin: EdgeInsets.only(top: 10),
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 showPhoto(context, imglist[i], i);
               },
@@ -232,7 +232,7 @@ class _BugInfoState extends State<BugInfo> {
 
   //错误重新加载
   Widget buildReLoadData() {
-    return InkWell(
+    return GestureDetector(
       child: Center(
         child: Text(
           '点击屏幕，重新加载',
@@ -266,7 +266,7 @@ class _BugInfoState extends State<BugInfo> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.menu, color: Colors.black45, size: 18),
@@ -369,7 +369,7 @@ class _BugInfoState extends State<BugInfo> {
                                 width: 30,
                                 uid: v.user!.uid,
                               ),
-                              InkWell(
+                              GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
@@ -518,7 +518,7 @@ class _BugInfoState extends State<BugInfo> {
                         position: position,
                         items: <PopupMenuEntry>[
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('删除'),
                               onTap: () async {
                                 bool ret = await imService.delMessage(
@@ -548,7 +548,7 @@ class _BugInfoState extends State<BugInfo> {
                             ),
                           ),
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('取消'),
                               onTap: () {
                                 Navigator.pop(context);
@@ -821,7 +821,7 @@ class _BugInfoState extends State<BugInfo> {
     replys.map((v) {
       tem.add(
         GestureDetector(
-          child: InkWell(
+          child: GestureDetector(
             child: Column(
               children: <Widget>[
                 Container(
@@ -927,7 +927,7 @@ class _BugInfoState extends State<BugInfo> {
                 position: position,
                 items: <PopupMenuEntry>[
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('删除'),
                       onTap: () async {
                         bool ret = await imService.delMessageReply(
@@ -956,7 +956,7 @@ class _BugInfoState extends State<BugInfo> {
                     ),
                   ),
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('取消'),
                       onTap: () {
                         Navigator.pop(context);

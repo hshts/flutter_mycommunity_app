@@ -211,7 +211,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
           margin: EdgeInsets.only(top: 10),
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 showPhoto(context, imglist[i], i);
               },
@@ -235,7 +235,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
 
   //错误重新加载
   Widget buildReLoadData() {
-    return InkWell(
+    return GestureDetector(
       child: Center(
         child: Text(
           '点击屏幕，重新加载',
@@ -269,7 +269,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.menu, color: Colors.black45, size: 18),
@@ -372,7 +372,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                                 width: 30,
                                 uid: v.user!.uid,
                               ),
-                              InkWell(
+                              GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
@@ -521,7 +521,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                         position: position,
                         items: <PopupMenuEntry>[
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('删除'),
                               onTap: () async {
                                 bool ret = await imService.delMessageSuggest(
@@ -551,7 +551,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                             ),
                           ),
                           PopupMenuItem(
-                            child: InkWell(
+                            child: GestureDetector(
                               child: Text('取消'),
                               onTap: () {
                                 Navigator.pop(context);
@@ -817,7 +817,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
     replys.map((v) {
       tem.add(
         GestureDetector(
-          child: InkWell(
+          child: GestureDetector(
             child: Column(
               children: <Widget>[
                 Container(
@@ -923,7 +923,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                 position: position,
                 items: <PopupMenuEntry>[
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('删除'),
                       onTap: () async {
                         bool ret = await imService.delMessageReplySuggest(
@@ -952,7 +952,7 @@ class _SuggestInfoState extends State<SuggestInfo> {
                     ),
                   ),
                   PopupMenuItem(
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text('取消'),
                       onTap: () {
                         Navigator.pop(context);

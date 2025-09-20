@@ -212,7 +212,7 @@ class _MemberListState extends State<MemberList> {
         onTap: () async {
           //类型等于1是修改昵称,0修改个人简介
         },
-        title: InkWell(
+        title: GestureDetector(
           child: Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -86,7 +86,7 @@ class _GroupPurchaseState extends State<GroupPurchase> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                child: InkWell(
+                child: GestureDetector(
                   child: Container(
                     padding: EdgeInsets.only(left: 10),
                     alignment: Alignment.center,
@@ -112,7 +112,7 @@ class _GroupPurchaseState extends State<GroupPurchase> {
                 ),
               ),
               SizedBox(width: 10),
-              InkWell(
+              GestureDetector(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[

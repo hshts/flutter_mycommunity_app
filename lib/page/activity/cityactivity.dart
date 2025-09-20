@@ -115,7 +115,7 @@ class _CityActivityState extends State<CityActivity>
               if (state is PostSuccess) {
                 if (state.hasReachedMax) {
                   //如果已经最大增加一个刷新按钮
-                  maxWidget = InkWell(
+                  maxWidget = GestureDetector(
                     child: Container(
                       margin: EdgeInsets.only(bottom: 50),
                       height: 50,
@@ -135,7 +135,7 @@ class _CityActivityState extends State<CityActivity>
 
                 if (state.activitys != null && state.activitys!.isEmpty) {
                   if (state.isRefreshed) {}
-                  return InkWell(
+                  return GestureDetector(
                     child: Column(
                       children: [
                         Expanded(
@@ -216,7 +216,7 @@ class _CityActivityState extends State<CityActivity>
   }
 
   Widget buildReLoadData() {
-    return InkWell(
+    return GestureDetector(
       child: Center(
         child: Text('轻触重试', style: TextStyle(color: Colors.black)),
       ),

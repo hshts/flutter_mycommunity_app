@@ -86,7 +86,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
           child: Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: 10, right: 30),
-            child: InkWell(
+            child: GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -153,7 +153,7 @@ class _CityActivityWidgetState extends State<CityActivityWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InkWell(
+                        GestureDetector(
                           child: ShareView(
                             icon: Icon(
                               IconFont.icon_fenxiang2,

@@ -151,7 +151,7 @@ class _State extends State<GroupMember> {
       color: Colors.white,
       child: ListTile(
         onTap: () async {},
-        title: InkWell(
+        title: GestureDetector(
           child: Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -186,7 +186,7 @@ class _State extends State<GroupMember> {
       color: Colors.white,
       child: ListTile(
         onTap: () async {},
-        title: InkWell(
+        title: GestureDetector(
           child: Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -79,7 +79,7 @@ class PhoneCountryCodeViewState extends State<PhoneCountryCodeView> {
                           PhoneCodeIndexName(data[index].name.toUpperCase()),
                           ListView.builder(
                             itemBuilder: (BuildContext context, int index2) {
-                              return InkWell(
+                              return GestureDetector(
                                 child: SizedBox(
                                   height: 46,
                                   width: double.maxFinite,

@@ -181,7 +181,7 @@ class _ActivityState extends State<ActivityInfo> {
                   ),
                   _listComments.isEmpty
                       ? SizedBox.shrink()
-                      : InkWell(
+                      : GestureDetector(
                           child: Row(
                             children: <Widget>[
                               Icon(Icons.menu, color: Colors.black45, size: 18),
@@ -470,7 +470,7 @@ class _ActivityState extends State<ActivityInfo> {
 
   //是否显示所有评论
   Widget buildShowAllComment() {
-    return InkWell(
+    return GestureDetector(
       child: Container(
         alignment: Alignment.center,
         margin: EdgeInsets.only(top: 20, bottom: 10),
@@ -571,7 +571,7 @@ class _ActivityState extends State<ActivityInfo> {
 
   //活动位置
   Widget buildLocation() {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -678,7 +678,7 @@ class _ActivityState extends State<ActivityInfo> {
           margin: EdgeInsets.only(top: 10),
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 showPhoto(context, imglist[i], i);
               },
@@ -1331,7 +1331,7 @@ class _ActivityState extends State<ActivityInfo> {
       widgets.add(
         Padding(
           padding: EdgeInsets.only(left: 0),
-          child: InkWell(
+          child: GestureDetector(
             child: Container(
               alignment: Alignment.center,
               width: 45,
@@ -1376,7 +1376,7 @@ class _ActivityState extends State<ActivityInfo> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              InkWell(
+              GestureDetector(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -1390,7 +1390,7 @@ class _ActivityState extends State<ActivityInfo> {
                               width: 30,
                               uid: v.user!.uid,
                             ),
-                            InkWell(
+                            GestureDetector(
                               child: Container(
                                 margin: EdgeInsets.only(left: 10),
                                 child: Column(
@@ -1513,7 +1513,7 @@ class _ActivityState extends State<ActivityInfo> {
     List<Widget> tem = [];
     replys.map((v) {
       tem.add(
-        InkWell(
+        GestureDetector(
           child: Column(
             children: <Widget>[
               Container(
@@ -1822,7 +1822,7 @@ class _ActivityState extends State<ActivityInfo> {
       ],
     );
 
-    return InkWell(
+    return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(5),
         decoration: BoxDecoration(color: Colors.grey.shade200),

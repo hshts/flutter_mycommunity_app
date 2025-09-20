@@ -197,7 +197,7 @@ class _OtherProfileState extends State<OtherProfile>
           return <Widget>[
             SliverAppBar(
               actions: [
-                InkWell(
+                GestureDetector(
                   child: Container(
                     alignment: Alignment.center,
                     child: ClipOval(
@@ -226,7 +226,7 @@ class _OtherProfileState extends State<OtherProfile>
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 10, right: 10),
-                  child: InkWell(
+                  child: GestureDetector(
                     child: Container(
                       alignment: Alignment.center,
                       child: ClipOval(
@@ -251,7 +251,7 @@ class _OtherProfileState extends State<OtherProfile>
                   ),
                 ),
               ],
-              leading: InkWell(
+              leading: GestureDetector(
                 child: Container(
                   alignment: Alignment.center,
                   child: ClipOval(
@@ -468,7 +468,7 @@ class _OtherProfileState extends State<OtherProfile>
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          InkWell(
+          GestureDetector(
             child: Container(
               height: 96,
               width: 96,
@@ -500,7 +500,7 @@ class _OtherProfileState extends State<OtherProfile>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           if (user!.followers! > 0) {
                             if (Global.profile.user != null) {
@@ -538,7 +538,7 @@ class _OtherProfileState extends State<OtherProfile>
                           ),
                         ),
                       ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           if (user!.following! > 0) {
                             if (Global.profile.user != null) {
@@ -576,7 +576,7 @@ class _OtherProfileState extends State<OtherProfile>
                           ),
                         ),
                       ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           showDialog(
                             context: context,

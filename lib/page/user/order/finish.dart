@@ -97,7 +97,7 @@ class _MyOrderFinishState extends State<MyOrderFinish> {
             child: Column(
               children: [
                 SizedBox(height: 12),
-                InkWell(
+                GestureDetector(
                   child: SizedBox(
                     height: 109,
                     child: Row(

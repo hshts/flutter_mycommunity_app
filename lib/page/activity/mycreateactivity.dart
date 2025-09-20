@@ -167,7 +167,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
             ),
             child: Column(
               children: [
-                InkWell(
+                GestureDetector(
                   child: Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -66,7 +66,7 @@ class _MomentWidgetState extends State<MomentWidget> {
           child: Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: 10, right: 30),
-            child: InkWell(
+            child: GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,

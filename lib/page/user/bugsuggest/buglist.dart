@@ -170,7 +170,7 @@ class _BugListState extends State<BugList> {
           ),
           child: Padding(
             padding: EdgeInsets.all(10),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 Navigator.pushNamed(
                   context,

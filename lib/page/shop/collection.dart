@@ -145,7 +145,7 @@ class _MyCollectionGoodPriceState extends State<MyCollectionGoodPrice> {
       }
 
       widgets.add(
-        InkWell(
+        GestureDetector(
           child: Container(
             margin: EdgeInsets.only(left: 7, right: 7, bottom: 7),
             decoration: BoxDecoration(

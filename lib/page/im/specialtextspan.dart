@@ -353,7 +353,7 @@ class LocationText extends SpecialText {
                       "[位置]",
                       style: TextStyle(color: Colors.black45, fontSize: 13),
                     )
-                  : InkWell(
+                  : GestureDetector(
                       child: Container(
                         padding: EdgeInsets.all(3),
                         color: Colors.white,

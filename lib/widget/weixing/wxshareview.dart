@@ -34,7 +34,7 @@ class _WXShareViewState extends State<WXShareView> {
       img = u.path.substring(1, u.path.length);
     }
 
-    return InkWell(
+    return GestureDetector(
       child: widget.icon,
       onTap: () {
         if (Global.profile.user == null) {

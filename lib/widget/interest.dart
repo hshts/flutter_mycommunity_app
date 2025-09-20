@@ -130,7 +130,7 @@ class _InterestSelState extends State<InterestSel> {
     List<Widget> choices = [];
     interestData.forEach((val, name) {
       choices.add(
-        InkWell(
+        GestureDetector(
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(

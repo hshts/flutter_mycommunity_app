@@ -60,7 +60,7 @@ class _ManageActivityMemberState extends State<ManageActivityMember> {
         // widgets.add(SizedBox.shrink());
       } else {
         widgets.add(
-          InkWell(
+          GestureDetector(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,

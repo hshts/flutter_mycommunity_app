@@ -92,7 +92,7 @@ class _MyOrderRefundState extends State<MyOrderRefund> {
               borderRadius: BorderRadius.all(Radius.circular(4.0)),
               //设置四周边框
             ),
-            child: InkWell(
+            child: GestureDetector(
               child: SizedBox(
                 height: 109,
                 child: Row(

@@ -184,7 +184,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                     return <Widget>[
                       SliverAppBar(
                         systemOverlayStyle: SystemUiOverlayStyle.light,
-                        leading: InkWell(
+                        leading: GestureDetector(
                           child: Container(
                             alignment: Alignment.center,
                             child: ClipOval(
@@ -332,7 +332,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          InkWell(
+          GestureDetector(
             child: Container(
               height: 96,
               width: 96,
@@ -364,7 +364,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           if (user.followers! > 0) {
                             Navigator.pushNamed(
@@ -404,7 +404,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                         color: Colors.white,
                         child: Text(''),
                       ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           if (user.following! > 0) {
                             Navigator.pushNamed(context, '/MyFollowUser');
@@ -440,7 +440,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                         color: Colors.white,
                         child: Text(''),
                       ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           showDialog(
                             context: context,

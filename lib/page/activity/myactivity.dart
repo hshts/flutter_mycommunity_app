@@ -160,7 +160,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
             ],
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
-          InkWell(
+          GestureDetector(
             child: SizedBox(
               width: double.infinity,
               child: Text(

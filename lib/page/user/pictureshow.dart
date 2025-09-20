@@ -24,7 +24,7 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
         }
       },
       builder: (context, state) {
-        return InkWell(
+        return GestureDetector(
           onTap: () {
             if (state is AuthenticationAuthenticated) {
               widget.parentJumpMyProfile!(4);

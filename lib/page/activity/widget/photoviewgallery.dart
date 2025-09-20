@@ -185,7 +185,7 @@ class NinePicture extends StatelessWidget {
           .asMap()
           .keys
           .map(
-            (index) => InkWell(
+            (index) => GestureDetector(
               onTap: () {
                 showPhoto(context, list[index], index);
               },

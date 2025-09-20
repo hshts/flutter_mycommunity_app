@@ -88,7 +88,7 @@ class _ActivityEvaluateListState extends State<ActivityEvaluateList> {
             child: Column(
               children: [
                 SizedBox(height: 12),
-                InkWell(
+                GestureDetector(
                   child: SizedBox(
                     height: 109,
                     child: Row(

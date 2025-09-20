@@ -138,7 +138,7 @@ class _RecommendState extends State<Recommend>
             }
             if (state is PostLoaded) {
               if (state.activitys == null || state.activitys!.isEmpty) {
-                return InkWell(
+                return GestureDetector(
                   child: Column(
                     children: [
                       Expanded(

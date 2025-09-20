@@ -166,7 +166,7 @@ class _SearchMomentState extends State<SearchMoment> {
     if (searchResults.isNotEmpty) {
       for (int i = 0; i < searchResults.length; i++) {
         hotSearchs.add(
-          InkWell(
+          GestureDetector(
             child: Container(
               margin: EdgeInsets.only(right: 10, bottom: 15),
               decoration: BoxDecoration(
@@ -202,7 +202,7 @@ class _SearchMomentState extends State<SearchMoment> {
     if (hissearch != null && hissearch.isNotEmpty) {
       for (int i = 0; i < hissearch.length; i++) {
         hisSearchs.add(
-          InkWell(
+          GestureDetector(
             child: Container(
               margin: EdgeInsets.only(right: 10, bottom: 15),
               decoration: BoxDecoration(
