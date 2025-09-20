@@ -85,7 +85,7 @@ class _MyFollowState extends State<MyFollow> {
           bloc: _myFollowBloc,
           builder: (context, state) {
             if (state is NoLogin) {
-              return InkWell(
+              return GestureDetector(
                 child: Center(
                   child: Text(
                     '登录后才能看到你关注了谁.',
@@ -169,7 +169,7 @@ class _MyFollowState extends State<MyFollow> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(right: 10),
-                    child: InkWell(
+                    child: GestureDetector(
                       child: Text(
                         '全部>',
                         style: TextStyle(color: Colors.black54, fontSize: 13),

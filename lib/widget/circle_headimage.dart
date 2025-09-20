@@ -5,10 +5,10 @@ import '../global.dart';
 
 //圆形头像，跳转到用户信息,使用内存缓存
 class NoCacheCircleHeadImage extends StatelessWidget {
-  String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
+  final String imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
   NoCacheCircleHeadImage({
     super.key,
     this.imageUrl = "",
@@ -27,7 +27,7 @@ class NoCacheCircleHeadImage extends StatelessWidget {
       temimageUrl = '$imageUrl?x-oss-process=image/resize,w_300/quality,q_90';
     }
 
-    return InkWell(
+    return GestureDetector(
       child: SizedBox(
         height: width,
         width: width,
@@ -60,11 +60,11 @@ class NoCacheCircleHeadImage extends StatelessWidget {
 
 //圆形头像，跳转到用户信息,使用内存缓存
 class NoCacheClipRRectHeadImage extends StatelessWidget {
-  String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
-  double cir;
+  final String imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
   NoCacheClipRRectHeadImage({
     super.key,
     this.imageUrl = "",
@@ -118,11 +118,11 @@ class NoCacheClipRRectHeadImage extends StatelessWidget {
 
 //没有定义默认事件, 长方形,使用内存缓存
 class NoCacheClipRRectOhterHeadImage extends StatelessWidget {
-  String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
-  double cir;
+  final String imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
   NoCacheClipRRectOhterHeadImage({
     super.key,
     this.imageUrl = "",
@@ -157,13 +157,13 @@ class NoCacheClipRRectOhterHeadImage extends StatelessWidget {
 
 //正方形的
 class NoCacheClipRRectOhterHeadImageContainer extends StatelessWidget {
-  String imageUrl;
-  double width;
-  double height;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  double borderwidth;
+  final String imageUrl;
+  final double width;
+  final double height;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final double borderwidth;
 
   NoCacheClipRRectOhterHeadImageContainer({
     super.key,
@@ -204,9 +204,9 @@ class NoCacheClipRRectOhterHeadImageContainer extends StatelessWidget {
 
 class CircleHeadImage extends StatelessWidget {
   final String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
   CircleHeadImage({
     super.key,
     this.imageUrl = "",
@@ -256,10 +256,10 @@ class CircleHeadImage extends StatelessWidget {
 //正方形用户头像，跳转到用户信息
 class ClipRRectHeadImage extends StatelessWidget {
   final String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
-  double cir;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
   ClipRRectHeadImage({
     super.key,
     this.imageUrl = "",
@@ -312,10 +312,10 @@ class ClipRRectHeadImage extends StatelessWidget {
 //没有定义默认事件, 长方形
 class ClipRRectOhterHeadImage extends StatelessWidget {
   final String imageUrl;
-  double width;
-  int imgwidthxp;
-  int uid;
-  double cir;
+  final double width;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
   ClipRRectOhterHeadImage({
     super.key,
     this.imageUrl = "",
@@ -349,12 +349,12 @@ class ClipRRectOhterHeadImage extends StatelessWidget {
 //正方形的
 class ClipRRectOhterHeadImageContainer extends StatelessWidget {
   final String imageUrl;
-  double width;
-  double height;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  double borderwidth;
+  final double width;
+  final double height;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final double borderwidth;
 
   ClipRRectOhterHeadImageContainer({
     super.key,
@@ -392,15 +392,15 @@ class ClipRRectOhterHeadImageContainer extends StatelessWidget {
 ///IM中显示地图用
 class ClipRRectOhterHeadImageContainerLocation extends StatelessWidget {
   final String imageUrl;
-  double width;
-  double height;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  String lat;
-  String lng;
-  String title;
-  String address;
+  final double width;
+  final double height;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final String lat;
+  final String lng;
+  final String title;
+  final String address;
 
   ClipRRectOhterHeadImageContainerLocation({
     super.key,
@@ -454,15 +454,15 @@ class ClipRRectOhterHeadImageContainerLocation extends StatelessWidget {
 
 class ClipRRectOhterHeadImageContainerLocationNoEvent extends StatelessWidget {
   final String imageUrl;
-  double width;
-  double height;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  String lat;
-  String lng;
-  String title;
-  String address;
+  final double width;
+  final double height;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final String lat;
+  final String lng;
+  final String title;
+  final String address;
 
   ClipRRectOhterHeadImageContainerLocationNoEvent({
     super.key,
@@ -503,12 +503,12 @@ class ClipRRectOhterHeadImageContainerLocationNoEvent extends StatelessWidget {
 //形状不固定按宽度的自适应
 class ClipRRectOhterHeadImageContainerByWidth extends StatelessWidget {
   final String imageUrl;
-  double pagewidth;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  double sourceWidth;
-  double sourceHeight;
+  final double pagewidth;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final double sourceWidth;
+  final double sourceHeight;
 
   ClipRRectOhterHeadImageContainerByWidth({
     super.key,
@@ -567,13 +567,13 @@ class ClipRRectOhterHeadImageContainerByWidth extends StatelessWidget {
 //固定高宽，按宽度从oss中取回处理好的图片,指定高度裁剪
 class ClipRRectOhterHeadImageContainerByWidthNoEvent extends StatelessWidget {
   final String imageUrl;
-  double pagewidth;
-  double pageheight;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  double sourceWidth;
-  double sourceHeight;
+  final double pagewidth;
+  final double pageheight;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final double sourceWidth;
+  final double sourceHeight;
 
   ClipRRectOhterHeadImageContainerByWidthNoEvent({
     super.key,
@@ -625,12 +625,12 @@ class ClipRRectOhterHeadImageContainerByWidthNoEvent extends StatelessWidget {
 class ClipRRectOhterHeadImageContainerByWidthNoEventNoHeight
     extends StatelessWidget {
   final String imageUrl;
-  double pagewidth;
-  int imgwidthxp;
-  int uid;
-  double cir;
-  double sourceWidth;
-  double sourceHeight;
+  final double pagewidth;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
+  final double sourceWidth;
+  final double sourceHeight;
 
   ClipRRectOhterHeadImageContainerByWidthNoEventNoHeight({
     super.key,
@@ -680,10 +680,10 @@ class ClipRRectOhterHeadImageContainerByWidthNoEventNoHeight
 //没有宽度，能弹出大图
 class ClipRRectOhterHeadImageContainerByBigImg extends StatelessWidget {
   final String imageUrl;
-  double pagewidth;
-  int imgwidthxp;
-  int uid;
-  double cir;
+  final double pagewidth;
+  final int imgwidthxp;
+  final int uid;
+  final double cir;
 
   ClipRRectOhterHeadImageContainerByBigImg({
     super.key,
@@ -726,11 +726,11 @@ class ClipRRectOhterHeadImageContainerByBigImg extends StatelessWidget {
 
 //修改图片缓存可以配置
 class CommunityCircleHeadImage extends StatelessWidget {
-  String? imageUrl;
-  double width;
-  int imgwidthxp;
-  String cid;
-  int uid;
+  final String? imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final String cid;
+  final int uid;
   CommunityCircleHeadImage({
     super.key,
     this.imageUrl,
@@ -767,11 +767,11 @@ class CommunityCircleHeadImage extends StatelessWidget {
 }
 
 class CommunityClipRRectHeadImage extends StatelessWidget {
-  String? imageUrl;
-  double width;
-  int imgwidthxp;
-  String cid;
-  int uid;
+  final String? imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final String cid;
+  final int uid;
 
   CommunityClipRRectHeadImage({
     super.key,
@@ -808,11 +808,11 @@ class CommunityClipRRectHeadImage extends StatelessWidget {
 }
 
 class ActivityClipRRectHeadImage extends StatelessWidget {
-  String? imageUrl;
-  double width;
-  int imgwidthxp;
-  String actid;
-  int uid;
+  final String? imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final String actid;
+  final int uid;
 
   ActivityClipRRectHeadImage({
     super.key,
@@ -854,11 +854,11 @@ class ActivityClipRRectHeadImage extends StatelessWidget {
 
 ///这个是消息页面活动的头像，，如果9宫格没有生成就显示自己的头像
 class ActivityClipRRectHeadShortCacheImage extends StatelessWidget {
-  String? imageUrl;
-  double width;
-  int imgwidthxp;
-  String actid;
-  int uid;
+  final String? imageUrl;
+  final double width;
+  final int imgwidthxp;
+  final String actid;
+  final int uid;
 
   ActivityClipRRectHeadShortCacheImage({
     super.key,

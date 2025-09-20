@@ -1,4 +1,6 @@
-﻿import 'dart:async';
+﻿// ignore_for_file: avoid_print
+
+import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'i18n_model.dart';
 
 /// Outputs year as four digits

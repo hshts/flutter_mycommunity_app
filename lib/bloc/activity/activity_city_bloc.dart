@@ -9,27 +9,34 @@ export './state/activity_city_state.dart';
 class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
   final ActivityService _activityService = ActivityService();
 
-  CityActivityDataBloc() : super(PostInitial());
+  CityActivityDataBloc() : super(PostInitial()) {
+    on<PostFetched>(_onPostFetched);
+    on<Refreshed>(_onRefreshed);
+  }
 
   //@override
   // TODO: implement initialState
   //CityActivityState get initialState => PostInitial();
 
-  @override
-  Stream<CityActivityState> mapEventToState(PostEvent event) async* {
+  Future<void> _onPostFetched(
+    PostFetched event,
+    Emitter<CityActivityState> emit,
+  ) async {
     final currentState = state;
     try {
-      if (event is PostFetched && !_hasReachedMax(currentState)) {
+      if (!_hasReachedMax(currentState)) {
         if (currentState is PostInitial || currentState is PostFailure) {
-          yield PostLoading();
+          emit(PostLoading());
           final activitys = await _activityService.getActivityListByCity(
             0,
             event.locationCode,
           );
-          yield PostSuccess(
-            activitys: activitys,
-            hasReachedMax: activitys.length < 6 ? true : false,
-            isRefreshed: true,
+          emit(
+            PostSuccess(
+              activitys: activitys,
+              hasReachedMax: activitys.length < 6 ? true : false,
+              isRefreshed: true,
+            ),
           );
           return;
         }
@@ -39,30 +46,41 @@ class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
             currentState.activitys!.length,
             event.locationCode,
           );
-          yield activitys.isEmpty
-              ? currentState.copyWith(hasReachedMax: true)
-              : PostSuccess(
-                  activitys: currentState.activitys! + activitys,
-                  hasReachedMax: false,
-                  isRefreshed: false,
-                );
+          emit(
+            activitys.isEmpty
+                ? currentState.copyWith(hasReachedMax: true)
+                : PostSuccess(
+                    activitys: currentState.activitys! + activitys,
+                    hasReachedMax: false,
+                    isRefreshed: false,
+                  ),
+          );
         }
       }
-      if (event is Refreshed) {
-        yield PostLoading();
-        final activitys = await _activityService.getActivityListByCity(
-          0,
-          event.locationCode,
-        );
-        yield PostSuccess(
+    } catch (_) {
+      emit(PostFailure());
+    }
+  }
+
+  Future<void> _onRefreshed(
+    Refreshed event,
+    Emitter<CityActivityState> emit,
+  ) async {
+    try {
+      emit(PostLoading());
+      final activitys = await _activityService.getActivityListByCity(
+        0,
+        event.locationCode,
+      );
+      emit(
+        PostSuccess(
           activitys: activitys,
           hasReachedMax: activitys.length < 6 ? true : false,
           isRefreshed: true,
-        );
-        return;
-      }
+        ),
+      );
     } catch (_) {
-      yield PostFailure();
+      emit(PostFailure());
     }
   }
 

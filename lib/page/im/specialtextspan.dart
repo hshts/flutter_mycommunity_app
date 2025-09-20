@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
