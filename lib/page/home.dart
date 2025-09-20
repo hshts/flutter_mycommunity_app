@@ -19,7 +19,7 @@ import '../common/iconfont.dart';
 import '../util/permission_util.dart';
 import '../util/showmessage_util.dart';
 import '../util/common_util.dart';
-import '../util/token_util.dart';
+import '../util/token_util_platform.dart';
 
 import '../global.dart';
 import 'activity/cityactivity.dart';
@@ -93,7 +93,12 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _initMap() async {
     await Global.init(context);
-    await _tokenUtil.getDeviceToken();
+    try {
+      await _tokenUtil.getDeviceToken();
+    } catch (e) {
+      print('获取设备 token 失败: $e');
+      // 继续执行，不让 Firebase 错误阻止应用启动
+    }
     _handleIncomingLinks();
     _handleInitialUri();
 
@@ -286,6 +291,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // 调用 AutomaticKeepAliveClientMixin 的 build 方法
     _title = (Global.profile.locationName.length > 3
         ? Global.profile.locationName.substring(0, 3)
         : Global.profile.locationName);

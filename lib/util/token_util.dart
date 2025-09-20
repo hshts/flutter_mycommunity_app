@@ -21,17 +21,30 @@ class TokenUtil {
   final UserService _userService = UserService();
   String _brand = "other";
   final ImHelper _imHelper = ImHelper();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
   Future<void> getDeviceToken() async {
-    await _getDeviceToken();
+    try {
+      await _getDeviceToken();
+    } catch (e) {
+      print('获取设备 token 失败: $e');
+      // 在 Web 平台上忽略 Firebase 相关错误
+      if (kIsWeb) {
+        print('Web 平台不支持推送通知，这是正常现象');
+      }
+    }
   }
 
   Future<void> _getDeviceToken() async {
     if (Global.profile.user != null) {
-      if (Platform.isAndroid) {
+      // Web 平台跳过推送通知功能
+      if (kIsWeb) {
+        print('Web 平台不支持推送通知');
+        return;
+      }
+
+      if (!kIsWeb && Platform.isAndroid) {
         _pushMessageRegister.onReceiveMessage().listen((event) {
           if (event["result"] == "success") {
             Global.devicetoken = event["token"].toString();
@@ -70,44 +83,83 @@ class TokenUtil {
   }
 
   Future<void> _initializeFirebaseMessaging() async {
-    // 请求通知权限
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      announcement: false,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-    );
+    // Web 平台完全跳过 Firebase Messaging 初始化
+    if (kIsWeb) {
+      print('Web 平台跳过 Firebase Messaging 初始化');
+      return;
+    }
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      // 初始化本地通知
-      await _initializeLocalNotifications();
-
-      // 获取FCM token
-      String? token = await _firebaseMessaging.getToken();
-      if (token != null) {
-        Global.devicetoken = token;
-        _updatePushToken(token);
+    try {
+      // 只在非 Web 平台执行 Firebase 初始化 - 使用动态调用避免 Web 平台编译错误
+      final dynamic messaging = await _getFirebaseMessagingInstance();
+      if (messaging == null) {
+        print('Firebase Messaging 不可用');
+        return;
       }
 
-      // 监听token刷新
-      _firebaseMessaging.onTokenRefresh.listen((String token) {
-        Global.devicetoken = token;
-        _updatePushToken(token);
-      });
+      // 请求通知权限
+      final dynamic settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        announcement: false,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+      );
 
-      // 设置消息处理器
+      if (settings.authorizationStatus.toString() ==
+          'AuthorizationStatus.authorized') {
+        // 初始化本地通知
+        await _initializeLocalNotifications();
+
+        // 获取FCM token
+        String? token = await messaging.getToken();
+        if (token != null) {
+          Global.devicetoken = token;
+          _updatePushToken(token);
+        }
+
+        // 监听token刷新
+        messaging.onTokenRefresh.listen((String token) {
+          Global.devicetoken = token;
+          _updatePushToken(token);
+        });
+
+        // 设置消息处理器
+        _setMessageHandlers();
+
+        // 检查应用启动时的消息
+        final dynamic initialMessage = await messaging.getInitialMessage();
+        if (initialMessage != null) {
+          await _handleBackgroundMessage(initialMessage);
+        }
+      }
+    } catch (e) {
+      print('Firebase Messaging 初始化失败: $e');
+    }
+  }
+
+  // 安全地获取 FirebaseMessaging 实例
+  Future<dynamic> _getFirebaseMessagingInstance() async {
+    if (kIsWeb) return null;
+    try {
+      // 在运行时动态获取 FirebaseMessaging.instance
+      return FirebaseMessaging.instance;
+    } catch (e) {
+      print('获取 FirebaseMessaging 实例失败: $e');
+      return null;
+    }
+  }
+
+  // 设置消息处理器
+  void _setMessageHandlers() {
+    if (kIsWeb) return;
+    try {
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
-
-      // 检查应用启动时的消息
-      RemoteMessage? initialMessage = await _firebaseMessaging
-          .getInitialMessage();
-      if (initialMessage != null) {
-        await _handleBackgroundMessage(initialMessage);
-      }
+    } catch (e) {
+      print('设置消息处理器失败: $e');
     }
   }
 
@@ -134,7 +186,7 @@ class TokenUtil {
 
   void _updatePushToken(String token) {
     if (Global.profile.user != null) {
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         _userService.updatePushToken(
           Global.profile.user!.uid,
           Global.profile.user!.token!,
@@ -157,12 +209,14 @@ class TokenUtil {
   }
 
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
+    if (kIsWeb) return; // Web 平台不支持
     // 在前台显示本地通知
     await _showLocalNotification(message);
     await onPush('onMessage', message);
   }
 
   Future<void> _handleBackgroundMessage(RemoteMessage message) async {
+    if (kIsWeb) return; // Web 平台不支持
     await onPush('onResume', message);
   }
 
@@ -174,6 +228,8 @@ class TokenUtil {
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
+    if (kIsWeb) return; // Web 平台不支持
+
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'high_importance_channel',
@@ -209,6 +265,8 @@ class TokenUtil {
   }
 
   Future<dynamic> onPush(String name, RemoteMessage payload) async {
+    if (kIsWeb) return Future.value(true); // Web 平台不支持
+
     String content = payload.data.toString();
     if (content != "") {
       content.replaceAll('{', '').replaceAll('}', '');
