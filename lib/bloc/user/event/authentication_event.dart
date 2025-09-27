@@ -33,6 +33,7 @@ class LoggedOut extends AuthenticationEvent {
 ///登录验证
 class LoginButtonPressed extends AuthenticationEvent {
   final String mobile;
+  final String email;
   final String password;
 
   ///短信验证码
@@ -47,6 +48,7 @@ class LoginButtonPressed extends AuthenticationEvent {
 
   const LoginButtonPressed({
     required this.mobile,
+    required this.email,
     required this.password,
     required this.vcode,
     required this.type,
@@ -54,18 +56,11 @@ class LoginButtonPressed extends AuthenticationEvent {
     required this.country,
   });
   @override
-  List<Object> get props => [
-    mobile,
-    password,
-    vcode,
-    type,
-    captchaVerification,
-    country,
-  ];
+  List<Object> get props => [mobile, email, password, vcode, type, captchaVerification, country];
 
   @override
   String toString() =>
-      'LoginButtonPressed { username: $mobile, password: $password, vode: $vcode, $type }';
+      'LoginButtonPressed { username: $mobile, email: $email, password: $password, vode: $vcode, $type }';
 }
 
 ///支付宝登录
@@ -92,17 +87,12 @@ class UpdateImagePressed extends AuthenticationEvent {
   final String imgpath;
   final String serverimgpath;
 
-  const UpdateImagePressed({
-    required this.user,
-    required this.imgpath,
-    this.serverimgpath = "",
-  });
+  const UpdateImagePressed({required this.user, required this.imgpath, this.serverimgpath = ""});
   @override
   List<Object> get props => [user, imgpath, serverimgpath];
 
   @override
-  String toString() =>
-      'LoginButtonPressed { user: $user, imgpath: $imgpath, serverimgpath: $serverimgpath }';
+  String toString() => 'LoginButtonPressed { user: $user, imgpath: $imgpath, serverimgpath: $serverimgpath }';
 }
 
 ///更新昵称
@@ -115,8 +105,7 @@ class UpdateUserNamePressed extends AuthenticationEvent {
   List<Object> get props => [user, username];
 
   @override
-  String toString() =>
-      'UpdateUserNamePressed { user: $user, imgpath: $username }';
+  String toString() => 'UpdateUserNamePressed { user: $user, imgpath: $username }';
 }
 
 ///更新所在地
@@ -125,17 +114,12 @@ class UpdateUserLocationPressed extends AuthenticationEvent {
   final String province;
   final String city;
 
-  const UpdateUserLocationPressed({
-    required this.user,
-    required this.province,
-    required this.city,
-  });
+  const UpdateUserLocationPressed({required this.user, required this.province, required this.city});
   @override
   List<Object> get props => [user, province, city];
 
   @override
-  String toString() =>
-      'UpdateUserLocationPressed { user: $user, province: $province, city: $city }';
+  String toString() => 'UpdateUserLocationPressed { user: $user, province: $province, city: $city }';
 }
 
 ///更新密码
@@ -148,8 +132,7 @@ class UpdateUserPasswordPressed extends AuthenticationEvent {
   List<Object> get props => [user, password];
 
   @override
-  String toString() =>
-      'UpdateUserNamePressed { user: $user, password: $password }';
+  String toString() => 'UpdateUserNamePressed { user: $user, password: $password }';
 }
 
 ///更新性别
@@ -175,8 +158,7 @@ class UpdateUserBirthdayPressed extends AuthenticationEvent {
   List<Object> get props => [user, birthday];
 
   @override
-  String toString() =>
-      'UpdateUserNamePressed { user: $user, password: $birthday }';
+  String toString() => 'UpdateUserNamePressed { user: $user, password: $birthday }';
 }
 
 ///更新个人简介
@@ -184,16 +166,12 @@ class UpdateUserSignaturePressed extends AuthenticationEvent {
   final User user;
   final String signature;
 
-  const UpdateUserSignaturePressed({
-    required this.user,
-    required this.signature,
-  });
+  const UpdateUserSignaturePressed({required this.user, required this.signature});
   @override
   List<Object> get props => [user, signature];
 
   @override
-  String toString() =>
-      'UpdateUserNamePressed { user: $user, password: $signature }';
+  String toString() => 'UpdateUserNamePressed { user: $user, password: $signature }';
 }
 
 //更新定位
@@ -201,16 +179,12 @@ class UpdateLocation extends AuthenticationEvent {
   final String locationCode;
   final String locationName;
 
-  const UpdateLocation({
-    required this.locationCode,
-    required this.locationName,
-  });
+  const UpdateLocation({required this.locationCode, required this.locationName});
   @override
   List<Object> get props => [locationCode, locationName];
 
   @override
-  String toString() =>
-      'UpdateLocation { locationCode: $locationCode, locationName: $locationName }';
+  String toString() => 'UpdateLocation { locationCode: $locationCode, locationName: $locationName }';
 }
 
 ///主动刷新

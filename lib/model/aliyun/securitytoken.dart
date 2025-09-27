@@ -1,10 +1,8 @@
-
 import 'package:json_annotation/json_annotation.dart';
 part 'securitytoken.g.dart';
 
 @JsonSerializable()
-class SecurityToken{
-
+class SecurityToken {
   String ossAccessKeyId = "";
   String policy = "";
   String signature = "";
@@ -12,7 +10,12 @@ class SecurityToken{
   String host = "";
   String expire = "";
 
-
-
-  SecurityToken(this.ossAccessKeyId, this.policy, this.signature, this.dir, this.host, this.expire);
+  SecurityToken(
+    this.ossAccessKeyId,
+    this.policy,
+    this.signature,
+    this.dir,
+    this.host,
+    this.expire,
+  );
 }

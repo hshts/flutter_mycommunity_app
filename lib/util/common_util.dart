@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -31,10 +33,7 @@ class CommonUtil {
   }
 
   static String getAgeGroupByYear(int year) {
-    return year.toString().substring(
-      year.toString().length - 2,
-      year.toString().length,
-    );
+    return year.toString().substring(year.toString().length - 2, year.toString().length);
   }
 
   //根据出生日期计算星座
@@ -157,24 +156,7 @@ class CommonUtil {
     List<String> s = [];
     List<String> r;
     int hex = 16;
-    List<String> b = [
-      '0',
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      'A',
-      'B',
-      'C',
-      'D',
-      'E',
-      'F',
-    ];
+    List<String> b = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
     while (n != 0) {
       s.add(b[n % 16]);
       n = n ~/ hex;
@@ -195,12 +177,7 @@ class CommonUtil {
   }
 
   //返回m
-  static double getDistance(
-    double lat1,
-    double lng1,
-    double lat2,
-    double lng2,
-  ) {
+  static double getDistance(double lat1, double lng1, double lat2, double lng2) {
     double radLat1 = getRadian(lat1);
     double radLat2 = getRadian(lat2);
     double a = radLat1 - radLat2; // 两点纬度差
@@ -209,22 +186,14 @@ class CommonUtil {
         2 *
         math.asin(
           math.sqrt(
-            math.pow(math.sin(a / 2), 2) +
-                math.cos(radLat1) *
-                    math.cos(radLat2) *
-                    math.pow(math.sin(b / 2), 2),
+            math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2),
           ),
         );
     s = s * EARTH_RADIUS;
     return s * 1000;
   }
 
-  static Widget getTextDistance(
-    double? lat1,
-    double? lng1,
-    double? lat2,
-    double? lng2,
-  ) {
+  static Widget getTextDistance(double? lat1, double? lng1, double? lat2, double? lng2) {
     if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) {
       return SizedBox.shrink();
     }
@@ -274,13 +243,7 @@ class CommonUtil {
     // }
   }
 
-  static Widget getWidgetDistance(
-    double lat1,
-    double lng1,
-    double lat2,
-    double lng2,
-    String address,
-  ) {
+  static Widget getWidgetDistance(double lat1, double lng1, double lat2, double lng2, String address) {
     if (lat2 <= 0) {
       return SizedBox.shrink();
     }
@@ -318,12 +281,7 @@ class CommonUtil {
   }
 
   ///value: 文本内容；fontSize : 文字的大小；fontWeight：文字权重；maxWidth：文本框的最大宽度；maxLines：文本支持最大多少行
-  static double calculateTextHeight(
-    String value,
-    fontSize,
-    FontWeight fontWeight,
-    double maxWidth,
-  ) {
+  static double calculateTextHeight(String value, fontSize, FontWeight fontWeight, double maxWidth) {
     TextPainter painter = TextPainter(
       ///AUTO：华为手机如果不指定locale的时候，该方法算出来的文字高度是比系统计算偏小的。
       locale: Localizations.localeOf(Global.mainContext!),
@@ -340,8 +298,7 @@ class CommonUtil {
   }
 
   static String datetimeFormat(DateTime date) {
-    num delta =
-        DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
+    num delta = DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
     if (delta < 1 * ONE_MINUTE) {
       num seconds = toSeconds(delta);
       return (seconds <= 0 ? 1 : seconds).toInt().toString() + ONE_SECOND_AGO;
@@ -391,8 +348,7 @@ class CommonUtil {
   }
 
   static String datetimeMomentFormat(DateTime date) {
-    num delta =
-        DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
+    num delta = DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
     if (delta < 1 * ONE_MINUTE) {
       num seconds = toSeconds(delta);
       return (seconds <= 0 ? 1 : seconds).toInt().toString() + ONE_SECOND_AGO;
@@ -446,11 +402,7 @@ class CommonUtil {
   }
 
   //图片压缩并上传阿里云oss 返回url
-  static Future<String> upLoadImage(
-    File file,
-    SecurityToken securityToken,
-    AliyunService aliyunService,
-  ) async {
+  static Future<String> upLoadImage(File file, SecurityToken securityToken, AliyunService aliyunService) async {
     String ossurl = "";
     // Directory _directory = await getTemporaryDirectory();
     // Directory _imageDirectory = await new Directory('${_directory.path}/activity/images/').create(recursive: true);
@@ -464,22 +416,14 @@ class CommonUtil {
     // }
     Uint8List imageData = await (file).readAsBytes();
     String md5name = md5.convert(imageData).toString();
-    ossurl = await aliyunService.uploadImage(
-      securityToken,
-      file.path,
-      '$md5name.png',
-      Global.profile.user!.uid,
-    );
+    ossurl = await aliyunService.uploadImage(securityToken, file.path, '$md5name.png', Global.profile.user!.uid);
     return ossurl;
   }
 }
 
 class MoneyTextInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     // TODO: implement formatEditUpdate
 
     String newvalueText = newValue.text;

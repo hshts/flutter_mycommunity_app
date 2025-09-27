@@ -31,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isShowPwd = false;
   bool _isShowAccountClean = false;
   bool _ismobilelogin = true; //是否手机验证登录
+  bool _isemaillogin = false; //是否邮箱登录
+  bool _isemailvcodelogin = false; //是否邮箱验证码登录
   bool _iscaptcha = false; //默认不用人机验证，服务器返回对应错误后开器
   bool _isagree = false; //是否同意条款
   int _count = 60; //初始倒计时时间
@@ -41,10 +43,12 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoginButtonEnable = true;
   String _vcode = "";
   String _mobile = "";
+  String _email = "";
   String _password = "";
   Timer? _timer;
   final UserService _userService = UserService();
   final FocusNode _commentFocus_mobile = FocusNode(); //手机号焦点
+  final FocusNode _commentFocus_email = FocusNode(); //邮箱焦点
   final FocusNode _passwordFocus_mobile = FocusNode(); //密码框焦点
   final FocusNode _vcodeFocus = FocusNode(); //验证码焦点
   late AuthenticationBloc _authenticationBloc;
@@ -54,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
   dispose() {
     if (_timer != null) _timer!.cancel();
     _commentFocus_mobile.dispose();
+    _commentFocus_email.dispose();
     _passwordFocus_mobile.dispose();
     _vcodeFocus.dispose();
     if (_streamDemoSubscription != null) {
@@ -81,6 +86,18 @@ class _LoginPageState extends State<LoginPage> {
           _isShowAccountClean = false;
         });
       } else if (_commentFocus_mobile.hasFocus && _mobile != "") {
+        setState(() {
+          _isShowAccountClean = true;
+        });
+      }
+    });
+
+    _commentFocus_email.addListener(() {
+      if (!_commentFocus_email.hasFocus) {
+        setState(() {
+          _isShowAccountClean = false;
+        });
+      } else if (_commentFocus_email.hasFocus && _email != "") {
         setState(() {
           _isShowAccountClean = true;
         });
@@ -120,20 +137,40 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.only(right: 29),
             alignment: Alignment.center,
             child: GestureDetector(
-              child: Text(
-                _loginNav,
-                style: TextStyle(color: Colors.black45, fontSize: 16.0),
-              ),
+              child: Text(_loginNav, style: TextStyle(color: Colors.black45, fontSize: 16.0)),
               onTap: () {
                 setState(() {
-                  _ismobilelogin = _ismobilelogin == true ? false : true;
-                  _loginNav = _loginNav == "手机密码登录" ? "验证码登录" : "手机密码登录";
-
-                  if (_ismobilelogin) {
-                    _password = "";
+                  if (_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) {
+                    // 手机验证码登录 -> 手机密码登录
+                    _ismobilelogin = false;
+                    _isemaillogin = false;
+                    _isemailvcodelogin = false;
+                    _loginNav = "邮箱密码登录";
+                  } else if (!_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) {
+                    // 手机密码登录 -> 邮箱密码登录
+                    _ismobilelogin = false;
+                    _isemaillogin = true;
+                    _isemailvcodelogin = false;
+                    _loginNav = "邮箱验证码登录";
+                  } else if (!_ismobilelogin && _isemaillogin && !_isemailvcodelogin) {
+                    // 邮箱密码登录 -> 邮箱验证码登录
+                    _ismobilelogin = false;
+                    _isemaillogin = false;
+                    _isemailvcodelogin = true;
+                    _loginNav = "手机验证码登录";
                   } else {
-                    _vcode = "";
+                    // 邮箱验证码登录 -> 手机验证码登录
+                    _ismobilelogin = true;
+                    _isemaillogin = false;
+                    _isemailvcodelogin = false;
+                    _loginNav = "手机密码登录";
                   }
+
+                  // 清空输入
+                  _password = "";
+                  _vcode = "";
+                  _mobile = "";
+                  _email = "";
                 });
               },
             ),
@@ -149,12 +186,14 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: kToolbarHeight - 10),
                 _buildTitle(),
                 SizedBox(height: 49.0),
-                _buildCountrySelect(),
+                (_isemaillogin || _isemailvcodelogin) ? _buildEmailInput() : _buildCountrySelect(),
                 SizedBox(height: 10.0),
-                !_ismobilelogin
+                (!_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) || _isemaillogin
                     ? _buildPasswordTextField(context)
                     : SizedBox.shrink(),
-                _ismobilelogin ? _buildVerificationcode() : SizedBox.shrink(),
+                (_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) || _isemailvcodelogin
+                    ? _buildVerificationcode()
+                    : SizedBox.shrink(),
                 SizedBox(height: 20.0),
                 _buildLoginButton(context),
               ],
@@ -164,15 +203,12 @@ class _LoginPageState extends State<LoginPage> {
             margin: EdgeInsets.only(bottom: 20),
             child: Column(
               children: [
-                Text(
-                  '一  社交账号登录  一',
-                  style: TextStyle(color: Colors.black45, fontSize: 14),
-                ),
+                Text('一  社交账号登录  一', style: TextStyle(color: Colors.black45, fontSize: 14)),
                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Global.isWeChatInstalled
+                    (Global.isWeChatInstalled ?? false)
                         ? IconButton(
                             onPressed: () async {
                               if (!_isagree) {
@@ -189,17 +225,11 @@ class _LoginPageState extends State<LoginPage> {
                               //   state: "wechat_sdk_demo_test",
                               // ).then((value) {});
                             },
-                            icon: Image.asset(
-                              'images/login_weixin.png',
-                              height: 28.9,
-                              width: 28.9,
-                            ),
+                            icon: Image.asset('images/login_weixin.png', height: 28.9, width: 28.9),
                           )
                         : SizedBox.shrink(),
-                    Global.isWeChatInstalled
-                        ? SizedBox(width: 39)
-                        : SizedBox.shrink(),
-                    Global.isAliPayInstalled
+                    (Global.isWeChatInstalled ?? false) ? SizedBox(width: 39) : SizedBox.shrink(),
+                    (Global.isAliPayInstalled ?? false)
                         ? IconButton(
                             onPressed: () async {
                               if (!_isagree) {
@@ -211,14 +241,10 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               _authenticationBloc.add(LoginAli());
                             },
-                            icon: Image.asset(
-                              'images/login_alipay.png',
-                              height: 28.9,
-                              width: 28.9,
-                            ),
+                            icon: Image.asset('images/login_alipay.png', height: 28.9, width: 28.9),
                           )
                         : SizedBox.shrink(),
-                    !kIsWeb && Platform.isIOS && Global.isAliPayInstalled
+                    !kIsWeb && Platform.isIOS && (Global.isAliPayInstalled ?? false)
                         ? SizedBox(width: 39)
                         : SizedBox.shrink(),
                     !kIsWeb && Platform.isIOS
@@ -232,13 +258,9 @@ class _LoginPageState extends State<LoginPage> {
                                 return;
                               }
 
-                              final credential =
-                                  await SignInWithApple.getAppleIDCredential(
-                                    scopes: [
-                                      AppleIDAuthorizationScopes.email,
-                                      AppleIDAuthorizationScopes.fullName,
-                                    ],
-                                  );
+                              final credential = await SignInWithApple.getAppleIDCredential(
+                                scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+                              );
                               if (credential.identityToken != null) {
                                 _authenticationBloc.add(
                                   LoginIos(
@@ -248,11 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                               }
                             },
-                            icon: Image.asset(
-                              'images/login_apple.png',
-                              height: 33,
-                              width: 33,
-                            ),
+                            icon: Image.asset('images/login_apple.png', height: 33, width: 33),
                           )
                         : SizedBox.shrink(),
                   ],
@@ -288,18 +306,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 5),
-              child: Text(
-                '我已阅读并同意',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
+              child: Text('我已阅读并同意', style: TextStyle(color: Colors.grey, fontSize: 14)),
             ),
             Padding(
               padding: EdgeInsets.only(top: 5),
               child: GestureDetector(
-                child: Text(
-                  '《隐私政策》',
-                  style: TextStyle(color: Colors.blue, fontSize: 14),
-                ),
+                child: Text('《隐私政策》', style: TextStyle(color: Colors.blue, fontSize: 14)),
                 onTap: () {
                   //TODO 跳转到登录用户协议页面
                   Navigator.pushNamed(
@@ -312,18 +324,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 5),
-              child: Text(
-                '和',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
+              child: Text('和', style: TextStyle(color: Colors.grey, fontSize: 14)),
             ),
             Padding(
               padding: EdgeInsets.only(top: 5),
               child: GestureDetector(
-                child: Text(
-                  '《用户协议》',
-                  style: TextStyle(color: Colors.blue, fontSize: 14),
-                ),
+                child: Text('《用户协议》', style: TextStyle(color: Colors.blue, fontSize: 14)),
                 onTap: () {
                   //TODO 跳转到登录用户协议页面
                   Navigator.pushNamed(
@@ -349,9 +355,7 @@ class _LoginPageState extends State<LoginPage> {
           Row(
             children: <Widget>[
               SizedBox(
-                width: _myCountry.length > 2
-                    ? (_myCountry.length > 3 ? 89 : 79)
-                    : 69,
+                width: _myCountry.length > 2 ? (_myCountry.length > 3 ? 89 : 79) : 69,
                 child: GestureDetector(
                   // child: Container(
                   child: Row(
@@ -368,9 +372,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   // ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/PhoneCountryCodeView').then((
-                      val,
-                    ) {
+                    Navigator.pushNamed(context, '/PhoneCountryCodeView').then((val) {
                       if (val != null && val != "") {
                         setState(() {
                           _myCountry = val.toString();
@@ -401,10 +403,7 @@ class _LoginPageState extends State<LoginPage> {
           text: _mobile,
           selection: TextSelection.fromPosition(
             //保持光标在最后面
-            TextPosition(
-              affinity: TextAffinity.downstream,
-              offset: _mobile.length,
-            ),
+            TextPosition(affinity: TextAffinity.downstream, offset: _mobile.length),
           ),
         ),
       ),
@@ -436,9 +435,9 @@ class _LoginPageState extends State<LoginPage> {
 
             if (v.length >= 3 && v.length < 8) {
               _mobile = "${v.substring(0, 3)} ${v.substring(3, v.length)}";
-            } else if (v.length >= 8)
-              _mobile =
-                  "${v.substring(0, 3)} ${v.substring(3, 7)} ${v.substring(7, v.length)}";
+            } else if (v.length >= 8) {
+              _mobile = "${v.substring(0, 3)} ${v.substring(3, 7)} ${v.substring(7, v.length)}";
+            }
           } else if (v.length < 12) {
             _mobile = v;
           }
@@ -464,10 +463,7 @@ class _LoginPageState extends State<LoginPage> {
                 text: _password,
                 selection: TextSelection.fromPosition(
                   //保持光标在最后面
-                  TextPosition(
-                    affinity: TextAffinity.downstream,
-                    offset: _password.length,
-                  ),
+                  TextPosition(affinity: TextAffinity.downstream, offset: _password.length),
                 ),
               ),
             ),
@@ -478,12 +474,7 @@ class _LoginPageState extends State<LoginPage> {
               alignLabelWithHint: true,
               border: OutlineInputBorder(borderSide: BorderSide.none),
               suffixIcon: IconButton(
-                icon: Icon(
-                  (_isShowPwd)
-                      ? IconFont.icon_yanjing_zheng
-                      : IconFont.icon_yanjing,
-                  size: 19,
-                ),
+                icon: Icon((_isShowPwd) ? IconFont.icon_yanjing_zheng : IconFont.icon_yanjing, size: 19),
                 color: Colors.grey,
                 onPressed: () {
                   setState(() {
@@ -523,19 +514,13 @@ class _LoginPageState extends State<LoginPage> {
                     cursorColor: Global.defredcolor,
                     focusNode: _vcodeFocus,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(6),
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
                     controller: TextEditingController.fromValue(
                       TextEditingValue(
                         text: _vcode,
                         selection: TextSelection.fromPosition(
                           //保持光标在最后面
-                          TextPosition(
-                            affinity: TextAffinity.downstream,
-                            offset: _vcode.length,
-                          ),
+                          TextPosition(affinity: TextAffinity.downstream, offset: _vcode.length),
                         ),
                       ),
                     ),
@@ -561,38 +546,45 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextButton.styleFrom(
                     disabledBackgroundColor: Colors.black45, //按钮禁用时的颜色
                     foregroundColor: (_isvButtonEnable && _mobile != "")
-                        ? Global.profile.fontColor
+                        ? (Global.profile.fontColor ?? Colors.white)
                         : Colors.black.withOpacity(0.2), //文本颜色
                     overlayColor: Colors.transparent,
                     shape: StadiumBorder(side: BorderSide.none),
                   ),
                   onPressed: () {
-                    if (_isvButtonEnable && _mobile != "") {
-                      if (_myCountry == "86" &&
-                          _mobile.trim().replaceAll(' ', '').length == 11) {
-                        _userService.sendVCode(
-                          _myCountry + _mobile.trim().replaceAll(' ', ''),
-                        );
-                      } else if (_myCountry == "86" &&
-                          _mobile.trim().replaceAll(' ', '').length != 11) {
-                        ShowMessage.showToast("请输入11位手机号!");
-                        return;
-                      } else if (_myCountry == "852" ||
-                          _myCountry == "853" ||
-                          _myCountry == "886") {
-                        _userService.sendVCode(_myCountry + _mobile);
-                      } else {
-                        ShowMessage.showToast("暂时只支持中国地区使用!");
-                        return;
+                    if (_isemailvcodelogin) {
+                      // 邮箱验证码发送逻辑
+                      if (_isvButtonEnable && _email != "") {
+                        if (_isValidEmail(_email)) {
+                          _userService.sendEmailVCode(_email, (String statusCode, String error) {
+                            ShowMessage.showToast(error);
+                          });
+                        } else {
+                          ShowMessage.showToast("请输入正确的邮箱地址!");
+                          return;
+                        }
+                      }
+                    } else {
+                      // 手机验证码发送逻辑
+                      if (_isvButtonEnable && _mobile != "") {
+                        if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) {
+                          _userService.sendVCode(_myCountry + _mobile.trim().replaceAll(' ', ''));
+                        } else if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length != 11) {
+                          ShowMessage.showToast("请输入11位手机号!");
+                          return;
+                        } else if (_myCountry == "852" || _myCountry == "853" || _myCountry == "886") {
+                          _userService.sendVCode(_myCountry + _mobile);
+                        } else {
+                          ShowMessage.showToast("暂时只支持中国地区使用!");
+                          return;
+                        }
                       }
                     }
                     setState(() {
                       if (_isvButtonEnable && _mobile != "") {
                         //当按钮可点击时
                         _isvButtonEnable = false; //按钮状态标记
-                        _timer = Timer.periodic(Duration(seconds: 1), (
-                          Timer timer,
-                        ) {
+                        _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
                           _count--;
                           setState(() {
                             if (_count == 0) {
@@ -608,18 +600,20 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     });
                   },
-                  child:
-                      _myCountry == "86" &&
-                              _mobile.trim().replaceAll(' ', '').length == 11 ||
-                          _myCountry != "86" && _mobile != ""
-                      ? Text(
-                          _buttonText,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _isvButtonEnable ? Colors.blue : Colors.grey,
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                  child: _isemailvcodelogin
+                      ? (_email != "" && _isValidEmail(_email)
+                            ? Text(
+                                _buttonText,
+                                style: TextStyle(fontSize: 16, color: _isvButtonEnable ? Colors.blue : Colors.grey),
+                              )
+                            : SizedBox.shrink())
+                      : (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11 ||
+                                _myCountry != "86" && _mobile != ""
+                            ? Text(
+                                _buttonText,
+                                style: TextStyle(fontSize: 16, color: _isvButtonEnable ? Colors.blue : Colors.grey),
+                              )
+                            : SizedBox.shrink()),
                 ),
               ),
             ],
@@ -657,29 +651,23 @@ class _LoginPageState extends State<LoginPage> {
                 height: 43,
                 child: TextButton(
                   style:
-                      ((_myCountry == "86" &&
-                                  _mobile.trim().replaceAll(' ', '').length ==
-                                      11 ||
-                              _myCountry != "86" && _mobile != "") &&
-                          (_vcode != "" || _password != ""))
+                      ((_isemaillogin && _email.isNotEmpty && _password.isNotEmpty) ||
+                          (_isemailvcodelogin && _email.isNotEmpty && _vcode.isNotEmpty) ||
+                          (!_isemaillogin &&
+                              !_isemailvcodelogin &&
+                              ((_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) ||
+                                  (_myCountry != "86" && _mobile != "")) &&
+                              (_vcode != "" || _password != "")))
                       ? ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Global.defredcolor,
-                          ),
+                          backgroundColor: WidgetStateProperty.all(Global.defredcolor),
                           shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.67),
-                            ),
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.67)),
                           ),
                         )
                       : ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Global.defredcolor.withAlpha(119),
-                          ),
+                          backgroundColor: WidgetStateProperty.all(Global.defredcolor.withAlpha(119)),
                           shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.67),
-                            ),
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.67)),
                           ),
                         ),
                   onPressed: () async {
@@ -688,6 +676,7 @@ class _LoginPageState extends State<LoginPage> {
                       _passwordFocus_mobile.unfocus();
                       _vcodeFocus.unfocus();
                       _commentFocus_mobile.unfocus();
+                      _commentFocus_email.unfocus();
 
                       if (!_isagree) {
                         _isagree = await _buildReadAgreement();
@@ -697,41 +686,82 @@ class _LoginPageState extends State<LoginPage> {
                         return;
                       }
 
-                      if (_mobile != "" &&
-                          (_vcode != "" || _password != "") &&
-                          _isLoginButtonEnable) {
-                        if (_ismobilelogin) {
-                          if (_myCountry == "86" &&
-                              _mobile.trim().replaceAll(' ', '').length == 11) {
-                            _isLoginButtonEnable = false;
-                            _authenticationBloc.add(
-                              LoginButtonPressed(
-                                mobile: _mobile.trim().replaceAll(' ', ''),
-                                password: _password,
-                                vcode: _vcode,
-                                type: 2,
-                                captchaVerification: "",
-                                country: _myCountry,
-                              ),
-                            );
-                          } else {
-                            ShowMessage.showToast("手机号格式错误");
+                      if (_isLoginButtonEnable) {
+                        if (_isemaillogin) {
+                          // 邮箱密码登录
+                          if (_email.isNotEmpty && _password.isNotEmpty) {
+                            if (_isValidEmail(_email)) {
+                              _isLoginButtonEnable = false;
+                              _authenticationBloc.add(
+                                LoginButtonPressed(
+                                  mobile: _email,
+                                  email: _email,
+                                  password: _password,
+                                  vcode: "",
+                                  type: 3, // 类型3为邮箱密码登录
+                                  captchaVerification: "",
+                                  country: "",
+                                ),
+                              );
+                            } else {
+                              ShowMessage.showToast("邮箱格式错误");
+                            }
                           }
-                        } else {
-                          if (_iscaptcha) {
-                            _loadingBlockPuzzle(context);
+                        } else if (_isemailvcodelogin) {
+                          // 邮箱验证码登录
+                          if (_email.isNotEmpty && _vcode.isNotEmpty) {
+                            if (_isValidEmail(_email)) {
+                              _isLoginButtonEnable = false;
+                              _authenticationBloc.add(
+                                LoginButtonPressed(
+                                  mobile: "",
+                                  email: _email,
+                                  password: "",
+                                  vcode: _vcode,
+                                  type: 4, // 类型4为邮箱验证码登录
+                                  captchaVerification: "",
+                                  country: "",
+                                ),
+                              );
+                            } else {
+                              ShowMessage.showToast("邮箱格式错误");
+                            }
+                          }
+                        } else if (_mobile != "" && (_vcode != "" || _password != "")) {
+                          if (_ismobilelogin) {
+                            if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) {
+                              _isLoginButtonEnable = false;
+                              _authenticationBloc.add(
+                                LoginButtonPressed(
+                                  mobile: _mobile.trim().replaceAll(' ', ''),
+                                  email: "",
+                                  password: _password,
+                                  vcode: _vcode,
+                                  type: 2,
+                                  captchaVerification: "",
+                                  country: _myCountry,
+                                ),
+                              );
+                            } else {
+                              ShowMessage.showToast("手机号格式错误");
+                            }
                           } else {
-                            _isLoginButtonEnable = false;
-                            _authenticationBloc.add(
-                              LoginButtonPressed(
-                                mobile: _mobile.trim().replaceAll(' ', ''),
-                                password: _password,
-                                vcode: _vcode,
-                                type: 1,
-                                captchaVerification: "",
-                                country: _myCountry,
-                              ),
-                            );
+                            if (_iscaptcha) {
+                              _loadingBlockPuzzle(context);
+                            } else {
+                              _isLoginButtonEnable = false;
+                              _authenticationBloc.add(
+                                LoginButtonPressed(
+                                  mobile: _mobile.trim().replaceAll(' ', ''),
+                                  email: "",
+                                  password: _password,
+                                  vcode: _vcode,
+                                  type: 1,
+                                  captchaVerification: "",
+                                  country: _myCountry,
+                                ),
+                              );
+                            }
                           }
                         }
                       }
@@ -742,11 +772,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: Text(
                     '登录',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                 ),
               ),
@@ -756,9 +782,7 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                 child: state is LoginLoading
                     ? CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                          Global.profile.backColor,
-                        ),
+                        valueColor: AlwaysStoppedAnimation(Global.profile.backColor ?? Global.defredcolor),
                       )
                     : null,
               ),
@@ -772,10 +796,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildTitle() {
     return Container(
       alignment: Alignment.center,
-      child: Text(
-        '登录后更精彩',
-        style: TextStyle(fontSize: 30.0, color: Colors.black),
-      ),
+      child: Text('登录后更精彩', style: TextStyle(fontSize: 30.0, color: Colors.black)),
     );
   }
 
@@ -793,16 +814,11 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 alignment: Alignment.center,
                 height: 200,
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.top,
-                ), // !important
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.top), // !important
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(9.0),
-                    topRight: Radius.circular(9.0),
-                  ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(9.0), topRight: Radius.circular(9.0)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -810,58 +826,31 @@ class _LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     Column(
                       children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 20),
-                          child: Text('请阅读并同意以下条款'),
-                        ),
+                        Container(margin: EdgeInsets.only(top: 20), child: Text('请阅读并同意以下条款')),
                         SizedBox(height: 40),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              child: Text(
-                                '《隐私政策》',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
+                              child: Text('《隐私政策》', style: TextStyle(color: Colors.blue, fontSize: 12)),
                               onTap: () {
                                 //TODO 跳转到登录用户协议页面
                                 Navigator.pushNamed(
                                   context,
                                   '/HtmlContent',
-                                  arguments: {
-                                    "parameterkey": "loginuseragree",
-                                    "title": "",
-                                  },
+                                  arguments: {"parameterkey": "loginuseragree", "title": ""},
                                 );
                               },
                             ),
-                            Text(
-                              '和',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
+                            Text('和', style: TextStyle(color: Colors.grey, fontSize: 12)),
                             GestureDetector(
-                              child: Text(
-                                '《用户协议》',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
+                              child: Text('《用户协议》', style: TextStyle(color: Colors.blue, fontSize: 12)),
                               onTap: () {
                                 //TODO 跳转到登录用户协议页面
                                 Navigator.pushNamed(
                                   context,
                                   '/HtmlContent',
-                                  arguments: {
-                                    "parameterkey": "useragreement",
-                                    "title": "",
-                                  },
+                                  arguments: {"parameterkey": "useragreement", "title": ""},
                                 );
                               },
                             ),
@@ -875,19 +864,12 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       child: TextButton(
                         style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Global.defredcolor,
-                          ),
+                          backgroundColor: WidgetStateProperty.all(Global.defredcolor),
                           shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.67),
-                            ),
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.67)),
                           ),
                         ),
-                        child: Text(
-                          '同意并继续',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
+                        child: Text('同意并继续', style: TextStyle(color: Colors.white, fontSize: 14)),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
@@ -903,9 +885,64 @@ class _LoginPageState extends State<LoginPage> {
             return true;
           }
           return false;
-        });
+        }) ??
+        false;
 
     return ret;
+  }
+
+  ///邮箱输入
+  Widget _buildEmailInput() {
+    return Container(
+      padding: EdgeInsets.only(left: 10),
+      child: Column(
+        children: <Widget>[
+          TextFormField(
+            style: TextStyle(fontSize: 19),
+            keyboardType: TextInputType.emailAddress,
+            cursorColor: Global.defredcolor,
+            controller: TextEditingController.fromValue(
+              TextEditingValue(
+                text: _email,
+                selection: TextSelection.fromPosition(
+                  TextPosition(affinity: TextAffinity.downstream, offset: _email.length),
+                ),
+              ),
+            ),
+            decoration: InputDecoration(
+              hintStyle: TextStyle(fontSize: 19, color: Colors.black45),
+              hintText: "请输入邮箱地址",
+              labelStyle: TextStyle(fontSize: 19, color: Colors.black),
+              border: InputBorder.none,
+              suffixIcon: _isShowAccountClean == true
+                  ? IconButton(
+                      icon: Icon(Icons.cancel, color: Colors.grey),
+                      onPressed: () {
+                        setState(() {
+                          _email = "";
+                          _isShowAccountClean = false;
+                        });
+                      },
+                    )
+                  : Text(""),
+            ),
+            focusNode: _commentFocus_email,
+            onChanged: (v) {
+              setState(() {
+                _email = v;
+                _isShowAccountClean = v.isNotEmpty;
+              });
+            },
+          ),
+          MyDivider(),
+        ],
+      ),
+    );
+  }
+
+  ///验证邮箱格式
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
   //滑动拼图
@@ -920,6 +957,7 @@ class _LoginPageState extends State<LoginPage> {
             _authenticationBloc.add(
               LoginButtonPressed(
                 mobile: _mobile.trim().replaceAll(' ', ''),
+                email: "",
                 password: _password,
                 vcode: _vcode,
                 type: 1,

@@ -54,6 +54,8 @@
         "sign_in_with_apple",
         "sliding_up_panel",
         "sqflite",
+        "sqflite_common_ffi",
+        "sqflite_common_ffi_web",
         "steel_crypt",
         "tobias",
         "uni_links",
@@ -593,6 +595,35 @@
       "dependencies": [
         "args",
         "pointycastle"
+      ]
+    },
+    {
+      "name": "sqflite_common_ffi_web",
+      "version": "0.4.5+4",
+      "dependencies": [
+        "args",
+        "dev_build",
+        "http",
+        "meta",
+        "path",
+        "process_run",
+        "pub_semver",
+        "sqflite_common",
+        "sqflite_common_ffi",
+        "sqlite3",
+        "synchronized",
+        "web"
+      ]
+    },
+    {
+      "name": "sqflite_common_ffi",
+      "version": "2.3.6",
+      "dependencies": [
+        "meta",
+        "path",
+        "sqflite_common",
+        "sqlite3",
+        "synchronized"
       ]
     },
     {
@@ -1724,6 +1755,47 @@
       "name": "asn1lib",
       "version": "1.6.5",
       "dependencies": []
+    },
+    {
+      "name": "dev_build",
+      "version": "1.1.2+11",
+      "dependencies": [
+        "args",
+        "collection",
+        "meta",
+        "path",
+        "pool",
+        "process_run",
+        "pub_semver",
+        "synchronized",
+        "yaml"
+      ]
+    },
+    {
+      "name": "process_run",
+      "version": "1.2.4",
+      "dependencies": [
+        "args",
+        "collection",
+        "meta",
+        "path",
+        "pub_semver",
+        "string_scanner",
+        "synchronized",
+        "yaml"
+      ]
+    },
+    {
+      "name": "sqlite3",
+      "version": "2.9.0",
+      "dependencies": [
+        "collection",
+        "ffi",
+        "meta",
+        "path",
+        "typed_data",
+        "web"
+      ]
     },
     {
       "name": "sqflite_common",

@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 //使用Dart Data Class Generator插件进行创建
 //使用命令: Generate from JSON
@@ -34,7 +34,6 @@ class AppInfo {
   }
 
   static AppInfo fromMap(Map<String, dynamic> map) {
-
     return AppInfo(
       iosUpdate: map['iosUpdate'],
       androidUpdate: map['androidUpdate'],

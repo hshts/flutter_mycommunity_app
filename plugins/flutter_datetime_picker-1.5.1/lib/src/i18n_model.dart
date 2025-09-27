@@ -1341,7 +1341,6 @@ final _i18nModel = <LocaleType, Map<String, Object>>{
     'am': 'AM',
     'pm': 'PM'
   }
-
 };
 
 /// Get international object for [localeType]

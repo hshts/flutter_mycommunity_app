@@ -1,4 +1,4 @@
-﻿const Map<String, String> interestData = {
+const Map<String, String> interestData = {
   "10": "游戏",
   "20": "动漫",
   "30": "科幻",

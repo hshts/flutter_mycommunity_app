@@ -20,12 +20,7 @@ class UserService {
   ImHelper imHelper = ImHelper();
 
   //登录
-  Future<User?> login(
-    String mobile,
-    String password,
-    String captchaVerification,
-    Function errorCallBack,
-  ) async {
+  Future<User?> login(String mobile, String password, String captchaVerification, Function errorCallBack) async {
     User? user;
     FormData formData = FormData.fromMap({
       "mobile": mobile,
@@ -51,7 +46,7 @@ class UserService {
     return user;
   }
 
-  //发送验证码
+  //通过手机号发送验证码
   Future<bool> sendVCode(String mobile) async {
     bool vsendstatus = false;
     await NetUtil.getInstance().get(
@@ -65,7 +60,17 @@ class UserService {
     return vsendstatus;
   }
 
-  //发送验证码
+  //通过email发送验证码
+  Future<bool> sendEmailVCode(String email, Function errorCallBack) async {
+    bool vsendstatus = false;
+    FormData formData = FormData.fromMap({"email": email});
+    await NetUtil.getInstance().post(formData, "/email-register/send-email", (Map<String, dynamic> data) {
+      vsendstatus = true;
+    }, errorCallBack);
+    return vsendstatus;
+  }
+
+  //通过uid发送验证码
   Future<bool> sendVCodeByUid(int uid, String token) async {
     bool vsendstatus = false;
     await NetUtil.getInstance().get(
@@ -80,18 +85,9 @@ class UserService {
   }
 
   //手机验证登录
-  Future<User?> loginMobile(
-    String mobile,
-    String vcode,
-    String country,
-    Function errorCallBack,
-  ) async {
+  Future<User?> loginMobile(String mobile, String vcode, String country, Function errorCallBack) async {
     User? user;
-    FormData formData = FormData.fromMap({
-      "mobile": mobile,
-      "vcode": vcode,
-      "country": country,
-    });
+    FormData formData = FormData.fromMap({"mobile": mobile, "vcode": vcode, "country": country});
     await NetUtil.getInstance().post(formData, "/user/loginmobile", (data) {
       if (data["data"]["user"].toString() != "") {
         user = User.fromJson(data["data"]["user"]);
@@ -115,16 +111,9 @@ class UserService {
   }
 
   //ios登录
-  Future<User?> loginIos(
-    String identityToken,
-    String iosuserid,
-    Function errorCallBack,
-  ) async {
+  Future<User?> loginIos(String identityToken, String iosuserid, Function errorCallBack) async {
     User? user;
-    FormData formData = FormData.fromMap({
-      "identityToken": identityToken,
-      "iosuserid": iosuserid,
-    });
+    FormData formData = FormData.fromMap({"identityToken": identityToken, "iosuserid": iosuserid});
     await NetUtil.getInstance().post(formData, "/user/loginios", (data) {
       if (data["data"]["user"].toString() != "") {
         user = User.fromJson(data["data"]["user"]);
@@ -148,9 +137,7 @@ class UserService {
             authCode = parms[i].split('=')[1];
             FormData formData = FormData.fromMap({"auth_code": authCode});
 
-            await NetUtil.getInstance().post(formData, "/AliPay/loginali", (
-              Map<String, dynamic> data,
-            ) {
+            await NetUtil.getInstance().post(formData, "/AliPay/loginali", (Map<String, dynamic> data) {
               if (data["data"]["user"].toString() != "") {
                 user = User.fromJson(data["data"]["user"]);
                 user!.token = data["data"]["token"].toString();
@@ -165,13 +152,7 @@ class UserService {
   }
 
   //绑定支付宝账号
-  Future<User?> updateAliPay(
-    int uid,
-    String token,
-    String authurl,
-    bool confirm,
-    Function errorCallBack,
-  ) async {
+  Future<User?> updateAliPay(int uid, String token, String authurl, bool confirm, Function errorCallBack) async {
     User? user;
     String authCode = "";
     if (authurl.isNotEmpty) {
@@ -189,9 +170,7 @@ class UserService {
               "confirm": confirm,
             });
 
-            await NetUtil.getInstance().post(formData, "/AliPay/updateali", (
-              Map<String, dynamic> data,
-            ) {
+            await NetUtil.getInstance().post(formData, "/AliPay/updateali", (Map<String, dynamic> data) {
               if (data["data"] != "") {
                 user = User.fromJson(data["data"]);
               }
@@ -205,25 +184,12 @@ class UserService {
   }
 
   //绑定微信账号
-  Future<User?> updateWeixin(
-    int uid,
-    String token,
-    String code,
-    bool confirm,
-    Function errorCallBack,
-  ) async {
+  Future<User?> updateWeixin(int uid, String token, String code, bool confirm, Function errorCallBack) async {
     User? user;
 
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "token": token,
-      "code": code,
-      "confirm": confirm,
-    });
+    FormData formData = FormData.fromMap({"uid": uid, "token": token, "code": code, "confirm": confirm});
 
-    await NetUtil.getInstance().post(formData, "/user/updateweixin", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/updateweixin", (Map<String, dynamic> data) {
       if (data["data"] != "") {
         user = User.fromJson(data["data"]);
       }
@@ -251,9 +217,7 @@ class UserService {
       "iosuserid": iosuserid,
     });
 
-    await NetUtil.getInstance().post(formData, "/user/updateios", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/updateios", (Map<String, dynamic> data) {
       if (data["data"] != "") {
         user = User.fromJson(data["data"]);
       }
@@ -281,20 +245,9 @@ class UserService {
   }
 
   //上传设备信息
-  Future<bool> updatePushToken(
-    int uid,
-    String token,
-    String brand,
-    String pushtoken,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updatePushToken(int uid, String token, String brand, String pushtoken, Function errorCallBack) async {
     bool ret = false;
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "token": token,
-      "brand": brand,
-      "pushtoken": pushtoken,
-    });
+    FormData formData = FormData.fromMap({"uid": uid, "token": token, "brand": brand, "pushtoken": pushtoken});
     await NetUtil.getInstance().post(formData, "/user/updatePushToken", (data) {
       ret = true;
     }, errorCallBack);
@@ -302,18 +255,9 @@ class UserService {
   }
 
   //手机验证码
-  Future<bool> verifyVCode(
-    int uid,
-    String token,
-    String vcode,
-    Function errorCallBack,
-  ) async {
+  Future<bool> verifyVCode(int uid, String token, String vcode, Function errorCallBack) async {
     bool ret = false;
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "token": token,
-      "vcode": vcode,
-    });
+    FormData formData = FormData.fromMap({"uid": uid, "token": token, "vcode": vcode});
     await NetUtil.getInstance().post(formData, "/user/verifyVCode", (data) {
       ret = true;
     }, errorCallBack);
@@ -360,9 +304,7 @@ class UserService {
   Future<User?> getUserInfo(int uid, Function errorCallBack) async {
     User? user;
     FormData formData = FormData.fromMap({"uid": uid});
-    await NetUtil.getInstance().post(formData, "/user/getuserinfo", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/getuserinfo", (Map<String, dynamic> data) {
       if (data["data"] != null) {
         user = User.fromJson(data["data"]);
         Global.profile.user!.following = user!.following;
@@ -383,21 +325,14 @@ class UserService {
       "token": token,
       "uid": uid,
     });
-    await NetUtil.getInstance().post(formData, "/user/updateImage", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/updateImage", (Map<String, dynamic> data) {
       isupdateImage = true;
     }, errorResponse);
     return isupdateImage;
   }
 
   //更新头像ossurl
-  Future<bool> updateImageByUrl(
-    String token,
-    int uid,
-    String imgpath,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateImageByUrl(String token, int uid, String imgpath, Function errorCallBack) async {
     bool isupdateImage = false;
 
     FormData formData = FormData.fromMap({
@@ -406,202 +341,99 @@ class UserService {
       "token": token,
       "uid": uid,
     });
-    await NetUtil.getInstance().post(formData, "/user/updateImage", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/updateImage", (Map<String, dynamic> data) {
       isupdateImage = true;
     }, errorCallBack);
     return isupdateImage;
   }
 
   //更新性别
-  Future<bool> updateSex(
-    String token,
-    int uid,
-    String sex,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateSex(String token, int uid, String sex, Function errorCallBack) async {
     bool isUpdate = false;
 
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "sex": sex,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateSex", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "sex": sex});
+    await NetUtil.getInstance().post(formData, "/user/updateSex", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //关注话题
-  Future<bool> updateSubject(
-    String token,
-    int uid,
-    String subject,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateSubject(String token, int uid, String subject, Function errorCallBack) async {
     bool isUpdate = false;
 
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "subject": subject,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateSubject", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "subject": subject});
+    await NetUtil.getInstance().post(formData, "/user/updateSubject", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新生日
-  Future<bool> updateBirthday(
-    String token,
-    int uid,
-    String birthday,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateBirthday(String token, int uid, String birthday, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "birthday": birthday,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateBirthday", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "birthday": birthday});
+    await NetUtil.getInstance().post(formData, "/user/updateBirthday", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新昵称
-  Future<bool> updateUserName(
-    String token,
-    int uid,
-    String username,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateUserName(String token, int uid, String username, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "username": username,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateUserName", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "username": username});
+    await NetUtil.getInstance().post(formData, "/user/updateUserName", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新位置
-  Future<bool> updateLocation(
-    String token,
-    int uid,
-    String province,
-    String city,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateLocation(String token, int uid, String province, String city, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "province": province,
-      "city": city,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateLocation", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "province": province, "city": city});
+    await NetUtil.getInstance().post(formData, "/user/updateLocation", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新个人简介
-  Future<bool> updateSignature(
-    String token,
-    int uid,
-    String signature,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateSignature(String token, int uid, String signature, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "signature": signature,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateSignature", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "signature": signature});
+    await NetUtil.getInstance().post(formData, "/user/updateSignature", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新密碼
-  Future<bool> updatePassword(
-    String token,
-    int uid,
-    String password,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updatePassword(String token, int uid, String password, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "password": generateMd5(password),
-    });
-    await NetUtil.getInstance().post(formData, "/user/updatePassWord", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "password": generateMd5(password)});
+    await NetUtil.getInstance().post(formData, "/user/updatePassWord", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新兴趣
-  Future<bool> updateInterest(
-    String token,
-    int uid,
-    String interest,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateInterest(String token, int uid, String interest, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "interest": interest,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateInterest", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "interest": interest});
+    await NetUtil.getInstance().post(formData, "/user/updateInterest", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
   }
 
   //更新录音
-  Future<bool> updateVoice(
-    String token,
-    int uid,
-    String voice,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateVoice(String token, int uid, String voice, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "voice": voice,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateVoice", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "voice": voice});
+    await NetUtil.getInstance().post(formData, "/user/updateVoice", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
@@ -625,26 +457,12 @@ class UserService {
   }
 
   //更新活动不感兴趣用户
-  Future<bool> updateNotinteresteduids(
-    String token,
-    int uid,
-    int notinteresteduids,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateNotinteresteduids(String token, int uid, int notinteresteduids, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "notinteresteduids": notinteresteduids,
-    });
-    await NetUtil.getInstance().post(
-      formData,
-      "/user/updateNotinteresteduids",
-      (Map<String, dynamic> data) {
-        isUpdate = true;
-      },
-      errorCallBack,
-    );
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "notinteresteduids": notinteresteduids});
+    await NetUtil.getInstance().post(formData, "/user/updateNotinteresteduids", (Map<String, dynamic> data) {
+      isUpdate = true;
+    }, errorCallBack);
     return isUpdate;
   }
 
@@ -661,33 +479,17 @@ class UserService {
       "uid": uid,
       "goodpricenotinteresteduids": goodpricenotinteresteduids,
     });
-    await NetUtil.getInstance().post(
-      formData,
-      "/user/goodpricenotinteresteduids",
-      (Map<String, dynamic> data) {
-        isUpdate = true;
-      },
-      errorCallBack,
-    );
+    await NetUtil.getInstance().post(formData, "/user/goodpricenotinteresteduids", (Map<String, dynamic> data) {
+      isUpdate = true;
+    }, errorCallBack);
     return isUpdate;
   }
 
   //更新黑名单
-  Future<bool> updateBlacklist(
-    String token,
-    int uid,
-    int blacklist,
-    Function errorCallBack,
-  ) async {
+  Future<bool> updateBlacklist(String token, int uid, int blacklist, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "blacklist": blacklist,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateBlacklist", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "blacklist": blacklist});
+    await NetUtil.getInstance().post(formData, "/user/updateBlacklist", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
@@ -715,11 +517,7 @@ class UserService {
   }
 
   //获取黑名单列表
-  Future<String> isFollowed(
-    int uid,
-    int followed,
-    Function errorCallBack,
-  ) async {
+  Future<String> isFollowed(int uid, int followed, Function errorCallBack) async {
     String createtime = "";
     FormData formData = FormData.fromMap({"uid": uid, "followed": followed});
     await NetUtil.getInstance().post(
@@ -737,18 +535,9 @@ class UserService {
   }
 
   //关注
-  Future<bool> Follow(
-    String token,
-    int uid,
-    int followed,
-    Function errorCallBack,
-  ) async {
+  Future<bool> Follow(String token, int uid, int followed, Function errorCallBack) async {
     bool ret = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "followed": followed,
-    });
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "followed": followed});
     await NetUtil.getInstance().post(
       formData,
       "/user/follwerCommunity",
@@ -764,18 +553,9 @@ class UserService {
   }
 
   //取消关注
-  Future<bool> cancelFollow(
-    String token,
-    int uid,
-    int followed,
-    Function errorCallBack,
-  ) async {
+  Future<bool> cancelFollow(String token, int uid, int followed, Function errorCallBack) async {
     bool ret = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "followed": followed,
-    });
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "followed": followed});
     await NetUtil.getInstance().post(
       formData,
       "/user/cleanfollwerCommunity",
@@ -791,20 +571,10 @@ class UserService {
   }
 
   //获取关注的社团
-  Future<List<User>> getFollowUsers(
-    int currentIndex,
-    int uid,
-    String token,
-  ) async {
+  Future<List<User>> getFollowUsers(int currentIndex, int uid, String token) async {
     List<User> users = [];
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "currentIndex": currentIndex,
-    });
-    await NetUtil.getInstance().post(formData, "/user/getFollowUsers", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "currentIndex": currentIndex});
+    await NetUtil.getInstance().post(formData, "/user/getFollowUsers", (Map<String, dynamic> data) {
       if (data["data"] != null) {
         for (int i = 0; i < data["data"].length; i++) {
           users.add(User.fromJson(data["data"][i]));
@@ -815,53 +585,32 @@ class UserService {
   }
 
   //获取我关注的社团，myhome页面中使用只返回5条记录
-  Future<List<User>> getFollowUsersInCommunityALL(
-    int currentIndex,
-    int uid,
-    String token,
-  ) async {
+  Future<List<User>> getFollowUsersInCommunityALL(int currentIndex, int uid, String token) async {
     List<User> users = [];
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "currentIndex": currentIndex,
-    });
-    await NetUtil.getInstance().post(
-      formData,
-      "/user/getFollowUsersInCommunityALL",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            users.add(User.fromJson(data["data"][i]));
-          }
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "currentIndex": currentIndex});
+    await NetUtil.getInstance().post(formData, "/user/getFollowUsersInCommunityALL", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          users.add(User.fromJson(data["data"][i]));
         }
-      },
-      errorResponse,
-    );
+      }
+    }, errorResponse);
     return users;
   }
 
   //获取关注的用户和社团
   Future<List<User>> getFollowUsersCommunity(int uid, int currentIndex) async {
     List<User> users = [];
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "currentIndex": currentIndex,
-    });
-    await NetUtil.getInstance().post(
-      formData,
-      "/user/getFollowUsersCommunity",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            User tem = User.fromJson(data["data"][i]);
-            tem.isFollow = true;
-            users.add(tem);
-          }
+    FormData formData = FormData.fromMap({"uid": uid, "currentIndex": currentIndex});
+    await NetUtil.getInstance().post(formData, "/user/getFollowUsersCommunity", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          User tem = User.fromJson(data["data"][i]);
+          tem.isFollow = true;
+          users.add(tem);
         }
-      },
-      errorResponse,
-    );
+      }
+    }, errorResponse);
     return users;
   }
 
@@ -869,13 +618,8 @@ class UserService {
   Future<List<User>> getFans(int uid, int currentIndex) async {
     bool ret = false;
     List<User> lists = [];
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "currentIndex": currentIndex,
-    });
-    await NetUtil.getInstance().post(formData, "/user/getFansUsers", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"uid": uid, "currentIndex": currentIndex});
+    await NetUtil.getInstance().post(formData, "/user/getFansUsers", (Map<String, dynamic> data) {
       if (data["data"] != null) {
         for (int i = 0; i < data["data"].length; i++) {
           lists.add(User.fromJson(data["data"][i]));
@@ -888,13 +632,8 @@ class UserService {
   //获取个人动态
   Future<List<Dynamic>> getUserDynamic(int currentIndex, int uid) async {
     List<Dynamic> dynamics = [];
-    FormData formData = FormData.fromMap({
-      "currentIndex": currentIndex,
-      "uid": uid.toString(),
-    });
-    await NetUtil.getInstance().post(formData, "/user/selUserDynamic", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"currentIndex": currentIndex, "uid": uid.toString()});
+    await NetUtil.getInstance().post(formData, "/user/selUserDynamic", (Map<String, dynamic> data) {
       if (data["data"] != null) {
         for (int i = 0; i < data["data"].length; i++) {
           dynamics.add(Dynamic.fromJson(data["data"][i]));
@@ -913,15 +652,8 @@ class UserService {
     Function errorCallBack,
   ) async {
     GroupRelation? groupRelation;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "touid": touid,
-      "uid": uid,
-      "timeline_id": timelineId,
-    });
-    await NetUtil.getInstance().post(formData, "/user/getSingleConversation", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "touid": touid, "uid": uid, "timeline_id": timelineId});
+    await NetUtil.getInstance().post(formData, "/user/getSingleConversation", (Map<String, dynamic> data) {
       groupRelation = GroupRelation.fromJson(data['data']);
     }, errorCallBack);
     return groupRelation;
@@ -946,9 +678,7 @@ class UserService {
       "captchaVerification": captchaVerification,
       "isCustomer": isCustomer,
     });
-    await NetUtil.getInstance().post(formData, "/user/joinSingle", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/joinSingle", (Map<String, dynamic> data) {
       groupRelation = GroupRelation.fromJson(data['data']);
     }, errorCallBack);
     return groupRelation;
@@ -973,9 +703,7 @@ class UserService {
       "captchaVerification": captchaVerification,
       "isCustomer": 1,
     });
-    await NetUtil.getInstance().post(formData, "/user/joinSingle", (
-      Map<String, dynamic> data,
-    ) async {
+    await NetUtil.getInstance().post(formData, "/user/joinSingle", (Map<String, dynamic> data) async {
       groupRelation = GroupRelation.fromJson(data['data'][0]);
       TimeLineSync timeLineSync = TimeLineSync.fromMapByServer(data["data"][1]);
       List<TimeLineSync> timeLineSyncs = [];
@@ -1005,9 +733,7 @@ class UserService {
     User? user;
     FormData formData = FormData.fromMap({"uid": otheruid});
 
-    await NetUtil.getInstance().post(formData, "/user/getuserinfo", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/getuserinfo", (Map<String, dynamic> data) {
       if (data["data"] != null) {
         user = User.fromJson(data["data"]);
       }
@@ -1027,15 +753,8 @@ class UserService {
     Function errorCallBack,
   ) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "uid": uid,
-      "touid": touid,
-      "content": content,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateMemberJoin", (
-      Map<String, dynamic> data,
-    ) {
+    FormData formData = FormData.fromMap({"token": token, "uid": uid, "touid": touid, "content": content});
+    await NetUtil.getInstance().post(formData, "/user/updateMemberJoin", (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
@@ -1063,103 +782,65 @@ class UserService {
       "image": image,
       "fromuid": Global.profile.user!.uid,
     });
-    await NetUtil.getInstance().post(formData, "/user/updateSharedFriend", (
-      Map<String, dynamic> data,
-    ) {
+    await NetUtil.getInstance().post(formData, "/user/updateSharedFriend", (Map<String, dynamic> data) {
       ret = true;
     }, errorCallBack);
     return ret;
   }
 
   //获取我的订单
-  Future<List<Order>> getMyOrder(
-    String token,
-    int uid,
-    Function errorCallBack,
-  ) async {
+  Future<List<Order>> getMyOrder(String token, int uid, Function errorCallBack) async {
     List<Order> orders = [];
     FormData formData = FormData.fromMap({"token": token, "uid": uid});
-    await NetUtil.getInstance().post(
-      formData,
-      "/grouppurchase/getMyPendingOrder",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            orders.add(Order.fromJson(data["data"][i]));
-          }
+    await NetUtil.getInstance().post(formData, "/grouppurchase/getMyPendingOrder", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          orders.add(Order.fromJson(data["data"][i]));
         }
-      },
-      errorCallBack,
-    );
+      }
+    }, errorCallBack);
     return orders;
   }
 
   //获取已完成付款的订单
-  Future<List<Order>> getMyOrderFinish(
-    String token,
-    int uid,
-    Function errorCallBack,
-  ) async {
+  Future<List<Order>> getMyOrderFinish(String token, int uid, Function errorCallBack) async {
     List<Order> orders = [];
     FormData formData = FormData.fromMap({"token": token, "uid": uid});
-    await NetUtil.getInstance().post(
-      formData,
-      "/grouppurchase/getMyFinishOrder",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            orders.add(Order.fromJson(data["data"][i]));
-          }
+    await NetUtil.getInstance().post(formData, "/grouppurchase/getMyFinishOrder", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          orders.add(Order.fromJson(data["data"][i]));
         }
-      },
-      errorCallBack,
-    );
+      }
+    }, errorCallBack);
     return orders;
   }
 
   //获取已退款的订单
-  Future<List<Order>> getMyRefundOrder(
-    String token,
-    int uid,
-    Function errorCallBack,
-  ) async {
+  Future<List<Order>> getMyRefundOrder(String token, int uid, Function errorCallBack) async {
     List<Order> orders = [];
     FormData formData = FormData.fromMap({"token": token, "uid": uid});
-    await NetUtil.getInstance().post(
-      formData,
-      "/grouppurchase/getMyRefundOrder",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            orders.add(Order.fromJson(data["data"][i]));
-          }
+    await NetUtil.getInstance().post(formData, "/grouppurchase/getMyRefundOrder", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          orders.add(Order.fromJson(data["data"][i]));
         }
-      },
-      errorCallBack,
-    );
+      }
+    }, errorCallBack);
     return orders;
   }
 
   //获取已确认的订单
-  Future<List<Order>> getMyConfirmOrder(
-    String token,
-    int uid,
-    Function errorCallBack,
-  ) async {
+  Future<List<Order>> getMyConfirmOrder(String token, int uid, Function errorCallBack) async {
     List<Order> orders = [];
     FormData formData = FormData.fromMap({"token": token, "uid": uid});
-    await NetUtil.getInstance().post(
-      formData,
-      "/grouppurchase/getMyConfirmOrder",
-      (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            orders.add(Order.fromJson(data["data"][i]));
-          }
+    await NetUtil.getInstance().post(formData, "/grouppurchase/getMyConfirmOrder", (Map<String, dynamic> data) {
+      if (data["data"] != null) {
+        for (int i = 0; i < data["data"].length; i++) {
+          orders.add(Order.fromJson(data["data"][i]));
         }
-      },
-      errorCallBack,
-    );
+      }
+    }, errorCallBack);
     return orders;
   }
 }

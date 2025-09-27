@@ -18,6 +18,8 @@ dependencies:
   shared_preferences: ^2.0.11 #本地数据存储
   json_annotation: ^4.4.0 #json类自动生成器
   sqflite: ^2.0.1 #本地数据库
+  sqflite_common_ffi: ^2.3.0 #Web平台SQLite支持
+  sqflite_common_ffi_web: ^0.4.2+2 #Web平台SQLite Web实现
   steel_crypt: ^3.0.0+1 #加解密
   encrypt: ^5.0.1 #加解密
   fluwx: ^3.8.1+1 #微信分享带支付

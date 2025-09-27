@@ -27,11 +27,17 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
     on<getlocalSysNotice>(_onGetlocalSysNotice);
   }
 
-  Future<void> _onInitStateNoticeAndReply(initStateNoticeAndReply event, Emitter<ReplyNoticeState> emit) async {
+  Future<void> _onInitStateNoticeAndReply(
+    initStateNoticeAndReply event,
+    Emitter<ReplyNoticeState> emit,
+  ) async {
     emit(PostInitial());
   }
 
-  Future<void> _onGetUserCommentReplyNotice(getUserCommentReplyNotice event, Emitter<ReplyNoticeState> emit) async {
+  Future<void> _onGetUserCommentReplyNotice(
+    getUserCommentReplyNotice event,
+    Emitter<ReplyNoticeState> emit,
+  ) async {
     //从服务器获取未读回复列表
     emit(ReplyPostLoading());
     UserNotice? userNotice;
@@ -77,10 +83,12 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
       setAppUnReadCount(sumcount);
     }
     if (count >= 0 || getLikeCount >= 0) {
-      emit(newReplyCount(
-        count: count + getLikeCount + newlithumbupCount,
-        followcount: getLikeCount,
-      ));
+      emit(
+        newReplyCount(
+          count: count + getLikeCount + newlithumbupCount,
+          followcount: getLikeCount,
+        ),
+      );
     }
 
     mynoticecount =
@@ -127,8 +135,7 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
       imHelper.updateReplyCommentNoticeRead(ReplyMsgType.suggestreplymsg);
     }
 
-    if (event.replyMsgType.toString() ==
-        ReplyMsgType.evaluatemsg.toString()) {
+    if (event.replyMsgType.toString() == ReplyMsgType.evaluatemsg.toString()) {
       imHelper.updateReplyCommentNoticeRead(ReplyMsgType.evaluatemsg);
       imHelper.updateReplyCommentNoticeRead(ReplyMsgType.evaluatereplymsg);
     }
@@ -151,8 +158,7 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
       imHelper.updateNewMemberNoticeRead();
     }
 
-    if (event.replyMsgType.toString() ==
-        ReplyMsgType.newfollowed.toString()) {
+    if (event.replyMsgType.toString() == ReplyMsgType.newfollowed.toString()) {
       imHelper.updateFollowedNoticeRead();
     }
 
@@ -160,8 +166,7 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
       imHelper.updateNewFriendNoticeRead();
     }
 
-    if (event.replyMsgType.toString() ==
-        ReplyMsgType.sharedReaded.toString()) {
+    if (event.replyMsgType.toString() == ReplyMsgType.sharedReaded.toString()) {
       imHelper.updateUserSharedRead();
     }
 
@@ -191,11 +196,13 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
     }
 
     if (count >= 0 || getLikeCount >= 0) {
-      emit(newReplyCount(
-        count: count + getLikeCount + newlithumbupCount,
-        followcount: getLikeCount,
-        newlithumbupCount: newlithumbupCount,
-      ));
+      emit(
+        newReplyCount(
+          count: count + getLikeCount + newlithumbupCount,
+          followcount: getLikeCount,
+          newlithumbupCount: newlithumbupCount,
+        ),
+      );
       return;
     }
 
@@ -204,7 +211,10 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
     }
   }
 
-  Future<void> _onOrderExpiration(OrderExpiration event, Emitter<ReplyNoticeState> emit) async {
+  Future<void> _onOrderExpiration(
+    OrderExpiration event,
+    Emitter<ReplyNoticeState> emit,
+  ) async {
     activityService.syncOrderExpirationFun(
       event.user.uid,
       event.user.token!,
@@ -212,11 +222,17 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
     );
   }
 
-  Future<void> _onGetlocalNotice(getlocalNotice event, Emitter<ReplyNoticeState> emit) async {
+  Future<void> _onGetlocalNotice(
+    getlocalNotice event,
+    Emitter<ReplyNoticeState> emit,
+  ) async {
     // Implement if needed
   }
 
-  Future<void> _onGetlocalSysNotice(getlocalSysNotice event, Emitter<ReplyNoticeState> emit) async {
+  Future<void> _onGetlocalSysNotice(
+    getlocalSysNotice event,
+    Emitter<ReplyNoticeState> emit,
+  ) async {
     // Implement if needed
   }
 

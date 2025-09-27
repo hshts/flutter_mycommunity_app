@@ -2,6 +2,8 @@
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class TableHelper {
   static const String im_group_relation = "im_group_relation_table";
@@ -254,15 +256,54 @@ class TableHelper {
   }
 
   Future<Database> _initDb() async {
-    String basePath = await getDatabasesPath();
-    String path = join(basePath, "read.db");
-    Database db = await openDatabase(
-      path,
-      version: 2,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
-    return db;
+    try {
+      // Web 平台初始化 SQLite 数据库工厂
+      if (kIsWeb) {
+        databaseFactory = databaseFactoryFfiWeb;
+        if (kDebugMode) {
+          print('Web 平台：使用 sqflite_common_ffi_web 初始化数据库');
+        }
+      }
+
+      String basePath = await getDatabasesPath();
+      String path = join(basePath, "read.db");
+      Database db = await openDatabase(
+        path,
+        version: 2,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
+
+      if (kDebugMode) {
+        print('数据库初始化成功: $path');
+      }
+
+      return db;
+    } catch (e) {
+      if (kDebugMode) {
+        print('数据库初始化失败: $e');
+      }
+
+      if (kIsWeb) {
+        print('Web 平台数据库初始化失败，这可能是正常现象');
+        // 在 Web 平台上，我们可以尝试使用内存数据库
+        try {
+          Database db = await openDatabase(
+            ':memory:',
+            version: 2,
+            onCreate: _onCreate,
+            onUpgrade: _onUpgrade,
+          );
+          print('Web 平台：使用内存数据库作为备选方案');
+          return db;
+        } catch (memoryDbError) {
+          print('内存数据库也初始化失败: $memoryDbError');
+          rethrow;
+        }
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future close() async {
