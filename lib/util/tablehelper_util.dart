@@ -259,6 +259,7 @@ class TableHelper {
     try {
       // Web 平台初始化 SQLite 数据库工厂
       if (kIsWeb) {
+        // 在Web平台上，我们需要确保使用正确的数据库工厂
         databaseFactory = databaseFactoryFfiWeb;
         if (kDebugMode) {
           print('Web 平台：使用 sqflite_common_ffi_web 初始化数据库');
@@ -267,11 +268,15 @@ class TableHelper {
 
       String basePath = await getDatabasesPath();
       String path = join(basePath, "read.db");
-      Database db = await openDatabase(
+      
+      // 使用正确的数据库工厂打开数据库
+      Database db = await databaseFactory.openDatabase(
         path,
-        version: 2,
-        onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
+        options: OpenDatabaseOptions(
+          version: 2,
+          onCreate: _onCreate,
+          onUpgrade: _onUpgrade,
+        ),
       );
 
       if (kDebugMode) {
@@ -284,25 +289,45 @@ class TableHelper {
         print('数据库初始化失败: $e');
       }
 
+      // 在 Web 平台上使用内存数据库作为备选方案
       if (kIsWeb) {
-        print('Web 平台数据库初始化失败，这可能是正常现象');
-        // 在 Web 平台上，我们可以尝试使用内存数据库
+        print('Web 平台数据库初始化失败，尝试使用内存数据库作为备选方案');
         try {
-          Database db = await openDatabase(
-            ':memory:',
-            version: 2,
-            onCreate: _onCreate,
-            onUpgrade: _onUpgrade,
+          // 使用内存数据库作为备选方案
+          Database db = await databaseFactory.openDatabase(
+            inMemoryDatabasePath,
+            options: OpenDatabaseOptions(
+              version: 2,
+              onCreate: _onCreate,
+              onUpgrade: _onUpgrade,
+            ),
           );
-          print('Web 平台：使用内存数据库作为备选方案');
+          print('Web 平台：使用内存数据库成功');
           return db;
         } catch (memoryDbError) {
           print('内存数据库也初始化失败: $memoryDbError');
-          rethrow;
         }
       } else {
-        rethrow;
+        // 在非Web平台上，如果数据库初始化失败，也尝试使用内存数据库
+        try {
+          Database db = await databaseFactory.openDatabase(
+            inMemoryDatabasePath,
+            options: OpenDatabaseOptions(
+              version: 2,
+              onCreate: _onCreate,
+              onUpgrade: _onUpgrade,
+            ),
+          );
+          print('使用内存数据库成功');
+          return db;
+        } catch (memoryDbError) {
+          print('内存数据库也初始化失败: $memoryDbError');
+        }
       }
+      
+      // 如果所有尝试都失败了，重新抛出异常
+      print('所有数据库初始化尝试都失败了');
+      rethrow;
     }
   }
 

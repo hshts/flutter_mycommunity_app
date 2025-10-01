@@ -57,10 +57,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          '绑定手机',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
+        title: Text('绑定手机', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: Container(
@@ -85,19 +82,13 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
               padding: EdgeInsets.only(top: 1),
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(6),
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
                 controller: TextEditingController.fromValue(
                   TextEditingValue(
                     text: _vcode,
                     selection: TextSelection.fromPosition(
                       //保持光标在最后面
-                      TextPosition(
-                        affinity: TextAffinity.downstream,
-                        offset: _vcode.length,
-                      ),
+                      TextPosition(affinity: TextAffinity.downstream, offset: _vcode.length),
                     ),
                   ),
                 ),
@@ -124,9 +115,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
           Container(
             child: TextButton(
               style: TextButton.styleFrom(
-                disabledBackgroundColor: Colors.grey.withOpacity(
-                  0.1,
-                ), //按钮禁用时的颜色
+                disabledBackgroundColor: Colors.grey.withOpacity(0.1), //按钮禁用时的颜色
                 foregroundColor: (_isvButtonEnable && _newmobile != "")
                     ? Global.profile.fontColor
                     : Colors.black.withOpacity(0.2), //文本颜色
@@ -136,14 +125,12 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
               onPressed: () {
                 if (_isvButtonEnable && _newmobile != "") {
                   if (_myCountry == "86" && _newmobile.length == 11) {
-                    _userService.sendVCode(_myCountry + _newmobile);
+                    _userService.sendMobileOTP(_myCountry + _newmobile);
                   } else if (_myCountry == "86" && _newmobile.length != 11) {
                     ShowMessage.showToast("请输入11位手机号!");
                     return;
-                  } else if (_myCountry == "852" ||
-                      _myCountry == "853" ||
-                      _myCountry == "886") {
-                    _userService.sendVCode(_myCountry + _newmobile);
+                  } else if (_myCountry == "852" || _myCountry == "853" || _myCountry == "886") {
+                    _userService.sendMobileOTP(_myCountry + _newmobile);
                   } else {
                     ShowMessage.showToast("暂时只支持中国地区使用!");
                     return;
@@ -154,9 +141,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                   if (_isvButtonEnable && _newmobile != "") {
                     //当按钮可点击时
                     _isvButtonEnable = false; //按钮状态标记
-                    _timer = Timer.periodic(Duration(seconds: 1), (
-                      Timer timer,
-                    ) {
+                    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
                       _count--;
                       setState(() {
                         if (_count == 0) {
@@ -174,10 +159,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
               },
               child: Text(
                 _buttonText,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: _isvButtonEnable ? Colors.blue : Colors.grey,
-                ),
+                style: TextStyle(fontSize: 15, color: _isvButtonEnable ? Colors.blue : Colors.grey),
               ),
             ),
           ),
@@ -210,9 +192,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/PhoneCountryCodeView').then((
-                    val,
-                  ) {
+                  Navigator.pushNamed(context, '/PhoneCountryCodeView').then((val) {
                     if (val != null && val != "") {
                       setState(() {
                         _myCountry = val.toString();
@@ -240,10 +220,7 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
           text: _newmobile,
           selection: TextSelection.fromPosition(
             //保持光标在最后面
-            TextPosition(
-              affinity: TextAffinity.downstream,
-              offset: _newmobile.length,
-            ),
+            TextPosition(affinity: TextAffinity.downstream, offset: _newmobile.length),
           ),
         ),
       ),
@@ -281,13 +258,9 @@ class _MyUpdateMobileState extends State<MyUpdateMobile> {
     return Container(
       height: 39,
       width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(19)),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(19))),
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Global.profile.backColor,
-        ),
+        style: ElevatedButton.styleFrom(backgroundColor: Global.profile.backColor),
         child: Text('提交', style: TextStyle(color: Global.profile.fontColor)),
         onPressed: () async {
           if (_vcode.length > 1) {

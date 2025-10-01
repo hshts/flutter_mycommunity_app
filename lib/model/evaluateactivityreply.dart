@@ -53,6 +53,7 @@ class EvaluateActivityReply {
     replyuser = User(
       data['uid'],
       "",
+      "",
       data['username'],
       null,
       null,
@@ -117,6 +118,5 @@ class EvaluateActivityReply {
   );
 
   Map<String, dynamic> toJson() => _$EvaluateActivityReplyToJson(this);
-  factory EvaluateActivityReply.fromJson(Map<String, dynamic> json) =>
-      _$EvaluateActivityReplyFromJson(json);
+  factory EvaluateActivityReply.fromJson(Map<String, dynamic> json) => _$EvaluateActivityReplyFromJson(json);
 }

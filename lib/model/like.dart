@@ -42,6 +42,7 @@ class Like {
       "",
       "",
       "",
+      "",
       0,
       "",
       0,
@@ -83,14 +84,7 @@ class Like {
     createtime = data['createtime'];
   }
 
-  Like(
-    this.likeid,
-    this.user,
-    this.liketype,
-    this.contentid,
-    this.touid,
-    this.createtime,
-  );
+  Like(this.likeid, this.user, this.liketype, this.contentid, this.touid, this.createtime);
 
   Map<String, dynamic> toJson() => _$LikeToJson(this);
   factory Like.fromJson(Map<String, dynamic> json) => _$LikeFromJson(json);

@@ -30,10 +30,9 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
           final activitys = await _activityService.getActivityListByUpdateTime(
             0,
           );
-          if (Global.profile.user != null) {
-            notinteresteduids = await _imHelper.getNotInteresteduids(
-              Global.profile.user!.uid,
-            );
+          final user = Global.profile.user;
+          if (user != null) {
+            notinteresteduids = await _imHelper.getNotInteresteduids(user.uid);
           }
           currentlength = activitys.length;
           emit(
@@ -53,10 +52,9 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
             currentlength,
           );
           if (activitys.isNotEmpty) currentlength += activitys.length;
-          if (Global.profile.user != null) {
-            notinteresteduids = await _imHelper.getNotInteresteduids(
-              Global.profile.user!.uid,
-            );
+          final user = Global.profile.user;
+          if (user != null) {
+            notinteresteduids = await _imHelper.getNotInteresteduids(user.uid);
           }
           emit(
             activitys.isEmpty
@@ -85,10 +83,9 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
       if (currentState is PostLoaded) {
         final activitys = await _activityService.getActivityListByUpdateTime(0);
         currentlength = activitys.length;
-        if (Global.profile.user != null) {
-          notinteresteduids = await _imHelper.getNotInteresteduids(
-            Global.profile.user!.uid,
-          );
+        final user = Global.profile.user;
+        if (user != null) {
+          notinteresteduids = await _imHelper.getNotInteresteduids(user.uid);
         }
         emit(
           PostLoaded(
@@ -105,7 +102,7 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
         currentlength = activitys.length;
         if (Global.profile.user != null) {
           notinteresteduids = await _imHelper.getNotInteresteduids(
-            Global.profile.user!.uid,
+            Global.profile.user?.uid ?? 0,
           );
         }
         emit(

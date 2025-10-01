@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
@@ -12,6 +12,8 @@ import '../../common/json/city_json.dart';
 import '../../model/aliyun/securitytoken.dart';
 
 import 'dart:convert' as convert;
+import 'dart:io' if (dart.library.io) 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class CommonUtil {
   static final num ONE_MINUTE = 60000;

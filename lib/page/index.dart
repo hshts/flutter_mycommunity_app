@@ -1,14 +1,12 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
-// import 'dart:isolate'; // 未使用，已移除
 
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/foundation.dart';
+import 'dart:io' if (dart.library.io) 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart'; // 未使用，已移除
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';

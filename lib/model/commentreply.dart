@@ -80,6 +80,7 @@ class CommentReply {
     replyuser = User(
       data['uid'],
       "",
+      "",
       data['username'],
       null,
       null,
@@ -147,6 +148,5 @@ class CommentReply {
   );
 
   Map<String, dynamic> toJson() => _$CommentReplyToJson(this);
-  factory CommentReply.fromJson(Map<String, dynamic> json) =>
-      _$CommentReplyFromJson(json);
+  factory CommentReply.fromJson(Map<String, dynamic> json) => _$CommentReplyFromJson(json);
 }

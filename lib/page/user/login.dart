@@ -1,8 +1,7 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, deprecated_member_use
 
 import 'dart:async';
-import 'dart:io';
-
+import 'dart:io' if (dart.library.io) 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,9 +29,9 @@ class _LoginPageState extends State<LoginPage> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   bool _isShowPwd = false;
   bool _isShowAccountClean = false;
-  bool _ismobilelogin = true; //是否手机验证登录
-  bool _isemaillogin = false; //是否邮箱登录
-  bool _isemailvcodelogin = false; //是否邮箱验证码登录
+  bool _ismobileOTPlogin = true; //是否手机验证登录
+  bool _isemailPASSlogin = false; //是否邮箱登录
+  bool _isemailOTPlogin = false; //是否邮箱验证码登录
   bool _iscaptcha = false; //默认不用人机验证，服务器返回对应错误后开器
   bool _isagree = false; //是否同意条款
   int _count = 60; //初始倒计时时间
@@ -41,10 +40,11 @@ class _LoginPageState extends State<LoginPage> {
   String _myCountry = "86";
   bool _isvButtonEnable = true; //验证码按钮
   bool _isLoginButtonEnable = true;
-  String _vcode = "";
   String _mobile = "";
   String _email = "";
   String _password = "";
+  String _vcode = "";
+  String _token = "";
   Timer? _timer;
   final UserService _userService = UserService();
   final FocusNode _commentFocus_mobile = FocusNode(); //手机号焦点
@@ -140,29 +140,29 @@ class _LoginPageState extends State<LoginPage> {
               child: Text(_loginNav, style: TextStyle(color: Colors.black45, fontSize: 16.0)),
               onTap: () {
                 setState(() {
-                  if (_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) {
+                  if (_ismobileOTPlogin && !_isemailPASSlogin && !_isemailOTPlogin) {
                     // 手机验证码登录 -> 手机密码登录
-                    _ismobilelogin = false;
-                    _isemaillogin = false;
-                    _isemailvcodelogin = false;
+                    _ismobileOTPlogin = false;
+                    _isemailPASSlogin = false;
+                    _isemailOTPlogin = false;
                     _loginNav = "邮箱密码登录";
-                  } else if (!_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) {
+                  } else if (!_ismobileOTPlogin && !_isemailPASSlogin && !_isemailOTPlogin) {
                     // 手机密码登录 -> 邮箱密码登录
-                    _ismobilelogin = false;
-                    _isemaillogin = true;
-                    _isemailvcodelogin = false;
+                    _ismobileOTPlogin = false;
+                    _isemailPASSlogin = true;
+                    _isemailOTPlogin = false;
                     _loginNav = "邮箱验证码登录";
-                  } else if (!_ismobilelogin && _isemaillogin && !_isemailvcodelogin) {
+                  } else if (!_ismobileOTPlogin && _isemailPASSlogin && !_isemailOTPlogin) {
                     // 邮箱密码登录 -> 邮箱验证码登录
-                    _ismobilelogin = false;
-                    _isemaillogin = false;
-                    _isemailvcodelogin = true;
+                    _ismobileOTPlogin = false;
+                    _isemailPASSlogin = false;
+                    _isemailOTPlogin = true;
                     _loginNav = "手机验证码登录";
                   } else {
                     // 邮箱验证码登录 -> 手机验证码登录
-                    _ismobilelogin = true;
-                    _isemaillogin = false;
-                    _isemailvcodelogin = false;
+                    _ismobileOTPlogin = true;
+                    _isemailPASSlogin = false;
+                    _isemailOTPlogin = false;
                     _loginNav = "手机密码登录";
                   }
 
@@ -171,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                   _vcode = "";
                   _mobile = "";
                   _email = "";
+                  _token = "";
                 });
               },
             ),
@@ -186,12 +187,12 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: kToolbarHeight - 10),
                 _buildTitle(),
                 SizedBox(height: 49.0),
-                (_isemaillogin || _isemailvcodelogin) ? _buildEmailInput() : _buildCountrySelect(),
+                (_isemailPASSlogin || _isemailOTPlogin) ? _buildEmailInput() : _buildCountrySelect(),
                 SizedBox(height: 10.0),
-                (!_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) || _isemaillogin
+                (!_ismobileOTPlogin && !_isemailPASSlogin && !_isemailOTPlogin) || _isemailPASSlogin
                     ? _buildPasswordTextField(context)
                     : SizedBox.shrink(),
-                (_ismobilelogin && !_isemaillogin && !_isemailvcodelogin) || _isemailvcodelogin
+                (_ismobileOTPlogin && !_isemailPASSlogin && !_isemailOTPlogin) || _isemailOTPlogin
                     ? _buildVerificationcode()
                     : SizedBox.shrink(),
                 SizedBox(height: 20.0),
@@ -552,13 +553,29 @@ class _LoginPageState extends State<LoginPage> {
                     shape: StadiumBorder(side: BorderSide.none),
                   ),
                   onPressed: () {
-                    if (_isemailvcodelogin) {
+                    if (_isemailOTPlogin) {
                       // 邮箱验证码发送逻辑
                       if (_isvButtonEnable && _email != "") {
                         if (_isValidEmail(_email)) {
-                          _userService.sendEmailVCode(_email, (String statusCode, String error) {
-                            ShowMessage.showToast(error);
-                          });
+                          _userService
+                              .sendEmailOTP(_email, (String statusCode, String error) {
+                                ShowMessage.showToast(error);
+                              })
+                              .then((resp_data) {
+                                // Map<String, dynamic> responseMap = jsonDecode(resp);
+                                // String token = responseMap["data"];
+                                // ShowMessage.showToast("验证码已发送，请查收:$resp_data");
+
+                                setState(() {
+                                  _token = resp_data;
+                                });
+                                return;
+                              })
+                              .catchError((error) {
+                                // 添加错误处理，防止错误被忽略
+                                print("发送验证码失败: $error");
+                                ShowMessage.showToast("发送验证码失败，请重试 $error");
+                              });
                         } else {
                           ShowMessage.showToast("请输入正确的邮箱地址!");
                           return;
@@ -568,12 +585,12 @@ class _LoginPageState extends State<LoginPage> {
                       // 手机验证码发送逻辑
                       if (_isvButtonEnable && _mobile != "") {
                         if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) {
-                          _userService.sendVCode(_myCountry + _mobile.trim().replaceAll(' ', ''));
+                          _userService.sendMobileOTP(_myCountry + _mobile.trim().replaceAll(' ', ''));
                         } else if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length != 11) {
                           ShowMessage.showToast("请输入11位手机号!");
                           return;
                         } else if (_myCountry == "852" || _myCountry == "853" || _myCountry == "886") {
-                          _userService.sendVCode(_myCountry + _mobile);
+                          _userService.sendMobileOTP(_myCountry + _mobile.trim().replaceAll(' ', ''));
                         } else {
                           ShowMessage.showToast("暂时只支持中国地区使用!");
                           return;
@@ -581,7 +598,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     }
                     setState(() {
-                      if (_isvButtonEnable && _mobile != "") {
+                      if (_isvButtonEnable && (_mobile != "" || _email != "")) {
                         //当按钮可点击时
                         _isvButtonEnable = false; //按钮状态标记
                         _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
@@ -600,7 +617,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     });
                   },
-                  child: _isemailvcodelogin
+                  child: _isemailOTPlogin
                       ? (_email != "" && _isValidEmail(_email)
                             ? Text(
                                 _buttonText,
@@ -651,10 +668,10 @@ class _LoginPageState extends State<LoginPage> {
                 height: 43,
                 child: TextButton(
                   style:
-                      ((_isemaillogin && _email.isNotEmpty && _password.isNotEmpty) ||
-                          (_isemailvcodelogin && _email.isNotEmpty && _vcode.isNotEmpty) ||
-                          (!_isemaillogin &&
-                              !_isemailvcodelogin &&
+                      ((_isemailPASSlogin && _email.isNotEmpty && _password.isNotEmpty) ||
+                          (_isemailOTPlogin && _email.isNotEmpty && _vcode.isNotEmpty) ||
+                          (!_isemailPASSlogin &&
+                              !_isemailOTPlogin &&
                               ((_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) ||
                                   (_myCountry != "86" && _mobile != "")) &&
                               (_vcode != "" || _password != "")))
@@ -687,18 +704,19 @@ class _LoginPageState extends State<LoginPage> {
                       }
 
                       if (_isLoginButtonEnable) {
-                        if (_isemaillogin) {
+                        if (_isemailPASSlogin) {
                           // 邮箱密码登录
                           if (_email.isNotEmpty && _password.isNotEmpty) {
                             if (_isValidEmail(_email)) {
                               _isLoginButtonEnable = false;
                               _authenticationBloc.add(
                                 LoginButtonPressed(
-                                  mobile: _email,
+                                  mobile: "",
                                   email: _email,
                                   password: _password,
                                   vcode: "",
-                                  type: 3, // 类型3为邮箱密码登录
+                                  token: "",
+                                  type: "EML_PASS", // 类型为邮箱密码登录
                                   captchaVerification: "",
                                   country: "",
                                 ),
@@ -707,7 +725,7 @@ class _LoginPageState extends State<LoginPage> {
                               ShowMessage.showToast("邮箱格式错误");
                             }
                           }
-                        } else if (_isemailvcodelogin) {
+                        } else if (_isemailOTPlogin) {
                           // 邮箱验证码登录
                           if (_email.isNotEmpty && _vcode.isNotEmpty) {
                             if (_isValidEmail(_email)) {
@@ -718,7 +736,8 @@ class _LoginPageState extends State<LoginPage> {
                                   email: _email,
                                   password: "",
                                   vcode: _vcode,
-                                  type: 4, // 类型4为邮箱验证码登录
+                                  token: _token,
+                                  type: "EML_OTP", // 类型4为邮箱验证码登录
                                   captchaVerification: "",
                                   country: "",
                                 ),
@@ -728,7 +747,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           }
                         } else if (_mobile != "" && (_vcode != "" || _password != "")) {
-                          if (_ismobilelogin) {
+                          if (_ismobileOTPlogin) {
                             if (_myCountry == "86" && _mobile.trim().replaceAll(' ', '').length == 11) {
                               _isLoginButtonEnable = false;
                               _authenticationBloc.add(
@@ -737,7 +756,8 @@ class _LoginPageState extends State<LoginPage> {
                                   email: "",
                                   password: _password,
                                   vcode: _vcode,
-                                  type: 2,
+                                  token: _token,
+                                  type: "SMS_OTP", // 类型为手机验证码登录
                                   captchaVerification: "",
                                   country: _myCountry,
                                 ),
@@ -756,7 +776,8 @@ class _LoginPageState extends State<LoginPage> {
                                   email: "",
                                   password: _password,
                                   vcode: _vcode,
-                                  type: 1,
+                                  token: _token,
+                                  type: "SMS_PASS", // 类型为手机密码登录
                                   captchaVerification: "",
                                   country: _myCountry,
                                 ),
@@ -960,7 +981,8 @@ class _LoginPageState extends State<LoginPage> {
                 email: "",
                 password: _password,
                 vcode: _vcode,
-                type: 1,
+                type: "MobilePass", // 类型为手机验证码登录
+                token: _token,
                 captchaVerification: v,
                 country: _myCountry,
               ),

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-
+import 'dart:io' if (dart.library.io) 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -323,7 +323,7 @@ class _MyUserIdEditState extends State<MyUserId> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                               )
                             : SizedBox.shrink(),
-                        Platform.isIOS
+                        !kIsWeb && Platform.isIOS
                             ? Padding(
                                 padding: EdgeInsets.only(left: 10, right: 10),
                                 child: Divider(
@@ -332,7 +332,7 @@ class _MyUserIdEditState extends State<MyUserId> {
                                 ),
                               )
                             : SizedBox.shrink(),
-                        Platform.isIOS
+                        !kIsWeb && Platform.isIOS
                             ? ListTile(
                                 onTap: () async {
                                   if (Global.profile.user!.iosuserid == "") {

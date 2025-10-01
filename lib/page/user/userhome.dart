@@ -525,8 +525,8 @@ class _MyHomeState extends State<MyHome> {
                   GestureDetector(
                     child: Global.profile.user != null
                         ? NoCacheClipRRectOhterHeadImage(
-                            imageUrl: Global.profile.user!.profilepicture ?? "",
-                            uid: Global.profile.user!.uid,
+                            imageUrl: Global.profile.user?.profilepicture ?? "",
+                            uid: Global.profile.user?.uid ?? 0,
                             width: 60,
                             cir: 50,
                           )
@@ -537,7 +537,7 @@ class _MyHomeState extends State<MyHome> {
                         '/PhotoViewImageHead',
                         arguments: {
                           "iscache": false,
-                          "image": Global.profile.user!.profilepicture,
+                          "image": Global.profile.user?.profilepicture,
                         },
                       );
                     },
@@ -549,7 +549,7 @@ class _MyHomeState extends State<MyHome> {
                     children: [
                       GestureDetector(
                         child: Text(
-                          Global.profile.user!.username,
+                          Global.profile.user?.username ?? "未知用户",
                           style: TextStyle(color: Colors.black87, fontSize: 15),
                         ),
                         onTap: () {
@@ -562,7 +562,7 @@ class _MyHomeState extends State<MyHome> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        '会员号: ${Global.profile.user!.uid}',
+                        '会员号: ${Global.profile.user?.uid ?? 0}',
                         style: TextStyle(color: Colors.black38, fontSize: 12),
                       ),
                     ],
@@ -632,7 +632,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '关注',
                   icon: Text(
-                    CommonUtil.getNum(Global.profile.user!.following!),
+                    CommonUtil.getNum(Global.profile.user?.following ?? 0),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -650,7 +650,7 @@ class _MyHomeState extends State<MyHome> {
                 IconText(
                   '粉丝',
                   icon: Text(
-                    CommonUtil.getNum(Global.profile.user!.followers!),
+                    CommonUtil.getNum(Global.profile.user?.followers ?? 0),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -663,7 +663,7 @@ class _MyHomeState extends State<MyHome> {
                     Navigator.pushNamed(
                       context,
                       '/MyFansUser',
-                      arguments: {"uid": Global.profile.user!.uid},
+                      arguments: {"uid": Global.profile.user?.uid ?? 0},
                     ).then((value) {
                       setState(() {});
                     });

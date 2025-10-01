@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'package:flutter_app/service/userservice.dart';
 import 'package:flutter_app/util/token_util.dart';
@@ -14,8 +16,7 @@ import 'state/authentication_state.dart';
 export 'event/authentication_event.dart';
 export 'state/authentication_state.dart';
 
-class AuthenticationBloc
-    extends Bloc<AuthenticationEvent, AuthenticationState> {
+class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   // Services and stateful fields
   final UserRepository userRepository = UserRepository();
   final UserService _userService = UserService();
@@ -48,10 +49,7 @@ class AuthenticationBloc
     on<initUpdate>(_onInitUpdate);
   }
 
-  Future<void> _onLoggedState(
-    LoggedState event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoggedState(LoggedState event, Emitter<AuthenticationState> emit) async {
     final user = Global.profile.user;
     if (user != null) {
       emit(AuthenticationAuthenticated());
@@ -60,18 +58,12 @@ class AuthenticationBloc
     }
   }
 
-  Future<void> _onLoggedIn(
-    LoggedIn event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoggedIn(LoggedIn event, Emitter<AuthenticationState> emit) async {
     await LoginSuccess(event.user);
     emit(AuthenticationAuthenticated());
   }
 
-  Future<void> _onLoggedOut(
-    LoggedOut event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoggedOut(LoggedOut event, Emitter<AuthenticationState> emit) async {
     try {
       final user = Global.profile.user;
       if (user != null) {
@@ -81,16 +73,15 @@ class AuthenticationBloc
     emit(LoginOuted());
   }
 
-  Future<void> _onLoginButtonPressed(
-    LoginButtonPressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoginButtonPressed(LoginButtonPressed event, Emitter<AuthenticationState> emit) async {
     emit(LoginLoading());
     try {
       final user = await userRepository.loginToUser(
         mobile: event.mobile,
+        email: event.email,
         password: event.password,
         vcode: event.vcode,
+        token: event.token,
         type: event.type,
         captchaVerification: event.captchaVerification,
         country: event.country,
@@ -100,146 +91,71 @@ class AuthenticationBloc
         await LoginSuccess(user);
         emit(AuthenticationAuthenticated());
       } else {
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (_) {
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新密码
-  Future<void> _onUpdateUserPasswordPressed(
-    UpdateUserPasswordPressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateUserPasswordPressed(UpdateUserPasswordPressed event, Emitter<AuthenticationState> emit) async {
     try {
-      final ret = await userRepository.UpdateUserPasswordPressed(
-        event.user,
-        event.password,
-        errorCallBack,
-      );
+      final ret = await userRepository.UpdateUserPasswordPressed(event.user, event.password, errorCallBack);
       if (ret) {
         emit(AuthenticationAuthenticated());
       } else {
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (e) {
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新性别
-  Future<void> _onUpdateUserSexPressed(
-    UpdateUserSexPressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateUserSexPressed(UpdateUserSexPressed event, Emitter<AuthenticationState> emit) async {
     try {
-      final ret = await userRepository.UpdateUserSexPressed(
-        event.user,
-        event.sex,
-        errorCallBack,
-      );
+      final ret = await userRepository.UpdateUserSexPressed(event.user, event.sex, errorCallBack);
       if (ret) {
         event.user.sex = event.sex;
         userRepository.persistToken(event.user);
         emit(AuthenticationAuthenticated());
       } else {
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (e) {
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新生日
-  Future<void> _onUpdateUserBirthdayPressed(
-    UpdateUserBirthdayPressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateUserBirthdayPressed(UpdateUserBirthdayPressed event, Emitter<AuthenticationState> emit) async {
     try {
-      final ret = await userRepository.UpdateUserBirthdayPressed(
-        event.user,
-        event.birthday,
-        errorCallBack,
-      );
+      final ret = await userRepository.UpdateUserBirthdayPressed(event.user, event.birthday, errorCallBack);
       if (ret) {
         event.user.birthday = event.birthday;
         userRepository.persistToken(event.user);
         emit(AuthenticationAuthenticated());
       } else {
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (e) {
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新定位（只更新状态）
-  Future<void> _onUpdateLocation(
-    UpdateLocation event,
-    Emitter<AuthenticationState> emit,
-  ) async {
-    emit(
-      UpdateLocationed(
-        locationName: event.locationName,
-        locationCode: event.locationCode,
-      ),
-    );
+  Future<void> _onUpdateLocation(UpdateLocation event, Emitter<AuthenticationState> emit) async {
+    emit(UpdateLocationed(locationName: event.locationName, locationCode: event.locationCode));
   }
 
   ///初始化用户信息更新（只更新状态）
-  Future<void> _onInitUpdate(
-    initUpdate event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onInitUpdate(initUpdate event, Emitter<AuthenticationState> emit) async {
     emit(AuthenticationAuthenticated());
   }
 
   ///支付宝登录
-  Future<void> _onLoginAli(
-    LoginAli event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoginAli(LoginAli event, Emitter<AuthenticationState> emit) async {
     try {
       final authurl = await _userService.getAliUserAuth();
       if (authurl.isNotEmpty) {
@@ -250,26 +166,13 @@ class AuthenticationBloc
           return;
         }
       }
-      emit(
-        AuthenticationUnauthenticated(
-          error: error,
-          errorstatusCode: errorstatusCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
     } catch (_) {
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
-  Future<void> _onLoginWeiXin(
-    LoginWeiXin event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onLoginWeiXin(LoginWeiXin event, Emitter<AuthenticationState> emit) async {
     User? user = await _userService.loginweixin(event.auth_code, errorCallBack);
     if (user != null) {
       await LoginSuccess(user);
@@ -278,10 +181,7 @@ class AuthenticationBloc
   }
 
   ///刷新（根据当前登录状态简单重发状态）
-  Future<void> _onRefresh(
-    Refresh event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onRefresh(Refresh event, Emitter<AuthenticationState> emit) async {
     if (Global.profile.user != null) {
       emit(AuthenticationAuthenticated());
     } else {
@@ -290,15 +190,8 @@ class AuthenticationBloc
   }
 
   ///ios登录
-  Future<void> _onLoginIos(
-    LoginIos event,
-    Emitter<AuthenticationState> emit,
-  ) async {
-    User? user = await _userService.loginIos(
-      event.identityToken,
-      event.iosuserid,
-      errorCallBack,
-    );
+  Future<void> _onLoginIos(LoginIos event, Emitter<AuthenticationState> emit) async {
+    User? user = await _userService.loginIos(event.identityToken, event.iosuserid, errorCallBack);
     if (user != null) {
       await LoginSuccess(user);
       emit(AuthenticationAuthenticated());
@@ -306,71 +199,37 @@ class AuthenticationBloc
   }
 
   ///更新照片
-  Future<void> _onUpdateImagePressed(
-    UpdateImagePressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateImagePressed(UpdateImagePressed event, Emitter<AuthenticationState> emit) async {
     try {
-      bool ret = await userRepository.updateImage(
-        event.user,
-        event.serverimgpath,
-        errorCallBack,
-      );
+      bool ret = await userRepository.updateImage(event.user, event.serverimgpath, errorCallBack);
       if (ret) {
         await userRepository.updateUserPicture(event.user, event.imgpath);
         emit(AuthenticationAuthenticated(isUserImage: true));
       } else {
         ///验证未通过
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (error) {
       ///验证未通过
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新昵称
-  Future<void> _onUpdateUserNamePressed(
-    UpdateUserNamePressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateUserNamePressed(UpdateUserNamePressed event, Emitter<AuthenticationState> emit) async {
     try {
-      bool ret = await userRepository.updateUserName(
-        event.user,
-        event.username,
-        errorCallBack,
-      );
+      bool ret = await userRepository.updateUserName(event.user, event.username, errorCallBack);
       if (ret) {
         event.user.username = event.username;
         userRepository.persistToken(event.user);
         emit(AuthenticationAuthenticated());
       } else {
         ///验证未通过
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (error) {
       ///验证未通过
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
@@ -380,47 +239,25 @@ class AuthenticationBloc
     Emitter<AuthenticationState> emit,
   ) async {
     try {
-      bool ret = await userRepository.UpdateUserSignaturePressed(
-        event.user,
-        event.signature,
-        errorCallBack,
-      );
+      bool ret = await userRepository.UpdateUserSignaturePressed(event.user, event.signature, errorCallBack);
       if (ret) {
         event.user.signature = event.signature;
         userRepository.persistToken(event.user);
         emit(AuthenticationAuthenticated());
       } else {
         ///验证未通过
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (error) {
       ///验证未通过
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   ///更新位置
-  Future<void> _onUpdateUserLocationPressed(
-    UpdateUserLocationPressed event,
-    Emitter<AuthenticationState> emit,
-  ) async {
+  Future<void> _onUpdateUserLocationPressed(UpdateUserLocationPressed event, Emitter<AuthenticationState> emit) async {
     try {
-      bool ret = await userRepository.updateLocation(
-        event.user,
-        event.province,
-        event.city,
-        errorCallBack,
-      );
+      bool ret = await userRepository.updateLocation(event.user, event.province, event.city, errorCallBack);
       if (ret) {
         event.user.province = event.province;
         event.user.city = event.city;
@@ -428,30 +265,18 @@ class AuthenticationBloc
         emit(AuthenticationAuthenticated());
       } else {
         ///验证未通过
-        emit(
-          AuthenticationUnauthenticated(
-            error: error,
-            errorstatusCode: errorstatusCode,
-          ),
-        );
+        emit(AuthenticationUnauthenticated(error: error, errorstatusCode: errorstatusCode));
       }
     } catch (error) {
       ///验证未通过
-      emit(
-        AuthenticationUnauthenticated(
-          error: errorNet,
-          errorstatusCode: errorNetCode,
-        ),
-      );
+      emit(AuthenticationUnauthenticated(error: errorNet, errorstatusCode: errorNetCode));
     }
   }
 
   // Note: Removed legacy/duplicate handler code with yield-based logic and stray event checks.
 
   @override
-  void onTransition(
-    Transition<AuthenticationEvent, AuthenticationState> transition,
-  ) {
+  void onTransition(Transition<AuthenticationEvent, AuthenticationState> transition) {
     //print(transition);
     super.onTransition(transition);
   }
@@ -500,9 +325,7 @@ class AuthenticationBloc
         user.likegoodpricecomment,
       ); //获取用户留言和评论的点赞情况goodprice
     }
-    if (user.likebugcomment > 0 ||
-        user.likesuggestcomment > 0 ||
-        user.likemomentcomment > 0) {
+    if (user.likebugcomment > 0 || user.likesuggestcomment > 0 || user.likemomentcomment > 0) {
       activityService.getUserBugAndSuggestAndMomentComnnentLike(
         user.uid,
         user.token!,
@@ -528,12 +351,8 @@ class AuthenticationBloc
       await userRepository.updateNotInteresteduids(user, errorCallBack);
     }
     //我的好价不感兴趣,不需要重新获取数据
-    if (user.goodpricenotinteresteduids != null &&
-        user.goodpricenotinteresteduids!.isNotEmpty) {
-      await userRepository.updateGoodPriceNotInteresteduids(
-        user,
-        errorCallBack,
-      );
+    if (user.goodpricenotinteresteduids != null && user.goodpricenotinteresteduids!.isNotEmpty) {
+      await userRepository.updateGoodPriceNotInteresteduids(user, errorCallBack);
     }
     //我的黑名单,不需要重新获取数据
     if (user.blacklist != null && user.blacklist!.isNotEmpty) {

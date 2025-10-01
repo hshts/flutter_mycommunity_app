@@ -1137,9 +1137,9 @@
     },
     {
       "name": "sqflite_common_ffi_web",
-      "rootUri": "file:///Users/shawn/.pub-cache/hosted/pub.flutter-io.cn/sqflite_common_ffi_web-0.4.5+4",
+      "rootUri": "file:///Users/shawn/.pub-cache/hosted/pub.flutter-io.cn/sqflite_common_ffi_web-1.0.1+1",
       "packageUri": "lib/",
-      "languageVersion": "3.5"
+      "languageVersion": "3.8"
     },
     {
       "name": "sqflite_darwin",

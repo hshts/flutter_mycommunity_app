@@ -80,8 +80,7 @@ class Activity {
   );
 
   Map<String, dynamic> toJson() => _$ActivityToJson(this);
-  factory Activity.fromJson(Map<String, dynamic> json) =>
-      _$ActivityFromJson(json);
+  factory Activity.fromJson(Map<String, dynamic> json) => _$ActivityFromJson(json);
 
   factory Activity.fromNullObject() {
     Activity activity = Activity(
@@ -121,6 +120,7 @@ class Activity {
 
     activity.user = User(
       0,
+      "",
       "",
       "",
       "",
@@ -174,6 +174,7 @@ class Activity {
     peoplenum = data['peoplenum'];
     user = User(
       0,
+      "",
       "",
       "",
       "",
@@ -236,6 +237,7 @@ class Activity {
     user = User(
       0,
       "",
+      "",
       data["user"]["username"],
       "",
       "",
@@ -295,6 +297,7 @@ class Activity {
     peoplenum = data['peoplenum'];
     user = User(
       0,
+      "",
       "",
       data["username"],
       "",

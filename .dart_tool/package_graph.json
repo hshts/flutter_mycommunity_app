@@ -599,7 +599,7 @@
     },
     {
       "name": "sqflite_common_ffi_web",
-      "version": "0.4.5+4",
+      "version": "1.0.1+1",
       "dependencies": [
         "args",
         "dev_build",

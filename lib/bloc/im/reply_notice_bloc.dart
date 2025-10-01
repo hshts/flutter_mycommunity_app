@@ -1,5 +1,6 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import '../../model/usernotice.dart';
 import '../../model/commentreply.dart';
 import '../../service/activity.dart';
@@ -241,9 +242,15 @@ class ReplyNoticeBloc extends Bloc<ReplyNoticeEvent, ReplyNoticeState> {
     // Global.replyCount = count;
     // unReadCount = Global.immsgCount + Global.replyCount;
     if (unReadCount > 0) {
-      FlutterAppBadger.updateBadgeCount(unReadCount > 99 ? 99 : unReadCount);
+      // 只在非Web平台上更新徽章
+      if (!kIsWeb) {
+        FlutterAppBadger.updateBadgeCount(unReadCount > 99 ? 99 : unReadCount);
+      }
     } else {
-      FlutterAppBadger.removeBadge();
+      // 只在非Web平台上移除徽章
+      if (!kIsWeb) {
+        FlutterAppBadger.removeBadge();
+      }
     }
   }
 

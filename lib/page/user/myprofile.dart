@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 
 import '../../model/user.dart';
@@ -98,7 +98,8 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    if (Platform.isAndroid) {
+    // 只在非Web平台且是Android系统时才调整系统UI
+    if (!kIsWeb && Platform.isAndroid) {
       WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
           false; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
@@ -122,7 +123,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
           true; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
@@ -229,7 +230,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                                   height: 130,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image: NetworkImage(user.profilepicture!),
+                                      image: NetworkImage(user.profilepicture ?? ""),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -337,11 +338,11 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
               height: 96,
               width: 96,
               decoration: BoxDecoration(
-                border: Border.all(color: Global.profile.fontColor!, width: 2),
+                border: Border.all(color: Global.profile.fontColor ?? Colors.black, width: 2),
                 borderRadius: BorderRadius.circular(50),
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(user.profilepicture!),
+                  image: NetworkImage(user.profilepicture ?? ""),
                 ),
               ),
               child: SizedBox.shrink(),
@@ -366,11 +367,11 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          if (user.followers! > 0) {
+                          if ((user.followers ?? 0) > 0) {
                             Navigator.pushNamed(
                               context,
                               '/MyFansUser',
-                              arguments: {"uid": Global.profile.user!.uid},
+                              arguments: {"uid": Global.profile.user?.uid ?? 0},
                             );
                           }
                         },
@@ -380,7 +381,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                               Text(
                                 user.followers == null
                                     ? '0'
-                                    : CommonUtil.getNum(user.followers!),
+                                    : CommonUtil.getNum(user.followers ?? 0),
                                 style: TextStyle(
                                   color: Colors.black87,
                                   fontSize: 14,
@@ -528,7 +529,7 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
                       child: Text(
                         title,
                         style: TextStyle(
-                          color: Global.profile.fontColor,
+                          color: Global.profile.fontColor ?? Colors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),

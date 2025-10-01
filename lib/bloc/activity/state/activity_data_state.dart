@@ -29,14 +29,14 @@ class PostLoaded extends ActivityDataState {
     this.isRebuild = true, //2次的状态不同才会rebuild
   }) {
     List<Activity> emptyList = [];
-    for (var e in activitys!) {
+    for (var e in activitys ?? []) {
       emptyList.add(e);
     }
 
     for (var e in emptyList) {
       if (notinteresteduids != null &&
-          notinteresteduids!.contains(e.user!.uid)) {
-        activitys!.remove(e);
+          notinteresteduids!.contains(e.user?.uid ?? 0)) {
+        (activitys ?? []).remove(e);
       }
     }
   }
@@ -45,16 +45,19 @@ class PostLoaded extends ActivityDataState {
     return PostLoaded(
       activitys: activitys ?? this.activitys,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-      error: error ?? error,
+      error: error ?? this.error,
+      notinteresteduids: notinteresteduids,
+      isRebuild: isRebuild,
     );
   }
 
   @override
   List<Object> get props => [
-    activitys ?? "",
+    activitys ?? const [],
     hasReachedMax ?? false,
     error ?? "",
     isRebuild ?? false,
+    notinteresteduids ?? const [],
   ];
 
   @override

@@ -6,19 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/profile.dart';
 import 'util/networkmanager_util.dart';
 
-const _themes = <MaterialColor>[
-  Colors.purple,
-  Colors.blue,
-  Colors.cyan,
-  Colors.teal,
-  Colors.green,
-  Colors.red,
-];
+const _themes = <MaterialColor>[Colors.purple, Colors.blue, Colors.cyan, Colors.teal, Colors.green, Colors.red];
 
 class Global {
   // static String serviceurl = "http://localhost/console/api/";
   static String serviceIM = "ws://ws.chulaiwanba.com:8082/ws";
-  static String serviceurl = "http://localhost/console/api/";
+  static String serviceurl = "http://127.0.0.1:5001/console/api/";
   // static String serviceIM =  "ws://192.168.10.108:8082/ws";
 
   static String headimg = "images/icon_head_default.png";
@@ -26,15 +19,13 @@ class Global {
 
   static String osshost = "https://oss.chulaiwanba.com/";
   static String apphost = "https://www.chulaiwanba.com/";
-  static String applogourl =
-      "https://mycommunity-prod.oss-cn-hangzhou.aliyuncs.com/appImage/logo.png";
+  static String applogourl = "https://mycommunity-prod.oss-cn-hangzhou.aliyuncs.com/appImage/logo.png";
   static bool isWeChatInstalled = false;
   static bool isAliPayInstalled = false;
   static const int SUCCESS = 200;
   static SharedPreferences? _prefs;
   static Profile profile = Profile();
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<ScaffoldState> mainkey = GlobalKey<ScaffoldState>();
 
   static const String female = "0";

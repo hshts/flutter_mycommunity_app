@@ -19,11 +19,42 @@ class NetUtil {
   }
 
   static NetUtil getInstance({String? baseUrl}) {
+    _instance._interceptors();
     if (baseUrl == null) {
       return _instance._normal();
     } else {
       return _instance._baseUrl(baseUrl);
     }
+  }
+
+  // 增加拦截器Authorization
+  NetUtil _interceptors() {
+    if (_dio != null) {
+      _dio!.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            // 从全局配置或其他地方获取 token
+            String? token = Global.profile.user?.token;
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+            return handler.next(options);
+          },
+          // onResponse: (response, handler) {
+          //   if (response.statusCode == 401 && response.data["message"] == "Token has expired.") {
+          //     // 处理access token过期
+          //     refreshToken();
+
+          //     Global.profile.token = null;
+          //     ShowMessage.showToast("未授权，请重新登录");
+          //     Global.navigatorKey.currentState!.pushNamed('/Login');
+          //   }
+          //   return handler.next(response);
+          // },
+        ),
+      );
+    }
+    return this;
   }
 
   //一般请求，默认域名
@@ -43,12 +74,7 @@ class NetUtil {
     return this;
   }
 
-  Future<void> download(
-    String url,
-    String filepath,
-    Function errorCallBack,
-    Function callBack,
-  ) async {
+  Future<void> download(String url, String filepath, Function errorCallBack, Function callBack) async {
     Response responce = await _dio!.download(url, filepath);
     if (responce.statusCode == 200) {
       callBack();
@@ -58,12 +84,7 @@ class NetUtil {
   }
 
   ///get请求
-  Future<void> get(
-    String url,
-    Function callBack, {
-    Map<String, String>? params,
-    Function? errorCallBack,
-  }) async {
+  Future<void> get(String url, Function callBack, {Map<String, String>? params, Function? errorCallBack}) async {
     Response response;
     try {
       response = await _dio!.get(url, queryParameters: params);
@@ -75,10 +96,7 @@ class NetUtil {
       if (response.data["status"] != null) {
         if (response.data["status"] < 0) {
           if (errorCallBack != null) {
-            errorCallBack(
-              response.data["status"].toString(),
-              response.data["msg"].toString(),
-            );
+            errorCallBack(response.data["status"].toString(), response.data["msg"].toString());
           }
           return;
         } else {
@@ -92,20 +110,32 @@ class NetUtil {
   }
 
   Future post(
-    FormData formData,
+    dynamic data,
     String api,
     Function callBack,
     Function errorCallBack, {
     bool isloginOut = false,
+    bool asJson = false,
   }) async {
     Response response;
     try {
-      response = await _dio!.post(api, data: formData);
+      // 支持 JSON 或表单提交
+      if (asJson) {
+        response = await _dio!.post(
+          api,
+          data: data,
+          options: Options(contentType: Headers.jsonContentType),
+        );
+      } else {
+        final payload = data is FormData ? data : (data is Map<String, dynamic> ? FormData.fromMap(data) : data);
+        response = await _dio!.post(api, data: payload);
+      }
     } on DioException catch (e) {
       return resultError(e);
     }
 
-    if (response.data["status"] < 0) {
+    // 添加对response.data和response.data["status"]的null检查
+    if (response.data != null && response.data["status"] != null && response.data["status"] < 0) {
       ///token过期
       if (response.data["status"] == -9006) {
         if (!isloginOut) {
@@ -123,12 +153,7 @@ class NetUtil {
   }
 
   ///外网的网络请求
-  Future<void> wget(
-    String url,
-    Function callBack, {
-    Map<String, String>? params,
-    Function? errorCallBack,
-  }) async {
+  Future<void> wget(String url, Function callBack, {Map<String, String>? params, Function? errorCallBack}) async {
     Response response;
     try {
       response = await _dio!.get(url, queryParameters: params);
@@ -143,12 +168,7 @@ class NetUtil {
     }
   }
 
-  static Future<void> aliyunOSSpost(
-    FormData formData,
-    String url,
-    Function callBack,
-    Function errorCallBack,
-  ) async {
+  static Future<void> aliyunOSSpost(FormData formData, String url, Function callBack, Function errorCallBack) async {
     Response response;
     BaseOptions options = BaseOptions();
     options.responseType = ResponseType.plain;
@@ -165,10 +185,7 @@ class NetUtil {
 
   //处理异常
   static void _handError(Function errorCallback, Response response) {
-    errorCallback(
-      response.data["status"].toString(),
-      response.data["msg"].toString(),
-    );
+    errorCallback(response.data["status"].toString(), response.data["msg"].toString());
     //print("<net> errorMsg :" + response.data["msg"]);
   }
 

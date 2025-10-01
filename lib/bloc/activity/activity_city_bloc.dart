@@ -43,14 +43,14 @@ class CityActivityDataBloc extends Bloc<PostEvent, CityActivityState> {
         //加载更多
         if (currentState is PostSuccess) {
           final activitys = await _activityService.getActivityListByCity(
-            currentState.activitys!.length,
+            currentState.activitys?.length ?? 0,
             event.locationCode,
           );
           emit(
             activitys.isEmpty
                 ? currentState.copyWith(hasReachedMax: true)
                 : PostSuccess(
-                    activitys: currentState.activitys! + activitys,
+                    activitys: (currentState.activitys ?? []) + activitys,
                     hasReachedMax: false,
                     isRefreshed: false,
                   ),

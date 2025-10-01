@@ -38,9 +38,11 @@ class LoginButtonPressed extends AuthenticationEvent {
 
   ///短信验证码
   final String vcode;
+  //token
+  final String token;
 
-  ///验证类型,1密码 2验证码
-  final int type;
+  ///验证类型,pass:密码, sms:短信验证码, email:邮箱验证码, 3rd:第三方登录
+  final String type;
 
   ///图片验证码
   final String captchaVerification;
@@ -51,16 +53,17 @@ class LoginButtonPressed extends AuthenticationEvent {
     required this.email,
     required this.password,
     required this.vcode,
+    required this.token,
     required this.type,
     required this.captchaVerification,
     required this.country,
   });
   @override
-  List<Object> get props => [mobile, email, password, vcode, type, captchaVerification, country];
+  List<Object> get props => [mobile, email, password, vcode, token, type, captchaVerification, country];
 
   @override
   String toString() =>
-      'LoginButtonPressed { username: $mobile, email: $email, password: $password, vode: $vcode, $type }';
+      'LoginButtonPressed { username: $mobile, email: $email, password: $password, vcode: $vcode, token: $token, type: $type }';
 }
 
 ///支付宝登录

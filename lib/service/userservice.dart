@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_app/util/apiconverter_util.dart';
 import 'package:tobias/tobias.dart' as tobias;
 
 import '../model/user.dart';
@@ -20,37 +21,35 @@ class UserService {
   ImHelper imHelper = ImHelper();
 
   //登录
-  Future<User?> login(String mobile, String password, String captchaVerification, Function errorCallBack) async {
+  Future<User?> loginByPASSS(
+    String mobile,
+    String email,
+    String password,
+    String captchaVerification,
+    Function errorCallBack,
+  ) async {
     User? user;
-    FormData formData = FormData.fromMap({
-      "mobile": mobile,
-      "password": generateMd5(password),
-      "captchaVerification": captchaVerification,
-    });
-    await NetUtil.getInstance().post(formData, "/user/login", (data) {
-      if (data["data"] != null && data["data"] != "") {
-        try {
-          if (data["data"]["user"] == null) {
-            //启动验证
-          } else if (data["data"]["user"].toString() != "") {
-            user = User.fromJson(data["data"]["user"]);
-            user!.token = data["data"]["token"].toString();
-          }
-        } catch (e) {
-          user = null;
-          errorCallBack("-8001", '服务器忙请稍后再试');
-        }
-      }
+    String refreshtoken = "";
+    String accesstoken = "";
+    Map<String, dynamic>? requestJson = {"mobile": mobile, "email": email, "password": generateMd5(password)};
+    await NetUtil.getInstance().post(requestJson, asJson: true, "/login", (data) {
+      print("EmailPASS validity ok");
+      refreshtoken = data["data"]["refresh_token"].toString();
+      accesstoken = data["data"]["access_token"].toString();
+      // Map<String, dynamic> usermap = {"uid": 10001, "username": email, "email": email, "token": accesstoken};
+      getUserInfo(accesstoken, errorCallBack).then((userInfo) {
+        user = userInfo;
+      });
     }, errorCallBack);
 
     return user;
   }
 
   //通过手机号发送验证码
-  Future<bool> sendVCode(String mobile) async {
+  Future<bool> sendMobileOTP(String mobile) async {
     bool vsendstatus = false;
     await NetUtil.getInstance().get(
-      "/user/sendVCode",
+      "/user/sendMobileOTP",
       (Map<String, dynamic> data) {
         vsendstatus = true;
       },
@@ -61,13 +60,15 @@ class UserService {
   }
 
   //通过email发送验证码
-  Future<bool> sendEmailVCode(String email, Function errorCallBack) async {
+  Future<String> sendEmailOTP(String email, Function errorCallBack) async {
     bool vsendstatus = false;
-    FormData formData = FormData.fromMap({"email": email});
-    await NetUtil.getInstance().post(formData, "/email-register/send-email", (Map<String, dynamic> data) {
+    String token = "";
+    // FormData formData = FormData.fromMap({"email": email});
+    await NetUtil.getInstance().post({"email": email}, "/email-code-login", asJson: true, (Map<String, dynamic> data) {
       vsendstatus = true;
+      token = data["data"].toString();
     }, errorCallBack);
-    return vsendstatus;
+    return token;
   }
 
   //通过uid发送验证码
@@ -85,7 +86,7 @@ class UserService {
   }
 
   //手机验证登录
-  Future<User?> loginMobile(String mobile, String vcode, String country, Function errorCallBack) async {
+  Future<User?> loginMobileOTP(String mobile, String vcode, String country, Function errorCallBack) async {
     User? user;
     FormData formData = FormData.fromMap({"mobile": mobile, "vcode": vcode, "country": country});
     await NetUtil.getInstance().post(formData, "/user/loginmobile", (data) {
@@ -94,6 +95,29 @@ class UserService {
         user!.token = data["data"]["token"].toString();
       }
     }, errorCallBack);
+    return user;
+  }
+
+  //邮箱登录
+  Future<User?> loginEmailOTP(String email, String vcode, String token, Function errorCallBack) async {
+    User? user;
+    String refreshtoken = "";
+    String accesstoken = "";
+    // FormData formData = FormData.fromMap({"email": email, "code": vcode, "token": token});
+    await NetUtil.getInstance().post(
+      {"email": email, "code": vcode, "token": token},
+      asJson: true,
+      "/email-code-login/validity",
+      (data) {
+        print("EmailOTP validity ok");
+        refreshtoken = data["data"]["refresh_token"].toString();
+        accesstoken = data["data"]["access_token"].toString();
+        Map<String, dynamic> usermap = {"uid": 10001, "username": email, "email": email, "token": accesstoken};
+
+        user = User.fromJson(usermap);
+      },
+      errorCallBack,
+    );
     return user;
   }
 
@@ -301,17 +325,24 @@ class UserService {
   }
 
   //获取用户信息
-  Future<User?> getUserInfo(int uid, Function errorCallBack) async {
+  Future<User?> getUserInfo(String token, Function errorCallBack) async {
     User? user;
-    FormData formData = FormData.fromMap({"uid": uid});
-    await NetUtil.getInstance().post(formData, "/user/getuserinfo", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        user = User.fromJson(data["data"]);
-        Global.profile.user!.following = user!.following;
-        Global.profile.user!.followers = user!.followers;
-        Global.saveProfile();
-      }
-    }, errorResponse);
+    // FormData formData = FormData.fromMap({"uid": uid});
+    await NetUtil.getInstance().get(
+      "/account/profile",
+      (Map<String, dynamic> data) {
+        if (data["id"] != null) {
+          user = User.fromJson(ApiFieldsConverter.convertUserData(data));
+          // user!.token = data["token"] ?? Global.profile.user!.token;
+          Global.profile.user = user;
+          Global.profile.user!.following = user!.following;
+          Global.profile.user!.followers = user!.followers;
+          Global.saveProfile();
+        }
+      },
+      params: {"_token": token},
+      errorCallBack: errorResponse,
+    );
 
     return user;
   }
@@ -335,13 +366,8 @@ class UserService {
   Future<bool> updateImageByUrl(String token, int uid, String imgpath, Function errorCallBack) async {
     bool isupdateImage = false;
 
-    FormData formData = FormData.fromMap({
-      //"path": await MultipartFile.fromFile(imgpath),
-      "path": imgpath,
-      "token": token,
-      "uid": uid,
-    });
-    await NetUtil.getInstance().post(formData, "/user/updateImage", (Map<String, dynamic> data) {
+    Map<String, dynamic> requestData = {"avatar": imgpath};
+    await NetUtil.getInstance().post(requestData, "/account/avatar", asJson: true, (Map<String, dynamic> data) {
       isupdateImage = true;
     }, errorCallBack);
     return isupdateImage;
@@ -382,8 +408,9 @@ class UserService {
   //更新昵称
   Future<bool> updateUserName(String token, int uid, String username, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "uid": uid, "username": username});
-    await NetUtil.getInstance().post(formData, "/user/updateUserName", (Map<String, dynamic> data) {
+    // FormData formData = FormData.fromMap({"token": token, "uid": uid, "username": username});
+    Map<String, dynamic> requestData = {"name": username};
+    await NetUtil.getInstance().post(requestData, "/account/name", asJson: true, (Map<String, dynamic> data) {
       isUpdate = true;
     }, errorCallBack);
     return isUpdate;
@@ -412,10 +439,21 @@ class UserService {
   //更新密碼
   Future<bool> updatePassword(String token, int uid, String password, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "uid": uid, "password": generateMd5(password)});
-    await NetUtil.getInstance().post(formData, "/user/updatePassWord", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "uid": uid, "password": generateMd5(password)});
+    await NetUtil.getInstance().post(
+      {
+        "_token": token,
+        "uid": uid,
+        "new_password": generateMd5(password),
+        "repeat_new_password": generateMd5(password),
+      },
+      asJson: true,
+      "/account/password",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+    );
     return isUpdate;
   }
 

@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'dart:io' if (dart.library.io) 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -137,7 +138,7 @@ class _MyProfileEditState extends State<MyProfileEdit> {
                           children: <Widget>[
                             Text("头像", style: TextStyle(fontSize: fontsize)),
                             NoCacheClipRRectOhterHeadImage(
-                              imageUrl: user.profilepicture!,
+                              imageUrl: user.profilepicture ?? "",
                               cir: 8,
                               uid: user.uid,
                             ),
@@ -454,14 +455,28 @@ class _MyProfileEditState extends State<MyProfileEdit> {
           imageFile = File(image!.path);
         } else if (value == "Gallery") {
           XFile? image;
-          if (Platform.isIOS) {
+          if (!kIsWeb && Platform.isIOS) {
             image = await _picker.pickImage(source: ImageSource.gallery);
             if (image != null) {
-              imageFile = File(image.path);
+              if (image.path.contains('assets-library')) {
+                // iOS平台特殊处理 AssetLibrary 路径
+                List<AssetEntity>? resultList = await AssetPicker.pickAssets(
+                  context,
+                  pickerConfig: AssetPickerConfig(
+                    maxAssets: 1,
+                    requestType: RequestType.image,
+                  ),
+                );
+                if (resultList != null && resultList.isNotEmpty) {
+                  imageFile = (await resultList[0].file)!;
+                }
+              } else {
+                imageFile = File(image.path);
+              }
             }
           }
 
-          if (Platform.isAndroid) {
+          if (!kIsWeb && Platform.isAndroid) {
             List<AssetEntity>? resultList = await AssetPicker.pickAssets(
               context,
               pickerConfig: AssetPickerConfig(

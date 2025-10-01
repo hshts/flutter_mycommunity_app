@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' if (dart.library.io) 'dart:io';
 // import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

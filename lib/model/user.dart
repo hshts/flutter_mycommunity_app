@@ -5,7 +5,9 @@ part 'user.g.dart';
 @JsonSerializable()
 class User {
   int uid;
+  String mobile = "";
   String username = "";
+  String email = "";
   String? sex;
   String? country;
   String? province;
@@ -37,7 +39,6 @@ class User {
   int likemoment = 0;
   int likemomentcomment = 0;
   int likegoodpricecomment = 0;
-  String mobile = "";
   String? notinteresteduids;
   String? blacklist;
   String? goodpricenotinteresteduids;
@@ -47,11 +48,12 @@ class User {
   String? voice;
   bool? isNew; //是否是新注册用户，用于广告监测统计
   int business = 0; //是否是商户
-  String subject = ""; //关注的主题
+  String subject; //关注的主题
 
   User(
     this.uid,
     this.mobile,
+    this.email,
     this.username,
     this.sex,
     this.country,
