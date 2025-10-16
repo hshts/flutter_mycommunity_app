@@ -27,9 +27,7 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
       if (!_hasReachedMax(currentState)) {
         if (currentState is PostUninitialized) {
           emit(PostLoading());
-          final activitys = await _activityService.getActivityListByUpdateTime(
-            0,
-          );
+          final activitys = await _activityService.getActivityListByUpdateTime(0);
           final user = Global.profile.user;
           if (user != null) {
             notinteresteduids = await _imHelper.getNotInteresteduids(user.uid);
@@ -48,9 +46,7 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
 
         // 加载更多
         if (currentState is PostLoaded) {
-          final activitys = await _activityService.getActivityListByUpdateTime(
-            currentlength,
-          );
+          final activitys = await _activityService.getActivityListByUpdateTime(currentlength);
           if (activitys.isNotEmpty) currentlength += activitys.length;
           final user = Global.profile.user;
           if (user != null) {
@@ -73,10 +69,7 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
     }
   }
 
-  Future<void> _onRefresh(
-    Refresh event,
-    Emitter<ActivityDataState> emit,
-  ) async {
+  Future<void> _onRefresh(Refresh event, Emitter<ActivityDataState> emit) async {
     final currentState = state;
 
     try {
@@ -95,15 +88,12 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
             notinteresteduids: notinteresteduids,
           ),
         );
-      } else if (currentState is PostUninitedError ||
-          currentState is PostUninitialized) {
+      } else if (currentState is PostUninitedError || currentState is PostUninitialized) {
         emit(PostLoading());
         final activitys = await _activityService.getActivityListByUpdateTime(0);
         currentlength = activitys.length;
         if (Global.profile.user != null) {
-          notinteresteduids = await _imHelper.getNotInteresteduids(
-            Global.profile.user?.uid ?? 0,
-          );
+          notinteresteduids = await _imHelper.getNotInteresteduids(Global.profile.user?.uid ?? 0);
         }
         emit(
           PostLoaded(
@@ -119,6 +109,5 @@ class ActivityDataBloc extends Bloc<ActivityDataEvent, ActivityDataState> {
     }
   }
 
-  bool _hasReachedMax(ActivityDataState state) =>
-      state is PostLoaded && state.hasReachedMax!;
+  bool _hasReachedMax(ActivityDataState state) => state is PostLoaded && state.hasReachedMax!;
 }

@@ -22,11 +22,8 @@ class Recommend extends StatefulWidget {
   _RecommendState createState() => _RecommendState();
 }
 
-class _RecommendState extends State<Recommend>
-    with AutomaticKeepAliveClientMixin {
-  final ScrollController _scrollControllerContent = ScrollController(
-    initialScrollOffset: 0,
-  );
+class _RecommendState extends State<Recommend> with AutomaticKeepAliveClientMixin {
+  final ScrollController _scrollControllerContent = ScrollController(initialScrollOffset: 0);
   final ImHelper _imHelper = ImHelper();
   final _loadstate = 0;
   double _activityContentHeight = 1.0; //瀑布组件高度
@@ -127,9 +124,7 @@ class _RecommendState extends State<Recommend>
           builder: (context, state) {
             if (state is PostLoading) {
               return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-                ),
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
               );
             }
             if (state is PostUninitedError) {
@@ -146,10 +141,7 @@ class _RecommendState extends State<Recommend>
                           alignment: Alignment.center,
                           child: Text(
                             'emmm...这里还没有活动.',
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: Colors.black54, fontSize: 14),
                             maxLines: 2,
                           ),
                         ),
@@ -171,16 +163,12 @@ class _RecommendState extends State<Recommend>
             }
             if (state is PostUninitialized) {
               return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-                ),
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
               );
             }
 
             return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-              ),
+              child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
             );
           },
         ),
@@ -192,10 +180,7 @@ class _RecommendState extends State<Recommend>
   Widget reLoadData() {
     return GestureDetector(
       child: Center(
-        child: Text(
-          '轻触重试',
-          style: TextStyle(color: Colors.black54, fontSize: 15),
-        ),
+        child: Text('轻触重试', style: TextStyle(color: Colors.black54, fontSize: 15)),
       ),
       onTap: () {
         _activityBloc.add(Refresh());
@@ -214,10 +199,7 @@ class _RecommendState extends State<Recommend>
           margin: EdgeInsets.only(bottom: 60),
           padding: EdgeInsets.only(top: 30),
           alignment: Alignment.bottomCenter,
-          child: Text(
-            '—————— 我也是有底线的 ——————',
-            style: TextStyle(color: Colors.black45, fontSize: 13),
-          ),
+          child: Text('—————— 我也是有底线的 ——————', style: TextStyle(color: Colors.black45, fontSize: 13)),
         ),
         onTap: () {
           _isTop = false;
@@ -242,12 +224,7 @@ class _RecommendState extends State<Recommend>
               slivers: <Widget>[
                 SliverToBoxAdapter(
                   child: Column(
-                    children: [
-                      SizedBox(
-                        height: _activityContentHeight,
-                        child: buildActivityContent(activitys, state),
-                      ),
-                    ],
+                    children: [SizedBox(height: _activityContentHeight, child: buildActivityContent(activitys, state))],
                   ),
                 ),
                 SliverToBoxAdapter(child: maxWidget),
@@ -274,9 +251,7 @@ class _RecommendState extends State<Recommend>
       crossAxisCount: 2,
       mainAxisSpacing: 0.0,
       crossAxisSpacing: 0.0,
-      itemCount: state.hasReachedMax!
-          ? state.activitys!.length
-          : state.activitys!.length + 1,
+      itemCount: state.hasReachedMax! ? state.activitys!.length : state.activitys!.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == activitys.length) {
           _lock = false; //加载完毕后解锁，允许再次加载
@@ -292,21 +267,13 @@ class _RecommendState extends State<Recommend>
   }
 
   //瀑布流内容
-  Widget buildActivityItem(
-    Activity activity,
-    int state,
-    List<Activity> temActivitys,
-  ) {
+  Widget buildActivityItem(Activity activity, int state, List<Activity> temActivitys) {
     Widget widgetMoney = Row(
       children: [
         Text("￥", style: TextStyle(color: Colors.red, fontSize: 10)),
         Text(
           activity.mincost.toString(),
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -314,16 +281,14 @@ class _RecommendState extends State<Recommend>
     return ShareView(
       activityHomeLongPress: (bool isNotInterests) async {
         if (isNotInterests) {
-          List<int> notinteresteduids = await _imHelper.getNotInteresteduids(
-            Global.profile.user!.uid,
-          );
+          List<int> notinteresteduids = await _imHelper.getNotInteresteduids(Global.profile.user!.uid);
           List<Activity> emptyList = [];
           for (var e in temActivitys) {
             emptyList.add(e);
           }
 
           for (var e in emptyList) {
-            if (notinteresteduids.contains(e.user!.uid)) {
+            if (e.user != null && notinteresteduids.contains(e.user!.uid)) {
               temActivitys.remove(e);
             }
           }
@@ -332,15 +297,11 @@ class _RecommendState extends State<Recommend>
         }
       },
       activityHomeOnTap: () {
-        Navigator.pushNamed(
-          context,
-          '/ActivityInfo',
-          arguments: {"actid": activity.actid},
-        ).then((val) {});
+        Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": activity.actid}).then((val) {});
       },
       sharedtype: "0",
       actid: activity.actid,
-      createuid: activity.user!.uid,
+      createuid: activity.user?.uid ?? 0,
       contentid: activity.actid,
       content: activity.content,
       image: activity.coverimg,
@@ -354,20 +315,17 @@ class _RecommendState extends State<Recommend>
               height: getImageWH(activity),
               decoration: BoxDecoration(
                 color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      '${activity.coverimg}?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80', //缩放压缩
+                  imageUrl: _getOptimizedImageUrl(activity.coverimg),
                   fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[300],
+                    child: Icon(Icons.image_not_supported, color: Colors.grey[600]),
+                  ),
                 ),
               ),
             ),
@@ -379,9 +337,7 @@ class _RecommendState extends State<Recommend>
                 activity.content,
                 style: TextStyle(
                   fontSize: 12,
-                  color: activity.user!.usertype == 99
-                      ? Colors.red
-                      : Colors.black,
+                  color: (activity.user?.usertype ?? 0) == 99 ? Colors.red : Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
                 maxLines: 2,
@@ -418,15 +374,15 @@ class _RecommendState extends State<Recommend>
                   NoCacheClipRRectOhterHeadImage(
                     width: 17,
                     cir: 50,
-                    imageUrl: activity.user!.profilepicture!,
-                    uid: activity.user!.uid,
-                    // maxRadius: 40.0,
+                    imageUrl: activity.user?.profilepicture ?? "",
+                    uid: activity.user?.uid ?? 0,
+                    // 注意: 如果头像 URL 无法访问,会自动显示默认头像
                   ),
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.only(left: 5),
                       child: Text(
-                        activity.user!.username,
+                        activity.user?.username ?? "用户",
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -447,7 +403,7 @@ class _RecommendState extends State<Recommend>
     return Row(
       children: <Widget>[
         Text(
-          "${activity.joinnum! + 1}人想参加",
+          "${(activity.joinnum ?? 0) + 1}人想参加",
           style: TextStyle(fontSize: 12, color: Colors.black54),
           overflow: TextOverflow.ellipsis,
         ),
@@ -457,9 +413,7 @@ class _RecommendState extends State<Recommend>
 
   //加载中图标
   Widget buildLoading() {
-    return CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-    );
+    return CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor));
   }
 
   //瀑布流内容高度
@@ -475,17 +429,33 @@ class _RecommendState extends State<Recommend>
       }
     }
     _activityContentHeight =
-        (_leftHeight >= _rigthHeight ? _leftHeight : _rigthHeight) +
-        _categoryBarHeight; //最后取左右两边的最大值作为瀑布组件的高,再加上分类的高
+        (_leftHeight >= _rigthHeight ? _leftHeight : _rigthHeight) + _categoryBarHeight; //最后取左右两边的最大值作为瀑布组件的高,再加上分类的高
   }
 
   //计算图片高度和宽度
   double getImageWH(Activity activity) {
-    double width = double.parse(activity.coverimgwh.split(',')[0]);
-    double height = double.parse(activity.coverimgwh.split(',')[1]);
-    double ratio = width / height; //宽高比
-    double retheight = (_pageWidth) / ratio;
-    if (retheight > 200) retheight = 200;
-    return retheight; //图片缩放高度
+    try {
+      String separator = activity.coverimgwh.contains('x') ? 'x' : ',';
+      double width = double.parse(activity.coverimgwh.split(separator)[0]);
+      double height = double.parse(activity.coverimgwh.split(separator)[1]);
+      double ratio = width / height; //宽高比
+      double retheight = (_pageWidth) / ratio;
+      if (retheight > 200) retheight = 200;
+      return retheight; //图片缩放高度
+    } catch (e) {
+      return 150.0; // 默认高度
+    }
+  }
+
+  // 获取优化后的图片 URL,只对 OSS 图片添加处理参数
+  String _getOptimizedImageUrl(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) return '';
+
+    // 只对阿里云 OSS 图片添加处理参数
+    if (imageUrl.contains('aliyuncs.com') || imageUrl.contains('aliyun')) {
+      return '$imageUrl?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80';
+    }
+
+    return imageUrl;
   }
 }

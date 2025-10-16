@@ -69,10 +69,7 @@ class ImHelper {
             print("更新群信息 ------------------------------");
           }
         } else {
-          await dbClient.insert(
-            TableHelper.im_group_relation,
-            groupRelation.toMap(),
-          );
+          await dbClient.insert(TableHelper.im_group_relation, groupRelation.toMap());
           result++;
         }
       }
@@ -81,9 +78,7 @@ class ImHelper {
   }
 
   ///订单过期调用，和上面那个类似就是不插入
-  Future<int> saveGroupRelationOrderExpiration(
-    List<GroupRelation>? grouprelations,
-  ) async {
+  Future<int> saveGroupRelationOrderExpiration(List<GroupRelation>? grouprelations) async {
     var dbClient = await _sql.db;
     var result = 0;
     List<String> timelineIds = [];
@@ -93,11 +88,10 @@ class ImHelper {
         timelineIds.add(groupRelation.timeline_id);
       }
       //服务器与本地群不匹配，这种情况需要把本地群数据删除，可能是用户未付款退出了。标记本地可以删除，用户进入聊天页面后提示无法发消息
-      List<GroupRelation>? localGrouprelations =
-          await getGroupRelationByRelationtype(
-            Global.profile.user!.uid.toString(),
-            0,
-          );
+      List<GroupRelation>? localGrouprelations = await getGroupRelationByRelationtype(
+        Global.profile.user!.uid.toString(),
+        0,
+      );
       if (localGrouprelations != null && localGrouprelations.isNotEmpty) {
         for (GroupRelation local in localGrouprelations) {
           if (!timelineIds.contains(local.timeline_id)) {
@@ -113,10 +107,7 @@ class ImHelper {
   }
 
   ///获取群成员
-  Future<void> saveGroupMemberRelation(
-    List<User> users,
-    String timelineId,
-  ) async {
+  Future<void> saveGroupMemberRelation(List<User> users, String timelineId) async {
     var dbClient = await _sql.db;
     var result = 0;
 
@@ -127,22 +118,18 @@ class ImHelper {
       );
 
       for (User user in users) {
-        await dbClient
-            .insert(TableHelper.im_groupandcommunity_member_relation, {
-              "timeline_id": timelineId,
-              "uid": user.uid,
-              "username": user.username,
-              "profilepicture": user.profilepicture,
-            });
+        await dbClient.insert(TableHelper.im_groupandcommunity_member_relation, {
+          "timeline_id": timelineId,
+          "uid": user.uid,
+          "username": user.username,
+          "profilepicture": user.profilepicture,
+        });
       }
     }
   }
 
   //删除群成员
-  Future<void> delGroupMemberRelation(
-    List<User> users,
-    String timelineId,
-  ) async {
+  Future<void> delGroupMemberRelation(List<User> users, String timelineId) async {
     var dbClient = await _sql.db;
 
     if (users.isNotEmpty) {
@@ -156,10 +143,7 @@ class ImHelper {
   }
 
   //更新relation
-  Future<void> updateGroupRelation(
-    String oldupdatetime,
-    String timelineId,
-  ) async {
+  Future<void> updateGroupRelation(String oldupdatetime, String timelineId) async {
     var dbClient = await _sql.db;
 
     await dbClient.rawUpdate(
@@ -172,10 +156,10 @@ class ImHelper {
   Future<void> updateGroupRelationLock(int locked, String timelineId) async {
     var dbClient = await _sql.db;
 
-    await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.im_group_relation} SET locked = ? WHERE timeline_id = ? ',
-      [locked, timelineId],
-    );
+    await dbClient.rawUpdate('UPDATE ${TableHelper.im_group_relation} SET locked = ? WHERE timeline_id = ? ', [
+      locked,
+      timelineId,
+    ]);
   }
 
   //更新relation
@@ -226,9 +210,7 @@ class ImHelper {
         "content": "@安全活动规范@",
         "uid": Global.profile.user!.uid,
         "contenttype": 0,
-        "send_time": CommonUtil.getCustomTime(
-          DateTime.now().add(Duration(seconds: 1)),
-        ),
+        "send_time": CommonUtil.getCustomTime(DateTime.now().add(Duration(seconds: 1))),
         "serdername": "system",
       });
     }
@@ -248,17 +230,13 @@ class ImHelper {
             "WHERE sequence_id=${timelinesync.sequence_id} and uid=${Global.profile.user!.uid} and timeline_id='${timelinesync.timeline_id}'",
           ),
         );
-        if (tem == null || tem == 0)
-          if (await dbClient.insert(
-                TableHelper.im_timeline_sync_relation,
-                timelinesync.toMap(),
-              ) >
-              0) {
+        if (tem == null || tem == 0) {
+          if (await dbClient.insert(TableHelper.im_timeline_sync_relation, timelinesync.toMap()) > 0) {
             result++;
           }
+        }
       }
     }
-
     return result;
   }
 
@@ -271,11 +249,7 @@ class ImHelper {
       for (TimeLineSync timelinesync in timelinesync) {
         timelinesync.sequence_id = -DateTime.now().millisecondsSinceEpoch;
 
-        if (await dbClient.insert(
-              TableHelper.im_timeline_sync_relation,
-              timelinesync.toMap(),
-            ) >
-            0) {
+        if (await dbClient.insert(TableHelper.im_timeline_sync_relation, timelinesync.toMap()) > 0) {
           result++;
         }
       }
@@ -289,10 +263,7 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    result = await dbClient.insert(
-      TableHelper.im_timeline_sync_relation,
-      timelinesync.toMap(),
-    );
+    result = await dbClient.insert(TableHelper.im_timeline_sync_relation, timelinesync.toMap());
 
     return result;
   }
@@ -304,12 +275,7 @@ class ImHelper {
     //初始化一条安全交易规范提示
     result = await dbClient.rawUpdate(
       'delete from ${TableHelper.im_timeline_sync_relation}  where timeline_id = ? and sequence_id=?  and uid=? and content=?',
-      [
-        timelinesync.timeline_id,
-        timelinesync.sequence_id,
-        Global.profile.user!.uid,
-        timelinesync.content,
-      ],
+      [timelinesync.timeline_id, timelinesync.sequence_id, Global.profile.user!.uid, timelinesync.content],
     );
 
     return result;
@@ -348,10 +314,10 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    result = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.im_group_relation} set newmsg=? where source_id=?',
-      [content, sourceId],
-    );
+    result = await dbClient.rawUpdate('UPDATE ${TableHelper.im_group_relation} set newmsg=? where source_id=?', [
+      content,
+      sourceId,
+    ]);
 
     return result;
   }
@@ -389,10 +355,7 @@ class ImHelper {
   }
 
   ///查询GroupRelation,分类
-  Future<List<GroupRelation>?> getGroupRelationByRelationtype(
-    String uid,
-    int relationtype,
-  ) async {
+  Future<List<GroupRelation>?> getGroupRelationByRelationtype(String uid, int relationtype) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.im_group_relation} "
@@ -411,10 +374,7 @@ class ImHelper {
   }
 
   //获取群聊关系
-  Future<GroupRelation?> getGroupRelationByGroupid(
-    int uid,
-    String timelineId,
-  ) async {
+  Future<GroupRelation?> getGroupRelationByGroupid(int uid, String timelineId) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.im_group_relation} WHERE  timeline_id='$timelineId'  "
@@ -447,12 +407,7 @@ class ImHelper {
   }
 
   //查询timeLineSync
-  Future<List<TimeLineSync>> getTimeLineSync(
-    int uid,
-    int current,
-    int offset,
-    String timelineId,
-  ) async {
+  Future<List<TimeLineSync>> getTimeLineSync(int uid, int current, int offset, String timelineId) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.im_timeline_sync_relation} where  uid=$uid and timeline_id='$timelineId' "
@@ -543,8 +498,6 @@ class ImHelper {
       print(count);
     }
     return count;
-
-    return count;
   }
   //删除聊天记录
 
@@ -623,12 +576,7 @@ class ImHelper {
     var result = 0;
     result = await dbClient.rawUpdate(
       'UPDATE ${TableHelper.im_timeline_sync_relation} SET localpath = ? WHERE sequence_id = ? and timeline_id = ? and uid=?',
-      [
-        timelinesync.localpath,
-        timelinesync.sequence_id,
-        timelinesync.timeline_id,
-        Global.profile.user!.uid,
-      ],
+      [timelinesync.localpath, timelinesync.sequence_id, timelinesync.timeline_id, Global.profile.user!.uid],
     );
     if (Global.isInDebugMode) {
       print(result);
@@ -654,10 +602,7 @@ class ImHelper {
   Future<int> saveActivityState(String actid, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.activity_state_table, {
-      "actid": actid,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.activity_state_table, {"actid": actid, "uid": uid});
     if (Global.isInDebugMode) {
       print('ActivityLike num $result');
     }
@@ -693,11 +638,7 @@ class ImHelper {
   }
 
   //保存GoodPricelike
-  Future<int> saveGoodPriceState(
-    String goodpriceid,
-    int uid,
-    int status,
-  ) async {
+  Future<int> saveGoodPriceState(String goodpriceid, int uid, int status) async {
     var dbClient = await _sql.db;
     var result = 0;
     result = await dbClient.insert(TableHelper.goodprice_state_table, {
@@ -724,11 +665,7 @@ class ImHelper {
   }
 
   //查询like
-  Future<bool> selGoodPriceState(
-    String goodpriceid,
-    int uid,
-    int status,
-  ) async {
+  Future<bool> selGoodPriceState(String goodpriceid, int uid, int status) async {
     bool ret = false;
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
@@ -744,12 +681,7 @@ class ImHelper {
   }
 
   //查询like0bug, 1suggest, 2moment
-  Future<int> selBugAndSuggestState(
-    String actid,
-    int uid,
-    int type,
-    Function fun,
-  ) async {
+  Future<int> selBugAndSuggestState(String actid, int uid, int type, Function fun) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.bugsuggest_state_table}"
@@ -767,11 +699,7 @@ class ImHelper {
   Future<int> saveBugSuggestState(String actid, int uid, int type) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.bugsuggest_state_table, {
-      "actid": actid,
-      "uid": uid,
-      "type": type,
-    });
+    result = await dbClient.insert(TableHelper.bugsuggest_state_table, {"actid": actid, "uid": uid, "type": type});
     if (Global.isInDebugMode) {
       print('ActivityLike num $result');
     }
@@ -792,12 +720,7 @@ class ImHelper {
   }
 
   //查询like
-  Future<int> selBugSuggestState(
-    String actid,
-    int uid,
-    int type,
-    Function fun,
-  ) async {
+  Future<int> selBugSuggestState(String actid, int uid, int type, Function fun) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.bugsuggest_state_table}"
@@ -849,28 +772,23 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    result = await dbClient
-        .insert(TableHelper.activity_collection_state_table, {
-          "actid": activity.actid,
-          "peoplenum": activity.peoplenum,
-          "content": activity.content,
-          "coverimg": activity.coverimg,
-          "uid": activity.user!.uid,
-          "actprovince": activity.actprovince,
-          "actcity": activity.actcity,
-          "coverimgwh": activity.coverimgwh,
-          "username": activity.user!.username,
-          "profilepicture": activity.user!.profilepicture,
-          "mincost": activity.goodPiceModel == null
-              ? activity.mincost
-              : activity.goodPiceModel!.mincost,
-          "lat": activity.lat,
-          "lng": activity.lng,
-          "maxcost": activity.goodPiceModel == null
-              ? activity.maxcost
-              : activity.goodPiceModel!.maxcost,
-          "localuid": uid,
-        });
+    result = await dbClient.insert(TableHelper.activity_collection_state_table, {
+      "actid": activity.actid,
+      "peoplenum": activity.peoplenum,
+      "content": activity.content,
+      "coverimg": activity.coverimg,
+      "uid": activity.user!.uid,
+      "actprovince": activity.actprovince,
+      "actcity": activity.actcity,
+      "coverimgwh": activity.coverimgwh,
+      "username": activity.user!.username,
+      "profilepicture": activity.user!.profilepicture,
+      "mincost": activity.goodPiceModel == null ? activity.mincost : activity.goodPiceModel!.mincost,
+      "lat": activity.lat,
+      "lng": activity.lng,
+      "maxcost": activity.goodPiceModel == null ? activity.maxcost : activity.goodPiceModel!.maxcost,
+      "localuid": uid,
+    });
     if (Global.isInDebugMode) {
       print('ActivityCollection num $result');
     }
@@ -887,9 +805,7 @@ class ImHelper {
     );
     List<Activity> activitys = [];
     for (var element in maps) {
-      activitys.add(
-        Activity.fromMapCollectionTable(element as Map<String, dynamic>),
-      );
+      activitys.add(Activity.fromMapCollectionTable(element as Map<String, dynamic>));
     }
     return activitys;
   }
@@ -927,10 +843,7 @@ class ImHelper {
   Future<int> saveProductCollectionState(int productid, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.product_collection_state_table, {
-      "productid": productid,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.product_collection_state_table, {"productid": productid, "uid": uid});
     if (Global.isInDebugMode) {
       print('ProductCollection num $result');
     }
@@ -951,11 +864,7 @@ class ImHelper {
   }
 
   //查询productcollection
-  Future<int> selProductCollectionState(
-    int productid,
-    int uid,
-    Function fun,
-  ) async {
+  Future<int> selProductCollectionState(int productid, int uid, Function fun) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.product_collection_state_table}"
@@ -970,45 +879,41 @@ class ImHelper {
   }
 
   //保存GoodPricecollection
-  Future<int> saveGoodPriceCollectionState(
-    GoodPiceModel goodPiceModel,
-    int uid,
-  ) async {
+  Future<int> saveGoodPriceCollectionState(GoodPiceModel goodPiceModel, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient
-        .insert(TableHelper.goodprice_collection_state_table, {
-          "goodpriceid": goodPiceModel.goodpriceid,
-          "title": goodPiceModel.title,
-          "content": goodPiceModel.content,
-          "category": goodPiceModel.category,
-          "brand": goodPiceModel.brand,
-          "mincost": goodPiceModel.mincost,
-          "maxcost": goodPiceModel.maxcost,
-          "discount": goodPiceModel.discount,
-          "endtime": goodPiceModel.endtime,
-          "createtime": goodPiceModel.createtime,
-          "albumpics": goodPiceModel.albumpics,
-          "pic": goodPiceModel.pic,
-          "collectionnum": goodPiceModel.collectionnum,
-          "province": goodPiceModel.province,
-          "city": goodPiceModel.city,
-          "uid": goodPiceModel.uid,
-          "likenum": goodPiceModel.likenum,
-          "unlikenum": goodPiceModel.unlikenum,
-          "productstatus": goodPiceModel.productstatus,
-          "satisfactionrate": goodPiceModel.satisfactionrate,
-          "activitycount": goodPiceModel.activitycount,
-          "lat": goodPiceModel.lat,
-          "lng": goodPiceModel.lng,
-          "address": goodPiceModel.address,
-          "addresstitle": goodPiceModel.addresstitle,
-          "commentnum": goodPiceModel.commentnum,
-          "tag": goodPiceModel.tag,
-          "username": goodPiceModel.username,
-          "profilepicture": goodPiceModel.profilepicture,
-          "localuid": uid,
-        });
+    result = await dbClient.insert(TableHelper.goodprice_collection_state_table, {
+      "goodpriceid": goodPiceModel.goodpriceid,
+      "title": goodPiceModel.title,
+      "content": goodPiceModel.content,
+      "category": goodPiceModel.category,
+      "brand": goodPiceModel.brand,
+      "mincost": goodPiceModel.mincost,
+      "maxcost": goodPiceModel.maxcost,
+      "discount": goodPiceModel.discount,
+      "endtime": goodPiceModel.endtime,
+      "createtime": goodPiceModel.createtime,
+      "albumpics": goodPiceModel.albumpics,
+      "pic": goodPiceModel.pic,
+      "collectionnum": goodPiceModel.collectionnum,
+      "province": goodPiceModel.province,
+      "city": goodPiceModel.city,
+      "uid": goodPiceModel.uid,
+      "likenum": goodPiceModel.likenum,
+      "unlikenum": goodPiceModel.unlikenum,
+      "productstatus": goodPiceModel.productstatus,
+      "satisfactionrate": goodPiceModel.satisfactionrate,
+      "activitycount": goodPiceModel.activitycount,
+      "lat": goodPiceModel.lat,
+      "lng": goodPiceModel.lng,
+      "address": goodPiceModel.address,
+      "addresstitle": goodPiceModel.addresstitle,
+      "commentnum": goodPiceModel.commentnum,
+      "tag": goodPiceModel.tag,
+      "username": goodPiceModel.username,
+      "profilepicture": goodPiceModel.profilepicture,
+      "localuid": uid,
+    });
     if (Global.isInDebugMode) {
       print('goodprice_collection_state_table num $result');
     }
@@ -1031,11 +936,7 @@ class ImHelper {
   }
 
   //查询productcollection
-  Future<String> selGoodPriceCollectionState(
-    String goodpriceid,
-    int uid,
-    Function fun,
-  ) async {
+  Future<String> selGoodPriceCollectionState(String goodpriceid, int uid, Function fun) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.goodprice_collection_state_table}"
@@ -1092,11 +993,7 @@ class ImHelper {
   }
 
   //查询collection
-  Future<int> selActivityCollectionState(
-    String actid,
-    int uid,
-    Function fun,
-  ) async {
+  Future<int> selActivityCollectionState(String actid, int uid, Function fun) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.activity_collection_state_table}"
@@ -1114,10 +1011,7 @@ class ImHelper {
   Future<int> saveActivityCommentState(String commentid, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.activity_comment_state_table, {
-      "commentid": commentid,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.activity_comment_state_table, {"commentid": commentid, "uid": uid});
     if (Global.isInDebugMode) {
       print('save comment num $result');
     }
@@ -1156,10 +1050,7 @@ class ImHelper {
   }
 
   //查询CommentState
-  Future<List<String>> selActivityCommentState(
-    String commentid,
-    int uid,
-  ) async {
+  Future<List<String>> selActivityCommentState(String commentid, int uid) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.activity_comment_state_table}"
@@ -1176,10 +1067,7 @@ class ImHelper {
   Future<int> saveGoodPriceCommentState(String commentid, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.goodprice_comment_state_table, {
-      "commentid": commentid,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.goodprice_comment_state_table, {"commentid": commentid, "uid": uid});
     if (Global.isInDebugMode) {
       print('save comment num $result');
     }
@@ -1218,10 +1106,7 @@ class ImHelper {
   }
 
   //查询CommentState
-  Future<List<String>> selGoodPriceCommentState(
-    String commentid,
-    int uid,
-  ) async {
+  Future<List<String>> selGoodPriceCommentState(String commentid, int uid) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.goodprice_comment_state_table}"
@@ -1235,17 +1120,14 @@ class ImHelper {
   }
 
   //保存CommentState
-  Future<int> saveBugAndSuggestCommentState(
-    String commentid,
-    int uid,
-    int type,
-  ) async {
+  Future<int> saveBugAndSuggestCommentState(String commentid, int uid, int type) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(
-      TableHelper.activity_bugsuggestcomment_state_table,
-      {"commentid": commentid, "uid": uid, "type": type},
-    );
+    result = await dbClient.insert(TableHelper.activity_bugsuggestcomment_state_table, {
+      "commentid": commentid,
+      "uid": uid,
+      "type": type,
+    });
     if (Global.isInDebugMode) {
       print('save comment num $result');
     }
@@ -1269,11 +1151,7 @@ class ImHelper {
   }
 
   //删除CommentState0 bug 1suggest 2moment
-  Future<int> delBugAndSuggestCommentState(
-    String commentid,
-    int uid,
-    int type,
-  ) async {
+  Future<int> delBugAndSuggestCommentState(String commentid, int uid, int type) async {
     var dbClient = await _sql.db;
     var result = 0;
     result = await dbClient.rawUpdate(
@@ -1288,11 +1166,7 @@ class ImHelper {
   }
 
   //查询CommentState0 bug 1suggest 2moment
-  Future<List<String>> selBugAndSuggestCommentState(
-    String commentid,
-    int uid,
-    int type,
-  ) async {
+  Future<List<String>> selBugAndSuggestCommentState(String commentid, int uid, int type) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.activity_bugsuggestcomment_state_table}"
@@ -1309,10 +1183,7 @@ class ImHelper {
   Future<int> saveActivityEvaluateState(String evaluateid, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.activity_evaluate_state_table, {
-      "evaluateid": evaluateid,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.activity_evaluate_state_table, {"evaluateid": evaluateid, "uid": uid});
     if (Global.isInDebugMode) {
       print('save evaluateid num $result');
     }
@@ -1351,10 +1222,7 @@ class ImHelper {
   }
 
   //查询ActivityEvaluateState
-  Future<List<String>> selActivityEvaluateState(
-    String evaluateid,
-    int uid,
-  ) async {
+  Future<List<String>> selActivityEvaluateState(String evaluateid, int uid) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.activity_evaluate_state_table}"
@@ -1379,10 +1247,7 @@ class ImHelper {
   }
 
   //保存回复内容
-  Future<int> saveReplys(
-    List<CommentReply> commentreplys,
-    ReplyMsgType type,
-  ) async {
+  Future<int> saveReplys(List<CommentReply> commentreplys, ReplyMsgType type) async {
     var dbClient = await _sql.db;
     var result = 0;
 
@@ -1394,11 +1259,7 @@ class ImHelper {
         ),
       );
       if (tem == 0)
-        if (await dbClient.insert(
-              TableHelper.t_Comment_Reply,
-              commentReply.toMap(type),
-            ) >
-            0) {
+        if (await dbClient.insert(TableHelper.t_Comment_Reply, commentReply.toMap(type)) > 0) {
           result++;
         }
     }
@@ -1519,8 +1380,7 @@ class ImHelper {
         ),
       );
       if (tem == 0)
-        if (await dbClient.insert(TableHelper.t_Follow, follow.toMap(follow)) >
-            0) {
+        if (await dbClient.insert(TableHelper.t_Follow, follow.toMap(follow)) > 0) {
           result++;
         }
     }
@@ -1579,10 +1439,7 @@ class ImHelper {
   }
 
   //获取本地未读系统通知
-  Future<int> getSysNoticeCount(
-    ReplyMsgType replyMsgType, {
-    Function? callBack,
-  }) async {
+  Future<int> getSysNoticeCount(ReplyMsgType replyMsgType, {Function? callBack}) async {
     var dbClient = await _sql.db;
     int? result = Sqflite.firstIntValue(
       await dbClient.rawQuery(
@@ -1657,10 +1514,7 @@ class ImHelper {
   Future<int> saveFollowState(int follow, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.insert(TableHelper.community_follow_state_table, {
-      "follow": follow,
-      "uid": uid,
-    });
+    result = await dbClient.insert(TableHelper.community_follow_state_table, {"follow": follow, "uid": uid});
     if (Global.isInDebugMode) {
       print('save num $result');
     }
@@ -1685,10 +1539,9 @@ class ImHelper {
   //本地回复标记成已读
   Future<int> updateNewMemberNoticeRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.user_member_state_table} SET isread=1 WHERE touid=?',
-      [Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.user_member_state_table} SET isread=1 WHERE touid=?', [
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1700,10 +1553,9 @@ class ImHelper {
   //本地回复标记成已读
   Future<int> updateNewFriendNoticeRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.user_friend_state_table} SET isread=1 WHERE uid=?',
-      [Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.user_friend_state_table} SET isread=1 WHERE uid=?', [
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1715,10 +1567,9 @@ class ImHelper {
   //本地关注标记成已读
   Future<int> updateFollowedNoticeRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.t_Follow} SET isread=1 WHERE uid=?',
-      [Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.t_Follow} SET isread=1 WHERE uid=?', [
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1809,11 +1660,7 @@ class ImHelper {
       );
 
       if (tem == 0)
-        if (await dbClient.insert(
-              TableHelper.user_shared_state_table,
-              usershared.toMap(),
-            ) >
-            0) {
+        if (await dbClient.insert(TableHelper.user_shared_state_table, usershared.toMap()) > 0) {
           result++;
         }
     }
@@ -1827,10 +1674,9 @@ class ImHelper {
 
   Future<int> updateUserSharedRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.user_shared_state_table} SET isread=1 WHERE uid=?',
-      [Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.user_shared_state_table} SET isread=1 WHERE uid=?', [
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1842,10 +1688,9 @@ class ImHelper {
   //点赞已读
   Future<int> updateUserLikeRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.t_like} SET isread=1 WHERE touid=?',
-      [Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.t_like} SET isread=1 WHERE touid=?', [
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1874,10 +1719,10 @@ class ImHelper {
   //好友分享已读
   Future<void> updateSharedFriendRead() async {
     var dbClient = await _sql.db;
-    int count = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.user_shared_state_table} SET isread=? WHERE uid=?',
-      [1, Global.profile.user!.uid],
-    );
+    int count = await dbClient.rawUpdate('UPDATE ${TableHelper.user_shared_state_table} SET isread=? WHERE uid=?', [
+      1,
+      Global.profile.user!.uid,
+    ]);
 
     if (Global.isInDebugMode) {
       print(count);
@@ -1905,10 +1750,10 @@ class ImHelper {
   Future<int> updateCommunityMember(int id) async {
     var dbClient = await _sql.db;
     var result = 0;
-    result = await dbClient.rawUpdate(
-      'UPDATE ${TableHelper.user_member_state_table} SET status = ? where id=? ',
-      [1, id],
-    );
+    result = await dbClient.rawUpdate('UPDATE ${TableHelper.user_member_state_table} SET status = ? where id=? ', [
+      1,
+      id,
+    ]);
 
     return result;
   }
@@ -2045,10 +1890,7 @@ class ImHelper {
   }
 
   //保存未评论活动,如果有未评论的需要全部取回
-  Future<int> saveUnEvaluateActivity(
-    List<ActivityEvaluate> activityEvaluates,
-    int uid,
-  ) async {
+  Future<int> saveUnEvaluateActivity(List<ActivityEvaluate> activityEvaluates, int uid) async {
     var dbClient = await _sql.db;
     var result = 0;
     //先删除所有的活动,activity中的status是isevaluate的状态
@@ -2117,11 +1959,7 @@ class ImHelper {
   }
 
   //获取为评论活动
-  Future<List<ActivityEvaluate>?> getUnEvaluateActivity(
-    int current,
-    int offset,
-    int evaluatestatus,
-  ) async {
+  Future<List<ActivityEvaluate>?> getUnEvaluateActivity(int current, int offset, int evaluatestatus) async {
     var dbClient = await _sql.db;
     List<Map> maps = await dbClient.rawQuery(
       "SELECT * FROM ${TableHelper.unevaluate_activity} where  "
@@ -2180,10 +2018,10 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    await dbClient.rawUpdate(
-      'delete from ${TableHelper.user_order_state_table}  where uid = ? and ordertype = ?',
-      [uid, ordertype],
-    );
+    await dbClient.rawUpdate('delete from ${TableHelper.user_order_state_table}  where uid = ? and ordertype = ?', [
+      uid,
+      ordertype,
+    ]);
 
     result = await dbClient.insert(TableHelper.user_order_state_table, {
       "uid": uid,
@@ -2199,15 +2037,12 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    await dbClient.rawUpdate(
-      'delete from ${TableHelper.user_orderunevaluate_state_table}  where uid = ?',
-      [uid],
-    );
+    await dbClient.rawUpdate('delete from ${TableHelper.user_orderunevaluate_state_table}  where uid = ?', [uid]);
 
-    result = await dbClient.insert(
-      TableHelper.user_orderunevaluate_state_table,
-      {"uid": uid, "orderunevaluatecount": count},
-    );
+    result = await dbClient.insert(TableHelper.user_orderunevaluate_state_table, {
+      "uid": uid,
+      "orderunevaluatecount": count,
+    });
 
     return result;
   }
@@ -2330,10 +2165,7 @@ class ImHelper {
   }
 
   //保存不感兴趣
-  Future<int> saveGoodPriceNotInteresteduids(
-    int uid,
-    int goodpricenotinteresteduid,
-  ) async {
+  Future<int> saveGoodPriceNotInteresteduids(int uid, int goodpricenotinteresteduid) async {
     var dbClient = await _sql.db;
     var result = 0;
 
@@ -2346,10 +2178,7 @@ class ImHelper {
   }
 
   //取消不感兴趣
-  Future<int> delGoodPriceNotInteresteduids(
-    int uid,
-    int goodpricenotinteresteduid,
-  ) async {
+  Future<int> delGoodPriceNotInteresteduids(int uid, int goodpricenotinteresteduid) async {
     var dbClient = await _sql.db;
     var result = 0;
 
@@ -2386,10 +2215,7 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    result = await dbClient.insert(TableHelper.user_blacklist, {
-      "uid": uid,
-      "blacklistuid": blacklistuid,
-    });
+    result = await dbClient.insert(TableHelper.user_blacklist, {"uid": uid, "blacklistuid": blacklistuid});
 
     return result;
   }
@@ -2399,10 +2225,10 @@ class ImHelper {
     var dbClient = await _sql.db;
     var result = 0;
 
-    await dbClient.rawUpdate(
-      'delete from ${TableHelper.user_blacklist}  where uid = ? and blacklistuid = ?',
-      [uid, blacklistuid],
-    );
+    await dbClient.rawUpdate('delete from ${TableHelper.user_blacklist}  where uid = ? and blacklistuid = ?', [
+      uid,
+      blacklistuid,
+    ]);
 
     return result;
   }

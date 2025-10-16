@@ -3,28 +3,33 @@ import 'package:flutter/material.dart';
 
 import '../global.dart';
 
+// 辅助函数：只对阿里云 OSS 图片添加处理参数
+String getOptimizedImageUrl(String imageUrl, String ossParams) {
+  if (imageUrl.isEmpty) return imageUrl;
+
+  // 只对阿里云 OSS 图片添加处理参数
+  if (imageUrl.contains('aliyuncs.com') || imageUrl.contains('aliyun')) {
+    return '$imageUrl?x-oss-process=$ossParams';
+  }
+
+  return imageUrl;
+}
+
 //圆形头像，跳转到用户信息,使用内存缓存
 class NoCacheCircleHeadImage extends StatelessWidget {
   final String imageUrl;
   final double width;
   final int imgwidthxp;
   final int uid;
-  NoCacheCircleHeadImage({
-    super.key,
-    this.imageUrl = "",
-    this.width = 45,
-    this.imgwidthxp = 130,
-    this.uid = 0,
-  });
+  NoCacheCircleHeadImage({super.key, this.imageUrl = "", this.width = 45, this.imgwidthxp = 130, this.uid = 0});
 
   @override
   Widget build(BuildContext context) {
     String temimageUrl = "";
-    if (uid != 0 &&
-        (Global.profile.user != null && Global.profile.user!.uid == uid)) {
+    if (uid != 0 && (Global.profile.user != null && Global.profile.user!.uid == uid)) {
       temimageUrl = imageUrl;
     } else {
-      temimageUrl = '$imageUrl?x-oss-process=image/resize,w_300/quality,q_90';
+      temimageUrl = getOptimizedImageUrl(imageUrl, 'image/resize,w_300/quality,q_90');
     }
 
     return GestureDetector(
@@ -40,17 +45,9 @@ class NoCacheCircleHeadImage extends StatelessWidget {
       ),
       onTap: () {
         if (Global.profile.user == null) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid != Global.profile.user!.uid) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid == Global.profile.user!.uid)
           Navigator.pushNamed(context, '/MyProfile');
       },
@@ -78,12 +75,10 @@ class NoCacheClipRRectHeadImage extends StatelessWidget {
   Widget build(BuildContext context) {
     String temimageUrl = "";
 
-    if (uid != 0 &&
-        (Global.profile.user != null && Global.profile.user!.uid == uid)) {
+    if (uid != 0 && (Global.profile.user != null && Global.profile.user!.uid == uid)) {
       temimageUrl = imageUrl;
     } else {
-      temimageUrl =
-          '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/quality,q_90';
+      temimageUrl = getOptimizedImageUrl(imageUrl, 'image/resize,m_fixed,w_300/quality,q_90');
     }
     return GestureDetector(
       child: SizedBox(
@@ -98,19 +93,11 @@ class NoCacheClipRRectHeadImage extends StatelessWidget {
       ),
       onTap: () {
         if (Global.profile.user == null) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid == Global.profile.user!.uid)
           Navigator.pushNamed(context, '/MyProfile');
         else
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
       },
     );
   }
@@ -136,20 +123,29 @@ class NoCacheClipRRectOhterHeadImage extends StatelessWidget {
   Widget build(BuildContext context) {
     String temimageUrl = "";
 
-    if (uid != 0 &&
-        (Global.profile.user != null && Global.profile.user!.uid == uid)) {
+    if (uid != 0 && (Global.profile.user != null && Global.profile.user!.uid == uid)) {
       temimageUrl = imageUrl;
     } else {
-      temimageUrl =
-          '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80';
+      temimageUrl = getOptimizedImageUrl(imageUrl, 'image/resize,m_fixed,w_300/sharpen,50/quality,q_80');
     }
     return SizedBox(
       width: width,
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(cir)),
-        child: temimageUrl.isEmpty
+        child: temimageUrl.isEmpty || imageUrl.isEmpty
             ? Image(image: AssetImage(Global.headimg))
-            : Image(image: NetworkImage(temimageUrl), fit: BoxFit.cover),
+            : Image(
+                image: NetworkImage(temimageUrl),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // 图片加载失败时使用默认头像(这是正常行为,不是错误)
+                  // print('使用默认头像,原因: $error');
+                  return ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(cir)),
+                    child: Image(image: AssetImage(Global.headimg), fit: BoxFit.cover),
+                  );
+                },
+              ),
       ),
     );
   }
@@ -180,12 +176,10 @@ class NoCacheClipRRectOhterHeadImageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     String temimageUrl = "";
 
-    if (uid != 0 &&
-        (Global.profile.user != null && Global.profile.user!.uid == uid)) {
+    if (uid != 0 && (Global.profile.user != null && Global.profile.user!.uid == uid)) {
       temimageUrl = imageUrl;
     } else {
-      temimageUrl =
-          '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80';
+      temimageUrl = getOptimizedImageUrl(imageUrl, 'image/resize,m_fixed,w_300/sharpen,50/quality,q_80');
     }
     return Container(
       height: height,
@@ -193,10 +187,7 @@ class NoCacheClipRRectOhterHeadImageContainer extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(cir),
         border: Border.all(color: Colors.white, width: borderwidth),
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: NetworkImage(temimageUrl),
-        ),
+        image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(temimageUrl)),
       ),
     );
   }
@@ -207,13 +198,7 @@ class CircleHeadImage extends StatelessWidget {
   final double width;
   final int imgwidthxp;
   final int uid;
-  CircleHeadImage({
-    super.key,
-    this.imageUrl = "",
-    this.width = 45,
-    this.imgwidthxp = 130,
-    this.uid = 0,
-  });
+  CircleHeadImage({super.key, this.imageUrl = "", this.width = 45, this.imgwidthxp = 130, this.uid = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -228,24 +213,15 @@ class CircleHeadImage extends StatelessWidget {
           child: temimageUrl.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  imageUrl:
-                      '$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  imageUrl: '$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                 ),
         ),
       ),
       onTap: () {
         if (Global.profile.user == null) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid != Global.profile.user!.uid) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid == Global.profile.user!.uid)
           Navigator.pushNamed(context, '/MyProfile');
       },
@@ -283,27 +259,18 @@ class ClipRRectHeadImage extends StatelessWidget {
           child: temimageUrl.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  imageUrl:
-                      '$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  imageUrl: '$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                   fit: BoxFit.cover,
                 ),
         ),
       ),
       onTap: () {
         if (Global.profile.user == null) {
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
         } else if (uid == Global.profile.user!.uid)
           Navigator.pushNamed(context, '/MyProfile');
         else
-          Navigator.pushNamed(
-            context,
-            '/OtherProfile',
-            arguments: {"uid": uid},
-          );
+          Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
       },
     );
   }
@@ -337,8 +304,7 @@ class ClipRRectOhterHeadImage extends StatelessWidget {
         child: temimageUrl.isEmpty
             ? Image(image: AssetImage(Global.headimg))
             : CachedNetworkImage(
-                imageUrl:
-                    '$temimageUrl?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80',
+                imageUrl: '$temimageUrl?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80',
                 fit: BoxFit.cover,
               ),
       ),
@@ -440,12 +406,7 @@ class ClipRRectOhterHeadImageContainerLocation extends StatelessWidget {
         Navigator.pushNamed(
           context,
           '/MapLocationShowNav',
-          arguments: {
-            "lat": lat,
-            "lng": lng,
-            "title": title,
-            "address": address,
-          },
+          arguments: {"lat": lat, "lng": lng, "title": title, "address": address},
         );
       },
     );
@@ -528,11 +489,7 @@ class ClipRRectOhterHeadImageContainerByWidth extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/PhotoViewImageHead',
-          arguments: {"image": temimageUrl},
-        );
+        Navigator.pushNamed(context, '/PhotoViewImageHead', arguments: {"image": temimageUrl});
       },
       child: Container(
         height: getImageWH(sourceWidth, sourceHeight),
@@ -622,8 +579,7 @@ class ClipRRectOhterHeadImageContainerByWidthNoEvent extends StatelessWidget {
 }
 
 //形状不固定按宽度的自适应
-class ClipRRectOhterHeadImageContainerByWidthNoEventNoHeight
-    extends StatelessWidget {
+class ClipRRectOhterHeadImageContainerByWidthNoEventNoHeight extends StatelessWidget {
   final String imageUrl;
   final double pagewidth;
   final int imgwidthxp;
@@ -701,11 +657,7 @@ class ClipRRectOhterHeadImageContainerByBigImg extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/PhotoViewImageHead',
-          arguments: {"image": temimageUrl},
-        );
+        Navigator.pushNamed(context, '/PhotoViewImageHead', arguments: {"image": temimageUrl});
       },
       child: Container(
         width: pagewidth,
@@ -714,9 +666,7 @@ class ClipRRectOhterHeadImageContainerByBigImg extends StatelessWidget {
           border: Border.all(color: Colors.white, width: 2),
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: CachedNetworkImageProvider(
-              '$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50',
-            ),
+            image: CachedNetworkImageProvider('$temimageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50'),
           ),
         ),
       ),
@@ -750,17 +700,12 @@ class CommunityCircleHeadImage extends StatelessWidget {
           child: imageUrl == null || imageUrl!.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  imageUrl:
-                      '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  imageUrl: '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                 ),
         ),
       ),
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/CommunityInfo',
-          arguments: {"cid": cid, "uid": uid},
-        );
+        Navigator.pushNamed(context, '/CommunityInfo', arguments: {"cid": cid, "uid": uid});
       },
     );
   }
@@ -792,10 +737,8 @@ class CommunityClipRRectHeadImage extends StatelessWidget {
           child: imageUrl == null || imageUrl!.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  errorWidget: (context, url, error) =>
-                      Image.asset('images/image-failed.png'),
-                  imageUrl:
-                      '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  errorWidget: (context, url, error) => Image.asset('images/image-failed.png'),
+                  imageUrl: '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                   fit: BoxFit.cover,
                 ),
         ),
@@ -833,20 +776,14 @@ class ActivityClipRRectHeadImage extends StatelessWidget {
           child: imageUrl == null || imageUrl!.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  imageUrl:
-                      '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  imageUrl: '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                   fit: BoxFit.cover,
-                  errorWidget: (context, url, error) =>
-                      Image.asset(Global.nullimg),
+                  errorWidget: (context, url, error) => Image.asset(Global.nullimg),
                 ),
         ),
       ),
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/ActivityInfo',
-          arguments: {"actid": actid},
-        ); //从消息列表进入活动详情，进行中或已结束
+        Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": actid}); //从消息列表进入活动详情，进行中或已结束
       },
     );
   }
@@ -879,22 +816,16 @@ class ActivityClipRRectHeadShortCacheImage extends StatelessWidget {
           child: imageUrl == null || imageUrl!.isEmpty
               ? Image(image: AssetImage(Global.headimg))
               : CachedNetworkImage(
-                  imageUrl:
-                      '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
+                  imageUrl: '$imageUrl?x-oss-process=image/resize,m_fixed,w_300/sharpen,50/quality,q_80',
                   fit: BoxFit.cover,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       LinearProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) =>
-                      Image.asset('images/image-failed.png'),
+                  errorWidget: (context, url, error) => Image.asset('images/image-failed.png'),
                 ),
         ),
       ),
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/ActivityInfo',
-          arguments: {"actid": actid},
-        ); //从消息列表进入活动详情，进行中或已结束
+        Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": actid}); //从消息列表进入活动详情，进行中或已结束
       },
     );
   }

@@ -62,10 +62,7 @@ class _OrderInfoState extends State<OrderInfo> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          '填写订单',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
+        title: Text('填写订单', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: Container(
@@ -77,20 +74,13 @@ class _OrderInfoState extends State<OrderInfo> {
                   Container(
                     margin: EdgeInsets.only(top: 10),
                     padding: EdgeInsets.only(bottom: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(9)),
-                    ),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(9))),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: 15,
-                            top: 20,
-                            bottom: 5,
-                          ),
+                          padding: EdgeInsets.only(left: 15, top: 20, bottom: 5),
                           child: Text(
                             widget.brand == "自营" ? "官方自营" : widget.brand,
                             style: TextStyle(fontSize: 16, color: Colors.black),
@@ -101,56 +91,34 @@ class _OrderInfoState extends State<OrderInfo> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              margin: EdgeInsets.only(
-                                left: 15,
-                                right: 10,
-                                top: 10,
-                              ),
+                              margin: EdgeInsets.only(left: 15, right: 10, top: 10),
                               height: 100,
                               width: 100,
-                              child: ClipRRectOhterHeadImageContainer(
-                                imageUrl: widget.pic,
-                                cir: 10,
-                              ),
+                              child: ClipRRectOhterHeadImageContainer(imageUrl: widget.pic, cir: 10),
                             ),
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                  left: 0,
-                                  right: 10,
-                                  top: 10,
-                                ),
+                                padding: EdgeInsets.only(left: 0, right: 10, top: 10),
                                 child: Column(
                                   children: [
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          child: Text(
-                                            widget.title,
-                                            style: TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
+                                          child: Text(widget.title, style: TextStyle(overflow: TextOverflow.ellipsis)),
                                         ),
                                         Container(
                                           alignment: Alignment.centerLeft,
                                           child: Text(
                                             widget.specsname,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black45,
-                                            ),
+                                            style: TextStyle(fontSize: 12, color: Colors.black45),
                                           ),
                                         ),
                                       ],
                                     ),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Container(
                                           margin: EdgeInsets.only(top: 20),
@@ -177,32 +145,18 @@ class _OrderInfoState extends State<OrderInfo> {
                   ),
                   SizedBox(height: 10),
                   Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(9)),
-                    ),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(9))),
                     child: Column(
                       children: [
                         ListTile(
                           title: Row(
                             children: [
-                              Icon(
-                                IconFont.icon_weixin,
-                                color: Color(0xff04BE02),
-                              ),
+                              Icon(IconFont.icon_weixin, color: Color(0xff04BE02)),
                               SizedBox(width: 10),
-                              Text(
-                                '微信支付',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              ),
+                              Text('微信支付', style: TextStyle(fontSize: 14, color: Colors.black87)),
                             ],
                           ),
-                          trailing: _paymenttype == 1
-                              ? Icon(Icons.check)
-                              : SizedBox.shrink(),
+                          trailing: _paymenttype == 1 ? Icon(Icons.check) : SizedBox.shrink(),
                           onTap: () {
                             setState(() {
                               _paymenttype = 1;
@@ -212,23 +166,12 @@ class _OrderInfoState extends State<OrderInfo> {
                         ListTile(
                           title: Row(
                             children: [
-                              Icon(
-                                IconFont.icon_umidd17,
-                                color: Color(0xff00A0E9),
-                              ),
+                              Icon(IconFont.icon_umidd17, color: Color(0xff00A0E9)),
                               SizedBox(width: 10),
-                              Text(
-                                '支付宝',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              ),
+                              Text('支付宝', style: TextStyle(fontSize: 14, color: Colors.black87)),
                             ],
                           ),
-                          trailing: _paymenttype == 0
-                              ? Icon(Icons.check)
-                              : SizedBox.shrink(),
+                          trailing: _paymenttype == 0 ? Icon(Icons.check) : SizedBox.shrink(),
                           onTap: () {
                             setState(() {
                               _paymenttype = 0;
@@ -265,19 +208,11 @@ class _OrderInfoState extends State<OrderInfo> {
                 children: [
                   Text(
                     '￥',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Global.defredcolor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Global.defredcolor),
                   ),
                   Text(
                     '$_saleprice',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Global.defredcolor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Global.defredcolor),
                   ),
                 ],
               ),
@@ -288,11 +223,7 @@ class _OrderInfoState extends State<OrderInfo> {
             child: TextButton(
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(Global.defredcolor),
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                ),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(9))),
               ),
               onPressed: () async {
                 if (_paymenttype == 0) {
@@ -306,11 +237,7 @@ class _OrderInfoState extends State<OrderInfo> {
               },
               child: Text(
                 '去支付',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -346,38 +273,13 @@ class _OrderInfoState extends State<OrderInfo> {
       ret = await tobias.aliPay(orderinfo['data']);
       if (ret["resultStatus"] == "9000") {
         GoodPiceModel goodPiceModel = GoodPiceModel(
-          widget.goodpriceid,
-          widget.title,
-          "",
-          0,
-          widget.brand,
-          0,
-          "",
-          "",
-          "",
-          widget.pic,
-          0,
-          0,
-          "",
-          "",
-          0,
-          "",
-          "",
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          "",
-          "",
-          "",
-          "",
-          0,
-          0,
-          0,
-          0,
-          0,
+          goodpriceid: widget.goodpriceid,
+          title: widget.title,
+          brand: widget.brand,
+          pic: widget.pic,
+          // Add other fields here as named arguments, e.g.
+          // fieldName: value,
+          // For fields you don't have, use default values or leave them out if optional.
         );
 
         Navigator.pushReplacementNamed(
@@ -423,38 +325,13 @@ class _OrderInfoState extends State<OrderInfo> {
         if (res is WeChatPaymentResponse) {
           if (res.isSuccessful) {
             GoodPiceModel goodPiceModel = GoodPiceModel(
-              widget.goodpriceid,
-              widget.title,
-              "",
-              0,
-              widget.brand,
-              0,
-              "",
-              "",
-              "",
-              widget.pic,
-              0,
-              0,
-              "",
-              "",
-              0,
-              "",
-              "",
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              "",
-              "",
-              "",
-              "",
-              0,
-              0,
-              0,
-              0,
-              0,
+              goodpriceid: widget.goodpriceid,
+              title: widget.title,
+              brand: widget.brand,
+              pic: widget.pic,
+              // Add other required named arguments here, e.g.
+              // fieldName: value,
+              // For fields you don't have, use default values or leave them out if optional.
             );
 
             Navigator.pushReplacementNamed(

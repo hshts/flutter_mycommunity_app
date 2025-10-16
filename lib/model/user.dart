@@ -4,14 +4,19 @@ part 'user.g.dart';
 
 @JsonSerializable()
 class User {
+  @JsonKey(defaultValue: 0)
   int uid;
+  @JsonKey(defaultValue: "")
   String mobile = "";
+  @JsonKey(defaultValue: "")
   String username = "";
+  @JsonKey(defaultValue: "")
   String email = "";
   String? sex;
   String? country;
   String? province;
   String? city;
+  @JsonKey(defaultValue: "")
   String signature = "";
   String? profilepicture;
   int? pwerrorcount;
@@ -26,18 +31,29 @@ class User {
 
   int? likeact;
   int? collectionact;
+  @JsonKey(defaultValue: 0)
   int likecomment;
   int? likeevaluate;
   int? collectionproduct;
+  @JsonKey(defaultValue: "")
   String aliuserid = "";
+  @JsonKey(defaultValue: "")
   String wxuserid = "";
+  @JsonKey(defaultValue: "")
   String iosuserid = "";
+  @JsonKey(defaultValue: 0)
   int likebug = 0;
+  @JsonKey(defaultValue: 0)
   int likesuggest = 0;
+  @JsonKey(defaultValue: 0)
   int likebugcomment = 0;
+  @JsonKey(defaultValue: 0)
   int likesuggestcomment = 0;
+  @JsonKey(defaultValue: 0)
   int likemoment = 0;
+  @JsonKey(defaultValue: 0)
   int likemomentcomment = 0;
+  @JsonKey(defaultValue: 0)
   int likegoodpricecomment = 0;
   String? notinteresteduids;
   String? blacklist;
@@ -47,7 +63,9 @@ class User {
   String? interest;
   String? voice;
   bool? isNew; //是否是新注册用户，用于广告监测统计
+  @JsonKey(defaultValue: 0)
   int business = 0; //是否是商户
+  @JsonKey(defaultValue: "")
   String subject; //关注的主题
 
   User(

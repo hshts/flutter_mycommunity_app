@@ -41,38 +41,38 @@ class GoodPriceInfo extends StatefulWidget {
         }
         // 回退：构造一个占位对象，避免空
         return GoodPiceModel(
-          "", // goodpriceid
-          "", // title
-          "", // content
-          0, // category
-          "", // brand
-          1, // discount
-          "", // endtime
-          "", // createtime
-          "", // albumpics
-          "", // pic
-          0, // collectionnum
-          0, // sellnum
-          "", // province
-          "", // city
-          0, // uid
-          "", // username
-          "", // profilepicture
-          0, // likenum
-          0, // unlikenum
-          0, // commentnum
-          1, // productstatus
-          0, // satisfactionrate
-          0, // activitycount
-          "", // tag
-          "", // msg
-          "", // addresstitle
-          "", // address
-          0, // lat
-          0, // lng
-          0, // mincost
-          0, // maxcost
-          0, // evaluatenum
+          goodpriceid: "",
+          title: "",
+          content: "",
+          category: 0,
+          brand: "",
+          discount: 1,
+          endtime: "",
+          createtime: "",
+          albumpics: "",
+          pic: "",
+          collectionnum: 0,
+          sellnum: 0,
+          province: "",
+          city: "",
+          uid: 0,
+          username: "",
+          profilepicture: "",
+          likenum: 0,
+          unlikenum: 0,
+          commentnum: 0,
+          productstatus: 1,
+          satisfactionrate: 0,
+          activitycount: 0,
+          tag: "",
+          msg: "",
+          addresstitle: "",
+          address: "",
+          lat: 0,
+          lng: 0,
+          mincost: 0,
+          maxcost: 0,
+          evaluatenum: 0,
         );
       })();
 }
@@ -80,17 +80,9 @@ class GoodPriceInfo extends StatefulWidget {
 class GoodPriceInfoState extends State<GoodPriceInfo> {
   late AppBarWidget appBar;
   late ScrollController scrollController;
-  late PositionedBtnWidget roundLeftBtn;
-  late PositionedBtnWidget rectLeftBtn;
-  late PositionedBtnWidget shareBtn;
-  late PositionedBtnWidget rectshareBtn;
-  late PositionedBtnWidget rectTitleBtn;
   String _message = "";
   double _pageWidth = 0;
-  bool _iscollection = false,
-      _isCollectEnter = true,
-      isMessageEnter = true,
-      _isCommentLike = true;
+  bool _iscollection = false, _isCollectEnter = true, isMessageEnter = true, _isCommentLike = true;
   List<Map<String, String>> imglist = [];
   List<Map<String, String>> albumpicslist = [];
   final GPService _gpService = GPService();
@@ -109,37 +101,20 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   @override
   void initState() {
     super.initState();
-    appBar = AppBarWidget();
     scrollController = ScrollController();
-    roundLeftBtn = PositionedBtnWidget(
-      size: 29,
-      btnTop: 25,
-      left: 20,
-      opacity: 1,
-      image: "images/fanghui.png",
-      actionFunction: () {
-        Navigator.pop(context);
-      },
-    );
-    rectLeftBtn = PositionedBtnWidget(
-      size: 29,
-      btnTop: 25,
-      left: 20,
-      opacity: 0,
-      image: "images/fanghui_black.png",
-      actionFunction: () {
-        Navigator.pop(context);
-      },
-    );
-    shareBtn = PositionedBtnWidget(
-      size: 29,
-      btnTop: 25,
-      right: 20,
-      opacity: 1,
-      content: ShareView(
+
+    // 创建带按钮的 AppBar
+    appBar = AppBarWidget(
+      leading: IconButton(
+        icon: Image.asset("images/fanghui_black.png", width: 24, height: 24, fit: BoxFit.contain),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      actions: ShareView(
         icon: IconButton(
-          icon: Image.asset("images/fenxiang.png"),
-          iconSize: 29,
+          icon: Image.asset("images/fenxiang_black.png", width: 24, height: 24, fit: BoxFit.contain),
+          iconSize: 24,
           onPressed: null,
         ),
         image: widget.goodPiceModel.pic,
@@ -149,45 +124,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         actid: widget.goodPiceModel.goodpriceid,
         createuid: widget.goodPiceModel.uid,
       ),
-      actionFunction: () {},
-    );
-    rectshareBtn = PositionedBtnWidget(
-      size: 1,
-      btnTop: 25,
-      right: 20,
-      opacity: 0,
-      content: ShareView(
-        icon: IconButton(
-          icon: Image.asset("images/fenxiang_black.png"),
-          iconSize: 1,
-          onPressed: null,
-        ),
-        image: widget.goodPiceModel.pic,
-        contentid: widget.goodPiceModel.goodpriceid,
-        content: widget.goodPiceModel.title,
-        sharedtype: "1",
-        actid: widget.goodPiceModel.goodpriceid,
-        createuid: widget.goodPiceModel.uid,
+      title: Text(
+        widget.goodPiceModel.title,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
-      actionFunction: () {},
     );
-    rectTitleBtn = PositionedBtnWidget(
-      btnTop: 36,
-      left: 0,
-      opacity: 0,
-      content: SizedBox(
-        width: 69,
-        child: Text(
-          widget.goodPiceModel.title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      actionFunction: () {
-        Navigator.pop(context);
-      },
-    );
+
     getCollectionAndComment();
   }
 
@@ -199,19 +143,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         errorCallBack,
       );
     } else {
-      _comments = await _gpService.getCommentList(
-        widget.goodPiceModel.goodpriceid,
-        0,
-        errorCallBack,
-      );
+      _comments = await _gpService.getCommentList(widget.goodPiceModel.goodpriceid, 0, errorCallBack);
     }
     sortComment(_comments, "1");
 
-    _evaluates = await _gpService.getEvaluateGoodPriceList(
-      widget.goodPiceModel.goodpriceid,
-      0,
-      errorCallBack,
-    );
+    _evaluates = await _gpService.getEvaluateGoodPriceList(widget.goodPiceModel.goodpriceid, 0, errorCallBack);
 
     if (Global.profile.user != null) {
       Map collectionstate = await _gpService.getGoodPriceCollectionState(
@@ -221,9 +157,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
       _iscollection = collectionstate["iscollection"];
     }
     //获取相关活动
-    _activitys = await _gpService.getActivityList(
-      widget.goodPiceModel.goodpriceid,
-    );
+    _activitys = await _gpService.getActivityList(widget.goodPiceModel.goodpriceid);
 
     if (_iscollection || (_comments.isNotEmpty) || (_activitys.isNotEmpty)) {
       if (mounted) {
@@ -235,44 +169,18 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   double maxOffset = 80.0;
 
   void scrollViewDidScrolled(double offSet) {
-    //print('scroll offset ' + offSet.toString());
     ///appbar 透明度
     double appBarOpacity = offSet / maxOffset;
-    double halfPace = maxOffset / 2.0;
 
-    ///圆形按钮透明度
-    double roundOpacity = (halfPace - offSet) / halfPace;
-
-    ///方形按钮透明度
-    double rectOpacity = (offSet - halfPace) / halfPace;
     if (appBarOpacity < 0) {
       appBarOpacity = 0.0;
     } else if (appBarOpacity > 1) {
       appBarOpacity = 1.0;
     }
-    if (roundOpacity < 0) {
-      roundOpacity = 0.0;
-    } else if (roundOpacity > 1) {
-      roundOpacity = 1;
-    }
-    if (rectOpacity < 0) {
-      rectOpacity = 0.0;
-    } else if (rectOpacity > 1) {
-      rectOpacity = 1.0;
-    }
-    //print('roundOpacity $roundOpacity rectOpacity $rectOpacity');
+
     ///更新透明度
     if (appBar.updateAppBarOpacity != null) {
       appBar.updateAppBarOpacity!(appBarOpacity);
-    }
-    if (roundLeftBtn.updateOpacity != null) {
-      roundLeftBtn.updateOpacity!(roundOpacity);
-      shareBtn.updateOpacity!(roundOpacity);
-    }
-    if (rectLeftBtn.updateOpacity != null) {
-      rectLeftBtn.updateOpacity!(rectOpacity);
-      rectshareBtn.updateOpacity!(rectOpacity);
-      rectTitleBtn.updateOpacity!(rectOpacity);
     }
   }
 
@@ -280,7 +188,6 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   Widget build(BuildContext context) {
     _pageWidth = MediaQuery.of(context).size.width;
     print(_pageWidth);
-    rectTitleBtn.left = (_pageWidth) / 2 - 35;
 
     return Scaffold(
       bottomNavigationBar: Container(
@@ -329,9 +236,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                               alignment: Alignment.center,
                               child: Text(
                                 "赞 ${widget.goodPiceModel.likenum}",
-                                style: TextStyle(
-                                  color: isLike ? Colors.red : Colors.black87,
-                                ),
+                                style: TextStyle(color: isLike ? Colors.red : Colors.black87),
                               ),
                             ),
                             onTap: () async {
@@ -343,22 +248,19 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   errorCallBack,
                                 );
                                 if (ret) {
-                                  widget.goodPiceModel.likenum =
-                                      widget.goodPiceModel.likenum - 1;
+                                  widget.goodPiceModel.likenum = widget.goodPiceModel.likenum - 1;
                                 }
                               } else {
                                 //先取消不赞，在点赞
                                 if (isUnLike) {
-                                  bool ret = await _gpService
-                                      .updateCancelUnLike(
-                                        widget.goodPiceModel.goodpriceid,
-                                        Global.profile.user!.uid,
-                                        Global.profile.user!.token!,
-                                        errorCallBack,
-                                      );
+                                  bool ret = await _gpService.updateCancelUnLike(
+                                    widget.goodPiceModel.goodpriceid,
+                                    Global.profile.user!.uid,
+                                    Global.profile.user!.token!,
+                                    errorCallBack,
+                                  );
                                   if (ret) {
-                                    widget.goodPiceModel.unlikenum =
-                                        widget.goodPiceModel.unlikenum - 1;
+                                    widget.goodPiceModel.unlikenum = widget.goodPiceModel.unlikenum - 1;
                                   }
                                 }
                                 bool ret = await _gpService.updateGoodPriceLike(
@@ -368,17 +270,13 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   errorCallBack,
                                 );
                                 if (ret) {
-                                  widget.goodPiceModel.likenum =
-                                      widget.goodPiceModel.likenum + 1;
+                                  widget.goodPiceModel.likenum = widget.goodPiceModel.likenum + 1;
                                 }
                               }
-                              if (widget.goodPiceModel.likenum +
-                                      widget.goodPiceModel.unlikenum >
-                                  0) {
+                              if (widget.goodPiceModel.likenum + widget.goodPiceModel.unlikenum > 0) {
                                 widget.goodPiceModel.satisfactionrate =
                                     widget.goodPiceModel.likenum /
-                                    (widget.goodPiceModel.likenum +
-                                        widget.goodPiceModel.unlikenum);
+                                    (widget.goodPiceModel.likenum + widget.goodPiceModel.unlikenum);
                               } else {
                                 widget.goodPiceModel.satisfactionrate = 0;
                               }
@@ -397,8 +295,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   errorCallBack,
                                 );
                                 if (ret) {
-                                  widget.goodPiceModel.unlikenum =
-                                      widget.goodPiceModel.unlikenum - 1;
+                                  widget.goodPiceModel.unlikenum = widget.goodPiceModel.unlikenum - 1;
                                 }
                               } else {
                                 if (isLike) {
@@ -409,8 +306,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                     errorCallBack,
                                   );
                                   if (ret) {
-                                    widget.goodPiceModel.likenum =
-                                        widget.goodPiceModel.likenum - 1;
+                                    widget.goodPiceModel.likenum = widget.goodPiceModel.likenum - 1;
                                   }
                                 }
                                 bool ret = await _gpService.updateUnLike(
@@ -420,18 +316,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   errorCallBack,
                                 );
                                 if (ret) {
-                                  widget.goodPiceModel.unlikenum =
-                                      widget.goodPiceModel.unlikenum + 1;
+                                  widget.goodPiceModel.unlikenum = widget.goodPiceModel.unlikenum + 1;
                                 }
                               }
 
-                              if (widget.goodPiceModel.likenum +
-                                      widget.goodPiceModel.unlikenum >
-                                  0) {
+                              if (widget.goodPiceModel.likenum + widget.goodPiceModel.unlikenum > 0) {
                                 widget.goodPiceModel.satisfactionrate =
                                     widget.goodPiceModel.likenum /
-                                    (widget.goodPiceModel.likenum +
-                                        widget.goodPiceModel.unlikenum);
+                                    (widget.goodPiceModel.likenum + widget.goodPiceModel.unlikenum);
                               } else {
                                 widget.goodPiceModel.satisfactionrate = 0;
                               }
@@ -443,9 +335,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                               alignment: Alignment.center,
                               child: Text(
                                 "不赞 ${widget.goodPiceModel.unlikenum}",
-                                style: TextStyle(
-                                  color: isUnLike ? Colors.red : Colors.black87,
-                                ),
+                                style: TextStyle(color: isUnLike ? Colors.red : Colors.black87),
                               ),
                             ),
                           ),
@@ -465,17 +355,12 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Icon(
-                    _iscollection
-                        ? IconFont.icon_collection_b
-                        : IconFont.icon_shoucang,
+                    _iscollection ? IconFont.icon_collection_b : IconFont.icon_shoucang,
                     color: _iscollection ? Colors.blueAccent : Colors.black87,
                     size: 17,
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    '${widget.goodPiceModel.collectionnum}',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  Text('${widget.goodPiceModel.collectionnum}', style: TextStyle(fontSize: 16)),
                 ],
               ),
               onTap: () async {
@@ -495,8 +380,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     _isCollectEnter = true;
                     _iscollection = true;
                     setState(() {
-                      widget.goodPiceModel.collectionnum =
-                          widget.goodPiceModel.collectionnum + 1;
+                      widget.goodPiceModel.collectionnum = widget.goodPiceModel.collectionnum + 1;
                     });
                   } else {
                     await _gpService.delGoodPriceCollection(
@@ -509,8 +393,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     _iscollection = false;
                     if (mounted) {
                       setState(() {
-                        widget.goodPiceModel.collectionnum =
-                            widget.goodPiceModel.collectionnum - 1;
+                        widget.goodPiceModel.collectionnum = widget.goodPiceModel.collectionnum - 1;
                       });
                     }
                   }
@@ -558,12 +441,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '一起出发',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                    ],
+                    children: [Text('一起出发', style: TextStyle(color: Colors.white, fontSize: 14))],
                   ),
                 ),
                 onTap: () {
@@ -599,8 +477,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           ///监听滚动
           NotificationListener(
             onNotification: (notification) {
-              if (notification is ScrollUpdateNotification &&
-                  notification.depth == 0) {
+              if (notification is ScrollUpdateNotification && notification.depth == 0) {
                 ///滑动通知
                 scrollViewDidScrolled(notification.metrics.pixels);
               }
@@ -628,11 +505,6 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             ),
           ),
           appBar,
-          rectLeftBtn,
-          roundLeftBtn,
-          shareBtn,
-          rectshareBtn,
-          rectTitleBtn,
         ],
       ),
     );
@@ -646,10 +518,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
 
     if (imagepaths.isNotEmpty) {
       for (int i = 0; i < imagepaths.length; i++) {
-        albumpicslist.add({
-          "tag": UniqueKey().toString(),
-          "img": imagepaths[i].toString(),
-        });
+        albumpicslist.add({"tag": UniqueKey().toString(), "img": imagepaths[i].toString()});
       }
     }
 
@@ -680,10 +549,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                       width: 45 + temwidth,
                       margin: EdgeInsets.only(right: 10, bottom: 10),
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Color(0xFF7F7F7F),
-                      ),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Color(0xFF7F7F7F)),
                       child: Text(
                         '${config.activeIndex + 1}/${imagepaths.length}',
                         style: TextStyle(color: Colors.white),
@@ -716,20 +582,13 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               colors: [Global.profile.backColor!, Colors.deepOrange],
             ),
           ),
-          child: Text(
-            widget.goodPiceModel.brand,
-            style: TextStyle(color: Colors.white, fontSize: 10),
-          ),
+          child: Text(widget.goodPiceModel.brand, style: TextStyle(color: Colors.white, fontSize: 10)),
         ),
         SizedBox(width: 10),
         Text('￥ ', style: TextStyle(color: Colors.red, fontSize: 12)),
         Text(
           '${widget.goodPiceModel.mincost}—${widget.goodPiceModel.maxcost}元',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
           maxLines: 1,
         ),
       ],
@@ -745,17 +604,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           Container(
             alignment: Alignment.center,
             padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-            ),
+            decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Text(
               e,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.black38,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 10, color: Colors.black38, fontWeight: FontWeight.bold),
             ),
           ),
         );
@@ -779,17 +631,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         children: [
           price,
           SizedBox(height: 10),
-          Text(
-            widget.goodPiceModel.title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          Text(widget.goodPiceModel.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           tag,
           SizedBox(height: 15),
-          Text(
-            widget.goodPiceModel.content,
-            style: TextStyle(color: Colors.black87, fontSize: 14),
-          ),
+          Text(widget.goodPiceModel.content, style: TextStyle(color: Colors.black87, fontSize: 14)),
           SizedBox(height: 10),
         ],
       ),
@@ -807,11 +653,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             padding: EdgeInsets.all(10),
             child: Text(
               '相关活动',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
           (_activitys.isNotEmpty)
@@ -819,10 +661,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               : Container(
                   alignment: Alignment.center,
                   height: 50,
-                  child: Text(
-                    '还没有相关活动',
-                    style: TextStyle(color: Colors.black54, fontSize: 13),
-                  ),
+                  child: Text('还没有相关活动', style: TextStyle(color: Colors.black54, fontSize: 13)),
                 ),
         ],
       ),
@@ -838,34 +677,19 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             padding: EdgeInsets.all(10),
             child: Row(
               children: [
-                NoCacheCircleHeadImage(
-                  imageUrl: v.user!.profilepicture!,
-                  width: 50,
-                  uid: v.user!.uid,
-                ),
+                NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 50, uid: v.user!.uid),
                 SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     children: [
                       Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              v.content,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                        children: [Expanded(child: Text(v.content, maxLines: 2, overflow: TextOverflow.ellipsis))],
                       ),
                       Row(
                         children: [
                           Text(
                             '有${v.currentpeoplenum.toString()}人参加',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.black54),
                           ),
                         ],
                       ),
@@ -875,31 +699,18 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Global.profile.backColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                   ),
-                  child: Text(
-                    '去参加',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
+                  child: Text('去参加', style: TextStyle(color: Colors.white, fontSize: 12)),
                   onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/ActivityInfo',
-                      arguments: {"actid": v.actid},
-                    );
+                    Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": v.actid});
                   },
                 ),
               ],
             ),
           ),
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/ActivityInfo',
-              arguments: {"actid": v.actid},
-            );
+            Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": v.actid});
           },
         ),
       );
@@ -944,20 +755,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                           style: TextStyle(color: Colors.black87, fontSize: 13),
                           overflow: TextOverflow.ellipsis,
                         )
-                      : Text(
-                          "",
-                          style: TextStyle(color: Colors.black87, fontSize: 13),
-                        ),
+                      : Text("", style: TextStyle(color: Colors.black87, fontSize: 13)),
                   Row(
                     children: [
                       widget.goodPiceModel.address.isNotEmpty
                           ? Expanded(
                               child: Text(
                                 "(${widget.goodPiceModel.address})",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 12,
-                                ),
+                                style: TextStyle(color: Colors.black54, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             )
@@ -988,11 +793,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               children: [
                 Text(
                   '评价 ${widget.goodPiceModel.evaluatenum == 0 ? '' : widget.goodPiceModel.evaluatenum}',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -1018,20 +819,13 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
               children: [
                 Text(
                   '问答 ${widget.goodPiceModel.commentnum == 0 ? '' : widget.goodPiceModel.commentnum}',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 GestureDetector(
                   child: Row(
                     children: <Widget>[
                       Icon(Icons.menu, color: Colors.black45, size: 18),
-                      Text(
-                        _sortname,
-                        style: TextStyle(color: Colors.black45, fontSize: 13),
-                      ),
+                      Text(_sortname, style: TextStyle(color: Colors.black45, fontSize: 13)),
                     ],
                   ),
                   onTap: () {
@@ -1080,32 +874,18 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              NoCacheCircleHeadImage(
-                                imageUrl: v.user!.profilepicture!,
-                                width: 30,
-                                uid: v.user!.uid,
-                              ),
+                              NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 30, uid: v.user!.uid),
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        v.user!.username,
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontSize: 13,
-                                        ),
-                                      ),
+                                      Text(v.user!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
                                       Text(
                                         v.createtime!.substring(5, 10),
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
+                                        style: TextStyle(color: Colors.grey, fontSize: 12),
                                       ),
                                     ],
                                   ),
@@ -1113,17 +893,9 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 onTap: () {
                                   int uid = v.user!.uid;
                                   if (Global.profile.user == null) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid != Global.profile.user!.uid) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
@@ -1137,14 +909,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                 padding: EdgeInsets.all(5),
                                 alignment: Alignment.centerRight,
                                 icon: Icon(
-                                  (Global.profile.user == null ||
-                                          v.likeuid != Global.profile.user!.uid)
+                                  (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                       ? IconFont.icon_dianzan1
                                       : IconFont.icon_tubiaozhizuo_,
                                   size: 18,
-                                  color:
-                                      (Global.profile.user == null ||
-                                          v.likeuid != Global.profile.user!.uid)
+                                  color: (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                       ? Colors.black38
                                       : Global.profile.backColor,
                                 ),
@@ -1170,24 +939,16 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   }
                                 },
                               ),
-                              Text(
-                                v.likenum == 0 ? '' : v.likenum.toString(),
-                                style: TextStyle(color: Colors.black38),
-                              ),
+                              Text(v.likenum == 0 ? '' : v.likenum.toString(), style: TextStyle(color: Colors.black38)),
                             ],
                           ),
                         ],
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 40),
-                        child: Text(
-                          v.content!,
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
+                        child: Text(v.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
                       ),
-                      (v.replys != null)
-                          ? buildChildComment(v.replys!)
-                          : SizedBox(height: 0),
+                      (v.replys != null) ? buildChildComment(v.replys!) : SizedBox(height: 0),
                     ],
                   ),
                   onTap: () {
@@ -1195,8 +956,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     sendMessage(v.commentid!, v.user!.uid, touser: v.user!);
                   },
                   onLongPress: () {
-                    if (Global.profile.user != null &&
-                        v.user!.uid == Global.profile.user!.uid) {
+                    if (Global.profile.user != null && v.user!.uid == Global.profile.user!.uid) {
                       showDel(v.commentid!);
                     } else {
                       showCommentReport(v.commentid!, v.user!.uid, v.content!);
@@ -1214,10 +974,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
           height: 50,
           width: double.infinity,
           child: Center(
-            child: Text(
-              '还没有问题',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
-            ),
+            child: Text('还没有问题', style: TextStyle(color: Colors.black54, fontSize: 14)),
           ),
         ),
       );
@@ -1238,28 +995,15 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 margin: EdgeInsets.all(5),
                 child: Row(
                   children: <Widget>[
-                    NoCacheCircleHeadImage(
-                      imageUrl: v.replyuser!.profilepicture!,
-                      width: 30,
-                      uid: v.replyuser!.uid,
-                    ),
+                    NoCacheCircleHeadImage(imageUrl: v.replyuser!.profilepicture!, width: 30, uid: v.replyuser!.uid),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            v.replyuser!.username,
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Text(
-                            v.replycreatetime!.substring(5, 10),
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
+                          Text(v.replyuser!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
+                          Text(v.replycreatetime!.substring(5, 10), style: TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
                     ),
@@ -1277,24 +1021,15 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                           children: <TextSpan>[
                             TextSpan(
                               text: '回复 ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             TextSpan(
                               text: v.touser!.username,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.blue, fontSize: 14),
                             ),
                             TextSpan(
                               text: ':${v.replycontent}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                           ],
                         )
@@ -1330,10 +1065,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         color: Colors.black12.withAlpha(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: tem,
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: tem),
     );
   }
 
@@ -1353,11 +1085,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 children: [
                   Row(
                     children: [
-                      NoCacheCircleHeadImage(
-                        imageUrl: e.user!.profilepicture!,
-                        width: 39,
-                        uid: e.user!.uid,
-                      ),
+                      NoCacheCircleHeadImage(imageUrl: e.user!.profilepicture!, width: 39, uid: e.user!.uid),
                       GestureDetector(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
@@ -1365,13 +1093,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Text(
-                                e.user!.username,
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 12,
-                                ),
-                              ),
+                              Text(e.user!.username, style: TextStyle(color: Colors.black87, fontSize: 12)),
                               SizedBox(height: 3),
                               RatingStars(
                                 editable: true,
@@ -1385,27 +1107,16 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         onTap: () {
                           int uid = e.user!.uid;
                           if (Global.profile.user == null) {
-                            Navigator.pushNamed(
-                              context,
-                              '/OtherProfile',
-                              arguments: {"uid": uid},
-                            );
+                            Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                           } else if (uid != Global.profile.user!.uid) {
-                            Navigator.pushNamed(
-                              context,
-                              '/OtherProfile',
-                              arguments: {"uid": uid},
-                            );
+                            Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                           } else if (uid == Global.profile.user!.uid)
                             Navigator.pushNamed(context, '/MyProfile');
                         },
                       ),
                     ],
                   ),
-                  Text(
-                    e.createtime!.substring(0, 10),
-                    style: TextStyle(color: Colors.grey, fontSize: 13),
-                  ),
+                  Text(e.createtime!.substring(0, 10), style: TextStyle(color: Colors.grey, fontSize: 13)),
                 ],
               ),
               GestureDetector(
@@ -1413,16 +1124,8 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   children: [
                     Container(
                       alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(
-                        top: 15,
-                        left: 20,
-                        right: 20,
-                        bottom: 10,
-                      ),
-                      child: Text(
-                        e.content!,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
+                      margin: EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
+                      child: Text(e.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
                     ),
                     e.imagepaths != null && e.imagepaths! != ""
                         ? Container(
@@ -1442,11 +1145,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/EvaluateInfo',
-                    arguments: {"evaluateActivity": e},
-                  ).then((val) {
+                  Navigator.pushNamed(context, '/EvaluateInfo', arguments: {"evaluateActivity": e}).then((val) {
                     setState(() {});
                   });
                 },
@@ -1459,16 +1158,8 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     padding: EdgeInsets.only(right: 2),
                     style: TextStyle(color: Colors.black54, fontSize: 13),
                     icon: e.likeuid != 0
-                        ? Icon(
-                            IconFont.icon_zan1,
-                            color: Colors.redAccent,
-                            size: 18,
-                          )
-                        : Icon(
-                            IconFont.icon_aixin,
-                            color: Colors.black45,
-                            size: 18,
-                          ),
+                        ? Icon(IconFont.icon_zan1, color: Colors.redAccent, size: 18)
+                        : Icon(IconFont.icon_aixin, color: Colors.black45, size: 18),
                     onTap: () async {
                       if (Global.profile.user == null) {
                         Navigator.pushNamed(context, '/Login');
@@ -1491,17 +1182,9 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     e.replynum.toString() == "0" ? '回复' : e.replynum.toString(),
                     padding: EdgeInsets.only(right: 2),
                     style: TextStyle(color: Colors.black54, fontSize: 13),
-                    icon: Icon(
-                      IconFont.icon_navbar_xiaoxi,
-                      color: Colors.black45,
-                      size: 18,
-                    ),
+                    icon: Icon(IconFont.icon_navbar_xiaoxi, color: Colors.black45, size: 18),
                     onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/EvaluateInfo',
-                        arguments: {"evaluateActivity": e},
-                      ).then((val) {
+                      Navigator.pushNamed(context, '/EvaluateInfo', arguments: {"evaluateActivity": e}).then((val) {
                         setState(() {});
                       });
                     },
@@ -1517,20 +1200,12 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     }).toList();
     return evaluateContent.isEmpty
         ? Center(
-            child: Text(
-              'Emm...就是没有评价...',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
-            ),
+            child: Text('Emm...就是没有评价...', style: TextStyle(color: Colors.black54, fontSize: 14)),
           )
         : Column(children: evaluateContent);
   }
 
-  void showPhoto(
-    BuildContext context,
-    Map<String, String> img,
-    int index,
-    List<Map<String, String>> imglist,
-  ) {
+  void showPhoto(BuildContext context, Map<String, String> img, int index, List<Map<String, String>> imglist) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -1556,9 +1231,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             color: Colors.white,
             alignment: Alignment.center,
             height: 80,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.top,
-            ), // !important
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.top), // !important
             margin: EdgeInsets.only(right: 10),
             width: double.infinity,
             child: Row(
@@ -1726,48 +1399,18 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     }
   }
 
-  Future<void> delMessage(
-    String token,
-    int uid,
-    int commentid,
-    String goodpriceid,
-  ) async {
-    bool ret = await _gpService.delMessage(
-      token,
-      uid,
-      commentid,
-      goodpriceid,
-      errorCallBack,
-    );
+  Future<void> delMessage(String token, int uid, int commentid, String goodpriceid) async {
+    bool ret = await _gpService.delMessage(token, uid, commentid, goodpriceid, errorCallBack);
     if (ret) {
-      _comments = await _gpService.getCommentList(
-        goodpriceid,
-        uid,
-        errorCallBack,
-      );
+      _comments = await _gpService.getCommentList(goodpriceid, uid, errorCallBack);
       setState(() {});
     } else {}
   }
 
-  Future<void> delReplyMessage(
-    String token,
-    int uid,
-    int replyid,
-    String goodpriceid,
-  ) async {
-    bool ret = await _gpService.delMessageReply(
-      token,
-      uid,
-      replyid,
-      goodpriceid,
-      errorCallBack,
-    );
+  Future<void> delReplyMessage(String token, int uid, int replyid, String goodpriceid) async {
+    bool ret = await _gpService.delMessageReply(token, uid, replyid, goodpriceid, errorCallBack);
     if (ret) {
-      _comments = await _gpService.getCommentList(
-        goodpriceid,
-        uid,
-        errorCallBack,
-      );
+      _comments = await _gpService.getCommentList(goodpriceid, uid, errorCallBack);
       setState(() {});
     } else {}
   }
@@ -1785,12 +1428,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     List<String> paths = imagepaths.split(',');
     List<Widget> images = [];
     paths.map((e) {
-      images.add(
-        ClipRRectOhterHeadImageContainerByBigImg(
-          imageUrl: e.toString(),
-          pagewidth: 200,
-        ),
-      );
+      images.add(ClipRRectOhterHeadImageContainerByBigImg(imageUrl: e.toString(), pagewidth: 200));
     }).toList();
 
     return images;
@@ -1804,33 +1442,15 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
   void errorHandle(int commentid, int touid, User? touser) {
     if (errorstatusCode != "200") {
       if (errorstatusCode == "-1008") {
-        loadingBlockPuzzle(
-          context,
-          commentid: commentid,
-          touid: touid,
-          touser: touser!,
-        );
+        loadingBlockPuzzle(context, commentid: commentid, touid: touid, touser: touser!);
       } else {
         ShowMessage.showToast(error);
       }
     }
   }
 
-  Future<void> commentLike(
-    int commentid,
-    int uid,
-    String token,
-    int touid,
-    String goodpriceid,
-  ) async {
-    bool ret = await _gpService.updateCommentLike(
-      commentid,
-      uid,
-      token,
-      touid,
-      goodpriceid,
-      errorCallBack,
-    );
+  Future<void> commentLike(int commentid, int uid, String token, int touid, String goodpriceid) async {
+    bool ret = await _gpService.updateCommentLike(commentid, uid, token, touid, goodpriceid, errorCallBack);
     if (ret) {
       //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
       for (var e in _comments) {
@@ -1845,19 +1465,8 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
     });
   }
 
-  Future<void> delCommentLike(
-    int commentid,
-    int uid,
-    String token,
-    int touid,
-  ) async {
-    bool ret = await _gpService.delCommentLike(
-      commentid,
-      uid,
-      token,
-      touid,
-      errorCallBack,
-    );
+  Future<void> delCommentLike(int commentid, int uid, String token, int touid) async {
+    bool ret = await _gpService.delCommentLike(commentid, uid, token, touid, errorCallBack);
     if (ret) {
       //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
       for (var e in _comments) {
@@ -1983,11 +1592,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     child: TextButton(
                       child: Text(
                         '举 报',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -2039,11 +1644,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     child: TextButton(
                       child: Text(
                         '举 报',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -2051,12 +1652,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         Navigator.pushNamed(
                           context,
                           '/ReportAllMessage',
-                          arguments: {
-                            "sourcetype": 9,
-                            "actid": replyid.toString(),
-                            "touid": touid,
-                            "content": content,
-                          },
+                          arguments: {"sourcetype": 9, "actid": replyid.toString(), "touid": touid, "content": content},
                         );
                       },
                     ),
@@ -2091,11 +1687,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     child: TextButton(
                       child: Text(
                         '删 除',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () async {
                         await delMessage(
@@ -2138,11 +1730,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     child: TextButton(
                       child: Text(
                         '删 除',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         delReplyMessage(
@@ -2176,11 +1764,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             child: TextButton(
               child: Text(
                 '取 消',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 Navigator.pop(context);

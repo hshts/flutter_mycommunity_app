@@ -75,7 +75,7 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
             widget.content ??
             IconButton(
               iconSize: size!,
-              icon: Image.asset(image!),
+              icon: Image.asset(image!, width: size, height: size, fit: BoxFit.contain),
               onPressed: () {
                 widget.actionFunction();
               },
@@ -86,10 +86,14 @@ class PositionedBtnState extends State<PositionedBtnWidget> {
 }
 
 ///app barb
+// ignore: must_be_immutable
 class AppBarWidget extends StatefulWidget {
   Function? updateAppBarOpacity;
+  Widget? leading;
+  Widget? actions;
+  Widget? title;
 
-  AppBarWidget({super.key});
+  AppBarWidget({super.key, this.leading, this.actions, this.title});
 
   @override
   State<StatefulWidget> createState() => AppBarState();
@@ -120,7 +124,14 @@ class AppBarState extends State<AppBarWidget> {
       opacity: opacity,
       child: SizedBox(
         height: appBarHeight,
-        child: AppBar(backgroundColor: Colors.white),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: widget.leading,
+          actions: widget.actions != null ? [widget.actions!] : null,
+          title: widget.title,
+          centerTitle: true,
+        ),
       ),
     );
   }

@@ -46,9 +46,7 @@ class _ActivityState extends State<ActivityInfo> {
   List<Activity> _moreActivity = [];
 
   final ActivityService _activityService = ActivityService();
-  final RefreshController _refreshController = RefreshController(
-    initialRefresh: false,
-  );
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
   int blockcommentid = 0;
   int blocktouid = 0;
   String _message = "";
@@ -68,9 +66,7 @@ class _ActivityState extends State<ActivityInfo> {
   ImHelper imhelper = ImHelper();
 
   Widget promptWidget = Center(
-    child: CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-    ),
+    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
   );
 
   Widget actMore = Container(
@@ -83,11 +79,7 @@ class _ActivityState extends State<ActivityInfo> {
           Container(
             child: Text(
               '相关推荐',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 5),
@@ -95,10 +87,7 @@ class _ActivityState extends State<ActivityInfo> {
             height: 50,
             width: double.infinity,
             child: Center(
-              child: Text(
-                '暂无相关活动',
-                style: TextStyle(color: Colors.black54, fontSize: 14),
-              ),
+              child: Text('暂无相关活动', style: TextStyle(color: Colors.black54, fontSize: 14)),
             ),
           ),
         ],
@@ -134,13 +123,11 @@ class _ActivityState extends State<ActivityInfo> {
             children: [
               buildHeadInfo(),
               buildRequirements(),
-              _activity!.addresstitle != null &&
-                      _activity!.addresstitle!.isNotEmpty
+              _activity!.addresstitle != null && _activity!.addresstitle!.isNotEmpty
                   ? buildLocation()
                   : SizedBox.shrink(),
               buildContent(),
-              _activity!.actimagespath != null &&
-                      _activity!.actimagespath!.isNotEmpty
+              _activity!.actimagespath != null && _activity!.actimagespath!.isNotEmpty
                   ? buildActivityImg()
                   : SizedBox.shrink(),
               Container(
@@ -155,11 +142,7 @@ class _ActivityState extends State<ActivityInfo> {
           ),
         ),
       );
-      actMember = Container(
-        color: Colors.white,
-        margin: EdgeInsets.only(top: 10),
-        child: buildMembers(),
-      );
+      actMember = Container(color: Colors.white, margin: EdgeInsets.only(top: 10), child: buildMembers());
       actComment = Container(
         margin: EdgeInsets.only(top: 10),
         color: Colors.white,
@@ -173,11 +156,7 @@ class _ActivityState extends State<ActivityInfo> {
                 children: <Widget>[
                   Text(
                     '全部留言(${_listComments.length.toString()})',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   _listComments.isEmpty
                       ? SizedBox.shrink()
@@ -185,13 +164,7 @@ class _ActivityState extends State<ActivityInfo> {
                           child: Row(
                             children: <Widget>[
                               Icon(Icons.menu, color: Colors.black45, size: 18),
-                              Text(
-                                _sortname,
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text(_sortname, style: TextStyle(color: Colors.black45, fontSize: 13)),
                             ],
                           ),
                           onTap: () {
@@ -217,15 +190,10 @@ class _ActivityState extends State<ActivityInfo> {
                       height: 50,
                       width: double.infinity,
                       child: Center(
-                        child: Text(
-                          '还没有任何留言',
-                          style: TextStyle(color: Colors.black54, fontSize: 14),
-                        ),
+                        child: Text('还没有任何留言', style: TextStyle(color: Colors.black54, fontSize: 14)),
                       ),
                     ),
-              (_isShowComment && !_isShowAll)
-                  ? buildShowAllComment()
-                  : SizedBox.shrink(),
+              (_isShowComment && !_isShowAll) ? buildShowAllComment() : SizedBox.shrink(),
             ],
           ),
         ),
@@ -243,11 +211,7 @@ class _ActivityState extends State<ActivityInfo> {
               Container(
                 child: Text(
                   '相关推荐',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 5),
@@ -281,7 +245,7 @@ class _ActivityState extends State<ActivityInfo> {
                           content: _activity!.content,
                           sharedtype: "0",
                           actid: _activity!.actid,
-                          createuid: _activity!.user!.uid,
+                          createuid: _activity?.user?.uid ?? 0,
                         )
                       : IconButton(
                           icon: Icon(Icons.more_horiz, color: Colors.black),
@@ -301,33 +265,17 @@ class _ActivityState extends State<ActivityInfo> {
                 builder: (BuildContext context, LoadStatus? mode) {
                   Widget body;
                   if (mode == LoadStatus.idle) {
-                    body = Text(
-                      "加载更多",
-                      style: TextStyle(color: Colors.black45, fontSize: 13),
-                    );
+                    body = Text("加载更多", style: TextStyle(color: Colors.black45, fontSize: 13));
                   } else if (mode == LoadStatus.loading) {
                     body = Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                          Global.profile.backColor,
-                        ),
-                      ),
+                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
                     );
                   } else if (mode == LoadStatus.failed) {
-                    body = Text(
-                      "加载失败!点击重试!",
-                      style: TextStyle(color: Colors.black45, fontSize: 13),
-                    );
+                    body = Text("加载失败!点击重试!", style: TextStyle(color: Colors.black45, fontSize: 13));
                   } else if (mode == LoadStatus.canLoading) {
-                    body = Text(
-                      "放开我,加载更多!",
-                      style: TextStyle(color: Colors.black45, fontSize: 13),
-                    );
+                    body = Text("放开我,加载更多!", style: TextStyle(color: Colors.black45, fontSize: 13));
                   } else {
-                    body = Text(
-                      "—————— 我也是有底线的 ——————",
-                      style: TextStyle(color: Colors.black45, fontSize: 13),
-                    );
+                    body = Text("—————— 我也是有底线的 ——————", style: TextStyle(color: Colors.black45, fontSize: 13));
                   }
                   print(mode);
                   return SizedBox(height: 55.0, child: Center(child: body));
@@ -341,17 +289,12 @@ class _ActivityState extends State<ActivityInfo> {
               ),
             )
           : promptWidget,
-      bottomNavigationBar: _activity != null
-          ? buildBottomButton()
-          : SizedBox.shrink(),
+      bottomNavigationBar: _activity != null ? buildBottomButton() : SizedBox.shrink(),
     );
   }
 
   Future<void> getActivityInfo() async {
-    _activity = await _activityService.getActivityInfo(
-      widget.actid,
-      errorCallBack,
-    );
+    _activity = await _activityService.getActivityInfo(widget.actid, errorCallBack);
     if (_activity == null) {
       promptWidget = Center(child: Text('活动已经被删除了'));
       setState(() {});
@@ -359,34 +302,23 @@ class _ActivityState extends State<ActivityInfo> {
     }
 
     if (Global.profile.user == null) {
-      _listComments = await _activityService.getCommentList(
-        widget.actid,
-        0,
-        errorCallBack,
-      );
+      _listComments = await _activityService.getCommentList(widget.actid, 0, errorCallBack);
     } else {
       imhelper.saveBrowseHistory(
         _activity!.actid,
         _activity!.content,
         _activity!.coverimg ?? "",
         _activity!.coverimgwh,
-        _activity!.user!.profilepicture ?? "",
-        _activity!.user!.username,
+        _activity?.user?.profilepicture ?? "",
+        _activity?.user?.username ?? "用户",
         _activity!.peoplenum ?? 0,
-        _activity!.goodPiceModel!.mincost,
-        _activity!.goodPiceModel!.maxcost,
+        _activity?.goodPiceModel?.mincost ?? 0,
+        _activity?.goodPiceModel?.maxcost ?? 0,
       );
-      Map likecollectionstate = await _activityService.getLikeCollectionState(
-        widget.actid,
-        Global.profile.user!.uid,
-      );
+      Map likecollectionstate = await _activityService.getLikeCollectionState(widget.actid, Global.profile.user!.uid);
       _islike = likecollectionstate["islike"];
       _iscollection = likecollectionstate["iscollection"];
-      _listComments = await _activityService.getCommentList(
-        widget.actid,
-        Global.profile.user!.uid,
-        errorCallBack,
-      );
+      _listComments = await _activityService.getCommentList(widget.actid, Global.profile.user!.uid, errorCallBack);
     }
     if (mounted) setState(() {});
     getActivityMore(_activity!); //更多相关活动
@@ -440,6 +372,14 @@ class _ActivityState extends State<ActivityInfo> {
       });
 
       return false;
+    } else if (Global.profile.user!.token == null || Global.profile.user!.token!.isEmpty) {
+      ShowMessage.showToast("登录已过期，请重新登录");
+      Navigator.pushNamed(context, '/Login').then((value) async {
+        if (Global.profile.user != null) {
+          getActivityInfo();
+        }
+      });
+      return false;
     } else {
       return true;
     }
@@ -454,13 +394,7 @@ class _ActivityState extends State<ActivityInfo> {
     setState(() {});
   }
 
-  void errorCallBack(
-    String statusCode,
-    String msg, {
-    touid,
-    commentid,
-    touser,
-  }) {
+  void errorCallBack(String statusCode, String msg, {touid, commentid, touser}) {
     if (statusCode == "-1008") {
       //需要进行人机验证
       loadingBlockPuzzle(context);
@@ -478,11 +412,7 @@ class _ActivityState extends State<ActivityInfo> {
           children: <Widget>[
             Text(
               '查看所有评论',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
             ),
             Icon(Icons.keyboard_arrow_down),
           ],
@@ -503,8 +433,8 @@ class _ActivityState extends State<ActivityInfo> {
         children: <Widget>[
           NoCacheCircleHeadImage(
             width: 60,
-            uid: _activity!.user!.uid,
-            imageUrl: _activity!.user!.profilepicture ?? "",
+            uid: _activity?.user?.uid ?? 0,
+            imageUrl: _activity?.user?.profilepicture ?? "",
           ),
           Padding(padding: EdgeInsets.only(left: 10)),
           Expanded(
@@ -513,18 +443,14 @@ class _ActivityState extends State<ActivityInfo> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  _activity!.user!.username,
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  _activity?.user?.username ?? "用户",
+                  style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Row(
                   children: [
                     Expanded(
                       child: Text(
-                        '${_activity!.user!.signature == "" ? "Ta很神秘" : _activity!.user!.signature} ',
+                        '${(_activity?.user?.signature ?? "") == "" ? "Ta很神秘" : (_activity?.user?.signature ?? "")} ',
                         style: TextStyle(color: Colors.black54, fontSize: 13),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -533,13 +459,7 @@ class _ActivityState extends State<ActivityInfo> {
                   ],
                 ),
                 Row(
-                  children: <Widget>[
-                    Text(
-                      '${CommonUtil.datetimeFormat(DateTime.parse(_activity!.user!.updatetime!))}来过 ${CommonUtil.getAgeGroup(_activity!.user!.birthday!)} '
-                      '${CommonUtil.getConstellation(_activity!.user!.birthday!)} ${_activity!.user!.sex == "0" ? "女" : (_activity!.user!.sex == '2' ? "" : "男")}',
-                      style: TextStyle(color: Colors.black54, fontSize: 13),
-                    ),
-                  ],
+                  children: <Widget>[Text(_buildUserInfoText(), style: TextStyle(color: Colors.black54, fontSize: 13))],
                 ),
               ],
             ),
@@ -547,6 +467,50 @@ class _ActivityState extends State<ActivityInfo> {
         ],
       ),
     );
+  }
+
+  // 构建用户信息文本,处理可能为 null 的字段
+  String _buildUserInfoText() {
+    List<String> infoParts = [];
+
+    // 最后来访时间
+    if (_activity?.user?.updatetime != null) {
+      try {
+        infoParts.add('${CommonUtil.datetimeFormat(DateTime.parse(_activity!.user!.updatetime!))}来过');
+      } catch (e) {
+        // 日期解析失败,忽略
+      }
+    }
+
+    // 年龄段
+    if (_activity?.user?.birthday != null && _activity!.user!.birthday!.isNotEmpty) {
+      try {
+        infoParts.add(CommonUtil.getAgeGroup(_activity!.user!.birthday!));
+      } catch (e) {
+        // 年龄计算失败,忽略
+      }
+    }
+
+    // 星座
+    if (_activity?.user?.birthday != null && _activity!.user!.birthday!.isNotEmpty) {
+      try {
+        infoParts.add(CommonUtil.getConstellation(_activity!.user!.birthday!));
+      } catch (e) {
+        // 星座计算失败,忽略
+      }
+    }
+
+    // 性别
+    String? sex = _activity?.user?.sex;
+    if (sex != null && sex.isNotEmpty) {
+      if (sex == "0") {
+        infoParts.add("女");
+      } else if (sex != "2") {
+        infoParts.add("男");
+      }
+    }
+
+    return infoParts.isEmpty ? "新用户" : infoParts.join(' ');
   }
 
   //获取活动要求
@@ -558,11 +522,8 @@ class _ActivityState extends State<ActivityInfo> {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: <Widget>[
           Padding(padding: EdgeInsets.only(left: 15)),
-          _activity!.goodpriceid != null && _activity!.goodpriceid!.isNotEmpty
-              ? Padding(
-                  padding: EdgeInsets.only(left: 1),
-                  child: buildGoodPrice(),
-                )
+          _activity!.goodpriceid != null && _activity!.goodpriceid!.isNotEmpty && _activity!.goodPiceModel != null
+              ? Padding(padding: EdgeInsets.only(left: 1), child: buildGoodPrice())
               : SizedBox.shrink(),
         ],
       ),
@@ -596,28 +557,20 @@ class _ActivityState extends State<ActivityInfo> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _activity!.addresstitle != null &&
-                          _activity!.addresstitle!.isNotEmpty
+                  _activity!.addresstitle != null && _activity!.addresstitle!.isNotEmpty
                       ? Text(
                           "${_activity!.addresstitle}",
                           style: TextStyle(color: Colors.black87, fontSize: 13),
                           overflow: TextOverflow.ellipsis,
                         )
-                      : Text(
-                          "",
-                          style: TextStyle(color: Colors.black87, fontSize: 13),
-                        ),
+                      : Text("", style: TextStyle(color: Colors.black87, fontSize: 13)),
                   Row(
                     children: [
-                      _activity!.address != null &&
-                              _activity!.address!.isNotEmpty
+                      _activity!.address != null && _activity!.address!.isNotEmpty
                           ? Expanded(
                               child: Text(
                                 "(${_activity!.address})",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 12,
-                                ),
+                                style: TextStyle(color: Colors.black54, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             )
@@ -641,12 +594,7 @@ class _ActivityState extends State<ActivityInfo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              _activity!.content,
-              style: TextStyle(color: Colors.black87, fontSize: 14),
-            ),
-          ],
+          children: <Widget>[Text(_activity!.content, style: TextStyle(color: Colors.black87, fontSize: 14))],
         ),
       ),
     );
@@ -657,10 +605,7 @@ class _ActivityState extends State<ActivityInfo> {
     _listimgs = _activity!.actimagespath!.split(',');
     if (_listimgs.isNotEmpty) {
       for (int i = 0; i < _listimgs.length; i++) {
-        imglist.add({
-          "tag": UniqueKey().toString(),
-          "img": _listimgs[i].toString(),
-        });
+        imglist.add({"tag": UniqueKey().toString(), "img": _listimgs[i].toString()});
       }
     }
     double initheigth = 0;
@@ -691,8 +636,7 @@ class _ActivityState extends State<ActivityInfo> {
                   //                  valueColor:  AlwaysStoppedAnimation(Global.profile.backColor),
                   //                ),
                 ),
-                imageUrl:
-                    '${_listimgs[i]}?x-oss-process=image/resize,m_fixed,w_1080/quality,q_80',
+                imageUrl: '${_listimgs[i]}?x-oss-process=image/resize,m_fixed,w_1080/quality,q_80',
                 fit: BoxFit.cover,
               ),
             ),
@@ -718,7 +662,7 @@ class _ActivityState extends State<ActivityInfo> {
       }
       //活动状态
       if (_activity!.status == 0) {
-        if (_activity!.user!.uid == Global.profile.user!.uid) {
+        if ((_activity?.user?.uid ?? 0) == (Global.profile.user?.uid ?? 0)) {
           _bottombutton = "活动管理";
           btncolor = Colors.blue;
         } else {
@@ -769,11 +713,7 @@ class _ActivityState extends State<ActivityInfo> {
                   ),
                   Text(
                     _activity == null ? "0" : _activity!.likenum.toString(),
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -785,7 +725,7 @@ class _ActivityState extends State<ActivityInfo> {
                     onPressed: () {
                       if (Global.profile.user != null) {
                         _hidemessage = "活动留言";
-                        messageWidget(0, _activity!.user!.uid);
+                        messageWidget(0, _activity?.user?.uid ?? 0);
                       } else {
                         _islogin();
                       }
@@ -793,11 +733,7 @@ class _ActivityState extends State<ActivityInfo> {
                   ),
                   Text(
                     "留言",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -806,12 +742,12 @@ class _ActivityState extends State<ActivityInfo> {
                 children: <Widget>[
                   IconButton(
                     icon: Icon(
-                      _iscollection
-                          ? IconFont.icon_collection_b
-                          : IconFont.icon_shoucang,
+                      _iscollection ? IconFont.icon_collection_b : IconFont.icon_shoucang,
                       color: _iscollection ? Colors.blueAccent : Colors.grey,
                     ),
                     onPressed: () {
+                      if (!_islogin()) return;
+
                       if (_isCollectEnter) {
                         _isCollectEnter = false;
                         if (!_iscollection) {
@@ -823,14 +759,8 @@ class _ActivityState extends State<ActivityInfo> {
                     },
                   ),
                   Text(
-                    _activity == null
-                        ? "0"
-                        : _activity!.collectionnum.toString(),
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    _activity == null ? "0" : _activity!.collectionnum.toString(),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -839,26 +769,18 @@ class _ActivityState extends State<ActivityInfo> {
           TextButton(
             style: TextButton.styleFrom(
               backgroundColor: btncolor,
-              shape: RoundedRectangleBorder(
-                side: BorderSide.none,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
+              shape: RoundedRectangleBorder(side: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(5))),
             ),
             child: Text(
               _bottombutton,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onPressed: () {
               if (!_islogin()) {
                 return;
               }
 
-              if (Global.profile.user != null &&
-                  _activity!.user!.uid == Global.profile.user!.uid) {
+              if (Global.profile.user != null && (_activity?.user?.uid ?? 0) == (Global.profile.user?.uid ?? 0)) {
                 if (_activity!.status == 0) {
                   _openSimpleDialog();
                 } else {
@@ -944,10 +866,7 @@ class _ActivityState extends State<ActivityInfo> {
 
   Future<void> joinActivity() async {
     //如果已经加入，就直接进入群聊
-    GroupRelation? groupRelation = await imhelper.getGroupRelationByGroupid(
-      Global.profile.user!.uid,
-      _activity!.actid,
-    );
+    GroupRelation? groupRelation = await imhelper.getGroupRelationByGroupid(Global.profile.user!.uid, _activity!.actid);
     if (groupRelation != null && groupRelation.isnotservice == 0) {
       Navigator.pushNamed(
         context,
@@ -983,10 +902,7 @@ class _ActivityState extends State<ActivityInfo> {
       await imhelper.updateGroupRelationIsNotService(_activity!.actid);
       if (ret > 0) {
         //服务器传回的grouprelation再重新获取下，有些属性可能为空
-        groupRelation = await imhelper.getGroupRelationByGroupid(
-          Global.profile.user!.uid,
-          _activity!.actid,
-        );
+        groupRelation = await imhelper.getGroupRelationByGroupid(Global.profile.user!.uid, _activity!.actid);
       }
 
       if (Global.isInDebugMode) {
@@ -998,10 +914,7 @@ class _ActivityState extends State<ActivityInfo> {
         Navigator.pushNamed(
           context,
           '/MyMessage',
-          arguments: {
-            "GroupRelation": groupRelation,
-            "millisecond": DateTime.now().millisecond,
-          },
+          arguments: {"GroupRelation": groupRelation, "millisecond": DateTime.now().millisecond},
         ).then((value) => getActivityInfo());
       } else {
         ShowMessage.showToast('加入活动群失败，请退出重试');
@@ -1010,10 +923,7 @@ class _ActivityState extends State<ActivityInfo> {
   }
 
   Future<void> joinGroupMessage() async {
-    GroupRelation? groupRelation = await imhelper.getGroupRelationByGroupid(
-      Global.profile.user!.uid,
-      _activity!.actid,
-    );
+    GroupRelation? groupRelation = await imhelper.getGroupRelationByGroupid(Global.profile.user!.uid, _activity!.actid);
     if (groupRelation != null) {
       Navigator.pushNamed(
         context,
@@ -1094,11 +1004,7 @@ class _ActivityState extends State<ActivityInfo> {
       errorCallBack,
     );
     if (ret) {
-      _listComments = await _activityService.getCommentList(
-        _activity!.actid,
-        Global.profile.user!.uid,
-        errorCallBack,
-      );
+      _listComments = await _activityService.getCommentList(_activity!.actid, Global.profile.user!.uid, errorCallBack);
       sortComment();
     }
   }
@@ -1112,11 +1018,7 @@ class _ActivityState extends State<ActivityInfo> {
       errorCallBack,
     );
     if (ret) {
-      _listComments = await _activityService.getCommentList(
-        _activity!.actid,
-        Global.profile.user!.uid,
-        errorCallBack,
-      );
+      _listComments = await _activityService.getCommentList(_activity!.actid, Global.profile.user!.uid, errorCallBack);
       sortComment();
     }
   }
@@ -1137,6 +1039,11 @@ class _ActivityState extends State<ActivityInfo> {
     User? touser,
     String captchaVerification = "",
   }) async {
+    // 检查用户登录状态和token
+    if (!_islogin()) {
+      return;
+    }
+
     blockcommentid = commentid;
     blocktouid = touid;
     if (commentid == 0) {
@@ -1152,15 +1059,7 @@ class _ActivityState extends State<ActivityInfo> {
       if (commentid > 0) {
         _listComments.insert(
           0,
-          Comment(
-            commentid,
-            _activity!.actid,
-            Global.profile.user!,
-            content,
-            0,
-            CommonUtil.getTime(),
-            0,
-          ),
+          Comment(commentid, _activity!.actid, Global.profile.user!, content, 0, CommonUtil.getTime(), 0),
         );
         sortComment();
       }
@@ -1217,11 +1116,7 @@ class _ActivityState extends State<ActivityInfo> {
             margin: EdgeInsets.only(bottom: 10),
             child: Text(
               '活动成员',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
           Wrap(children: buildMemberList()),
@@ -1234,9 +1129,13 @@ class _ActivityState extends State<ActivityInfo> {
     int index = 0;
     int count = ((_pageWidth - 35) / 65).floor();
     List<User> members = [];
-    count = _activity!.members!.length > count
-        ? count
-        : _activity!.members!.length;
+
+    // 安全检查 members 是否为 null
+    if (_activity?.members == null || _activity!.members!.isEmpty) {
+      return [];
+    }
+
+    count = _activity!.members!.length > count ? count : _activity!.members!.length;
     for (int i = 0; i < count; i++) {
       members.add(_activity!.members![i]);
     }
@@ -1251,12 +1150,7 @@ class _ActivityState extends State<ActivityInfo> {
             children: <Widget>[
               Stack(
                 children: <Widget>[
-                  NoCacheClipRRectHeadImage(
-                    width: 46,
-                    uid: item.uid,
-                    cir: 50,
-                    imageUrl: '${item.profilepicture}',
-                  ),
+                  NoCacheClipRRectHeadImage(width: 46, uid: item.uid, cir: 50, imageUrl: item.profilepicture ?? ""),
                   Container(
                     width: 20,
                     height: 20,
@@ -1273,11 +1167,7 @@ class _ActivityState extends State<ActivityInfo> {
                       ),
                       width: 15,
                       height: 15,
-                      child: Icon(
-                        IconFont.icon_qizi_icon,
-                        color: Colors.white,
-                        size: 15,
-                      ),
+                      child: Icon(IconFont.icon_qizi_icon, color: Colors.white, size: 15),
                     ),
                   ),
                 ],
@@ -1287,9 +1177,7 @@ class _ActivityState extends State<ActivityInfo> {
                 alignment: Alignment.center,
                 width: 45,
                 child: Text(
-                  item.username.length > 4
-                      ? '${item.username.substring(0, 3)}...'
-                      : item.username,
+                  item.username.length > 4 ? '${item.username.substring(0, 3)}...' : item.username,
                   style: TextStyle(fontSize: 11, color: Colors.black54),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1303,20 +1191,13 @@ class _ActivityState extends State<ActivityInfo> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              NoCacheClipRRectHeadImage(
-                cir: 46,
-                width: 45,
-                uid: item.uid,
-                imageUrl: '${item.profilepicture}',
-              ),
+              NoCacheClipRRectHeadImage(cir: 46, width: 45, uid: item.uid, imageUrl: item.profilepicture ?? ""),
               Padding(padding: EdgeInsets.only(top: 8)),
               Container(
                 width: 45,
                 alignment: Alignment.center,
                 child: Text(
-                  item.username.length > 4
-                      ? '${item.username.substring(0, 3)}...'
-                      : item.username,
+                  item.username.length > 4 ? '${item.username.substring(0, 3)}...' : item.username,
                   style: TextStyle(fontSize: 11, color: Colors.black54),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1341,17 +1222,10 @@ class _ActivityState extends State<ActivityInfo> {
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 border: Border.all(width: 1, color: Colors.black12),
               ),
-              child: Text(
-                "更多...",
-                style: TextStyle(color: Colors.black38, fontSize: 12),
-              ),
+              child: Text("更多...", style: TextStyle(color: Colors.black38, fontSize: 12)),
             ),
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/ActivityMember',
-                arguments: {"activity": _activity},
-              );
+              Navigator.pushNamed(context, '/ActivityMember', arguments: {"activity": _activity});
             },
           ),
         ),
@@ -1365,9 +1239,7 @@ class _ActivityState extends State<ActivityInfo> {
   Widget buildComment() {
     List<Widget> tem = [];
     if (_isShowComment && _commentid != 0 && !_isShowAll) {
-      _listComments = _listComments
-          .where((element) => element.commentid == _commentid)
-          .toList();
+      _listComments = _listComments.where((element) => element.commentid == _commentid).toList();
     }
     _listComments.map((v) {
       tem.add(
@@ -1385,11 +1257,7 @@ class _ActivityState extends State<ActivityInfo> {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            NoCacheCircleHeadImage(
-                              imageUrl: v.user!.profilepicture!,
-                              width: 30,
-                              uid: v.user!.uid,
-                            ),
+                            NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 30, uid: v.user!.uid),
                             GestureDetector(
                               child: Container(
                                 margin: EdgeInsets.only(left: 10),
@@ -1397,19 +1265,10 @@ class _ActivityState extends State<ActivityInfo> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(
-                                      v.user!.username,
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontSize: 13,
-                                      ),
-                                    ),
+                                    Text(v.user!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
                                     Text(
                                       v.createtime!.substring(5, 10),
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
+                                      style: TextStyle(color: Colors.grey, fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -1417,17 +1276,9 @@ class _ActivityState extends State<ActivityInfo> {
                               onTap: () {
                                 int uid = v.user!.uid;
                                 if (Global.profile.user == null) {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/OtherProfile',
-                                    arguments: {"uid": uid},
-                                  );
+                                  Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                 } else if (uid != Global.profile.user!.uid) {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/OtherProfile',
-                                    arguments: {"uid": uid},
-                                  );
+                                  Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                 } else if (uid == Global.profile.user!.uid) {
                                   Navigator.pushNamed(context, '/MyProfile');
                                 }
@@ -1442,48 +1293,36 @@ class _ActivityState extends State<ActivityInfo> {
                               padding: EdgeInsets.all(5),
                               alignment: Alignment.centerRight,
                               icon: Icon(
-                                (Global.profile.user == null ||
-                                        v.likeuid != Global.profile.user!.uid)
+                                (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                     ? IconFont.icon_aixin
                                     : IconFont.icon_zan1,
-                                color:
-                                    (Global.profile.user == null ||
-                                        v.likeuid != Global.profile.user!.uid)
+                                color: (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                     ? Colors.black38
                                     : Global.profile.backColor,
                               ),
                               onPressed: () {
+                                if (!_islogin()) return;
+
                                 if (_isCommentLike) {
                                   _isCommentLike = false;
                                   if (v.likeuid == 0) {
                                     updateCommentLike(v.commentid, v.user!.uid);
                                   } else {
-                                    updateDelCommentLike(
-                                      v.commentid,
-                                      v.user!.uid,
-                                    );
+                                    updateDelCommentLike(v.commentid, v.user!.uid);
                                   }
                                 }
                               },
                             ),
-                            Text(
-                              v.likenum == 0 ? '' : v.likenum.toString(),
-                              style: TextStyle(color: Colors.black38),
-                            ),
+                            Text(v.likenum == 0 ? '' : v.likenum.toString(), style: TextStyle(color: Colors.black38)),
                           ],
                         ),
                       ],
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 40),
-                      child: Text(
-                        v.content!,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
+                      child: Text(v.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
                     ),
-                    (v.replys != null && v.replys!.isNotEmpty)
-                        ? buildChildComment(v.replys!)
-                        : SizedBox(height: 0),
+                    (v.replys != null && v.replys!.isNotEmpty) ? buildChildComment(v.replys!) : SizedBox(height: 0),
                   ],
                 ),
                 onTap: () {
@@ -1491,8 +1330,7 @@ class _ActivityState extends State<ActivityInfo> {
                   messageWidget(v.commentid!, v.user!.uid, touser: v.user);
                 },
                 onLongPress: () {
-                  if (Global.profile.user != null &&
-                      v.user!.uid == Global.profile.user!.uid) {
+                  if (Global.profile.user != null && v.user!.uid == Global.profile.user!.uid) {
                     showDel(v.commentid!);
                   } else {
                     showCommentReport(v.commentid!, v.user!.uid, v.content!);
@@ -1531,17 +1369,8 @@ class _ActivityState extends State<ActivityInfo> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            v.replyuser!.username,
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Text(
-                            v.replycreatetime!.substring(5, 10),
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
+                          Text(v.replyuser!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
+                          Text(v.replycreatetime!.substring(5, 10), style: TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
                     ),
@@ -1559,24 +1388,15 @@ class _ActivityState extends State<ActivityInfo> {
                           children: <TextSpan>[
                             TextSpan(
                               text: '回复 ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             TextSpan(
                               text: v.touser!.username,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.blue, fontSize: 14),
                             ),
                             TextSpan(
                               text: ':${v.replycontent}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                           ],
                         )
@@ -1593,8 +1413,7 @@ class _ActivityState extends State<ActivityInfo> {
             ],
           ),
           onLongPress: () {
-            if (Global.profile.user != null &&
-                v.replyuser!.uid == Global.profile.user!.uid) {
+            if (Global.profile.user != null && v.replyuser!.uid == Global.profile.user!.uid) {
               showReplyDel(v.replyid!);
             } else {
               showReplyReport(v.replyid!, v.replyuser!.uid, v.replycontent!);
@@ -1613,10 +1432,7 @@ class _ActivityState extends State<ActivityInfo> {
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         color: Colors.black12.withAlpha(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: tem,
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: tem),
     );
   }
 
@@ -1651,22 +1467,14 @@ class _ActivityState extends State<ActivityInfo> {
         Text("￥", style: TextStyle(color: Colors.red, fontSize: 10)),
         Text(
           "${activity.mincost}—${activity.maxcost}",
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ],
     );
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/ActivityInfo',
-          arguments: {"actid": activity.actid},
-        ).then((val) {});
+        Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": activity.actid}).then((val) {});
       },
       child: Card(
         elevation: 0,
@@ -1679,27 +1487,17 @@ class _ActivityState extends State<ActivityInfo> {
                 width: _pageWidth,
                 decoration: BoxDecoration(
                   color: Colors.grey,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5),
-                    topRight: Radius.circular(5),
-                  ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5),
-                    topRight: Radius.circular(5),
-                  ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                   child: activity.coverimg != ""
                       ? CachedNetworkImage(
                           imageUrl:
                               '${activity.coverimg}?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80', //缩放压缩
                           fit: BoxFit.cover,
                         )
-                      : Image.asset(
-                          "images/icon_nullimg.png",
-                          width: _pageWidth,
-                          fit: BoxFit.cover,
-                        ),
+                      : Image.asset("images/icon_nullimg.png", width: _pageWidth, fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -1708,11 +1506,7 @@ class _ActivityState extends State<ActivityInfo> {
               padding: EdgeInsets.only(top: 5, left: 10),
               child: Text(
                 activity.content,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1784,39 +1578,24 @@ class _ActivityState extends State<ActivityInfo> {
               colors: <Color>[Colors.deepOrange, Colors.redAccent, Colors.red],
             ),
           ),
-          child: Text(
-            _activity!.goodPiceModel!.brand,
-            style: TextStyle(fontSize: 12, color: Colors.white),
-          ),
+          child: Text(_activity!.goodPiceModel!.brand, style: TextStyle(fontSize: 12, color: Colors.white)),
         ),
         SizedBox(width: 6),
         Text("￥", style: TextStyle(color: Colors.red, fontSize: 10)),
         Text(
           _activity!.goodPiceModel!.mincost.toString(),
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.red, fontSize: 14, fontWeight: FontWeight.bold),
         ),
         _activity!.goodPiceModel!.maxcost > 0
             ? Text(
                 '-',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.red, fontWeight: FontWeight.bold),
               )
             : SizedBox.shrink(),
         _activity!.goodPiceModel!.maxcost > 0
             ? Text(
                 _activity!.goodPiceModel!.maxcost.toString(),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.red, fontWeight: FontWeight.bold),
               )
             : SizedBox.shrink(),
       ],
@@ -1830,12 +1609,7 @@ class _ActivityState extends State<ActivityInfo> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipRRectOhterHeadImageContainer(
-              imageUrl: _activity!.goodPiceModel!.pic,
-              width: 50,
-              height: 50,
-              cir: 9,
-            ),
+            ClipRRectOhterHeadImageContainer(imageUrl: _activity!.goodPiceModel!.pic, width: 50, height: 50, cir: 9),
             SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -1844,10 +1618,7 @@ class _ActivityState extends State<ActivityInfo> {
                 children: [
                   Text(
                     _activity!.goodPiceModel!.title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    style: TextStyle(fontSize: 14, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 5),
                   widgetMoney,
@@ -1858,8 +1629,7 @@ class _ActivityState extends State<ActivityInfo> {
         ),
       ),
       onTap: () {
-        if (_activity!.goodpriceid != null &&
-            _activity!.goodpriceid!.isNotEmpty) {
+        if (_activity!.goodpriceid != null && _activity!.goodpriceid!.isNotEmpty) {
           _gotoGoodPrice();
         }
       },
@@ -1893,9 +1663,7 @@ class _ActivityState extends State<ActivityInfo> {
             color: Colors.white,
             alignment: Alignment.center,
             height: 80,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.top,
-            ), // !important
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.top), // !important
             margin: EdgeInsets.only(right: 10),
             width: double.infinity,
             child: Row(
@@ -1935,13 +1703,7 @@ class _ActivityState extends State<ActivityInfo> {
                   onPressed: () {
                     if (_message.isNotEmpty) {
                       Navigator.pop(context);
-                      sendToMessage(
-                        commentid,
-                        touid,
-                        _message,
-                        captchaVerification: "",
-                        touser: touser,
-                      );
+                      sendToMessage(commentid, touid, _message, captchaVerification: "", touser: touser);
                     } else {
                       ShowMessage.showToast('你还没有输入留言!');
                     }
@@ -1982,10 +1744,7 @@ class _ActivityState extends State<ActivityInfo> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return UpdateActivityDialog(
-                            initialTextContent: _activity!.content,
-                            activity: _activity!,
-                          );
+                          return UpdateActivityDialog(initialTextContent: _activity!.content, activity: _activity!);
                         },
                       ).then((value) {
                         setState(() {});
@@ -2025,11 +1784,9 @@ class _ActivityState extends State<ActivityInfo> {
 
   //查看goodprice
   Future<void> _gotoGoodPrice() async {
-    Navigator.pushNamed(
-      context,
-      '/GoodPriceInfo',
-      arguments: {"goodprice": _activity!.goodPiceModel!},
-    );
+    if (_activity?.goodPiceModel != null) {
+      Navigator.pushNamed(context, '/GoodPriceInfo', arguments: {"goodprice": _activity!.goodPiceModel!});
+    }
   }
 
   //是否确认结束
@@ -2086,12 +1843,7 @@ class _ActivityState extends State<ActivityInfo> {
       builder: (_) {
         return BlockPuzzleCaptchaPage(
           onSuccess: (v) {
-            sendToMessage(
-              blockcommentid,
-              blocktouid,
-              _message,
-              captchaVerification: v,
-            );
+            sendToMessage(blockcommentid, blocktouid, _message, captchaVerification: v);
           },
           onFail: () {},
         );
@@ -2123,11 +1875,7 @@ class _ActivityState extends State<ActivityInfo> {
                     child: TextButton(
                       child: Text(
                         '举 报',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -2179,11 +1927,7 @@ class _ActivityState extends State<ActivityInfo> {
                     child: TextButton(
                       child: Text(
                         '举 报',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -2191,12 +1935,7 @@ class _ActivityState extends State<ActivityInfo> {
                         Navigator.pushNamed(
                           context,
                           '/ReportAllMessage',
-                          arguments: {
-                            "sourcetype": 7,
-                            "actid": replyid.toString(),
-                            "touid": touid,
-                            "content": content,
-                          },
+                          arguments: {"sourcetype": 7, "actid": replyid.toString(), "touid": touid, "content": content},
                         );
                       },
                     ),
@@ -2231,11 +1970,7 @@ class _ActivityState extends State<ActivityInfo> {
                     child: TextButton(
                       child: Text(
                         '删 除',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         updateDelMessage(commentid);
@@ -2273,11 +2008,7 @@ class _ActivityState extends State<ActivityInfo> {
                     child: TextButton(
                       child: Text(
                         '删 除',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () {
                         updatedelMessageReply(replyid);
@@ -2306,11 +2037,7 @@ class _ActivityState extends State<ActivityInfo> {
             child: TextButton(
               child: Text(
                 '取 消',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -2330,11 +2057,7 @@ class UpdateActivityDialog extends StatefulWidget {
   final String initialTextContent;
   final Activity activity;
 
-  const UpdateActivityDialog({
-    super.key,
-    required this.initialTextContent,
-    required this.activity,
-  });
+  const UpdateActivityDialog({super.key, required this.initialTextContent, required this.activity});
 
   @override
   _UpdateActivityDialogState createState() => _UpdateActivityDialogState();
@@ -2371,10 +2094,7 @@ class _UpdateActivityDialogState extends State<UpdateActivityDialog> {
                     textcontent = text;
                   });
                 },
-                decoration: InputDecoration(
-                  hintText: "有趣的活动介绍，能让你组织的活动获得更多关注。",
-                  border: InputBorder.none,
-                ),
+                decoration: InputDecoration(hintText: "有趣的活动介绍，能让你组织的活动获得更多关注。", border: InputBorder.none),
               ),
             ),
             Row(
@@ -2402,9 +2122,7 @@ class _UpdateActivityDialogState extends State<UpdateActivityDialog> {
                 ),
                 SizedBox(width: 10),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                   child: Text('取消'),
                   onPressed: () async {
                     Navigator.pop(context);

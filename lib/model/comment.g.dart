@@ -16,7 +16,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) =>
         json['content'] as String?,
         (json['likenum'] as num?)?.toInt(),
         json['createtime'] as String?,
-        (json['likeuid'] as num).toInt(),
+        (json['likeuid'] as num?)?.toInt() ?? 0,
       )
       ..replys = (json['replys'] as List<dynamic>?)
           ?.map((e) => CommentReply.fromJson(e as Map<String, dynamic>))

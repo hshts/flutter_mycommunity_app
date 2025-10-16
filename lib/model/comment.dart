@@ -14,19 +14,11 @@ class Comment {
   int? likenum;
   String? createtime;
   List<CommentReply>? replys; //活动
+  @JsonKey(defaultValue: 0)
   int likeuid;
 
-  Comment(
-    this.commentid,
-    this.actid,
-    this.user,
-    this.content,
-    this.likenum,
-    this.createtime,
-    this.likeuid,
-  );
+  Comment(this.commentid, this.actid, this.user, this.content, this.likenum, this.createtime, this.likeuid);
 
   Map<String, dynamic> toJson() => _$CommentToJson(this);
-  factory Comment.fromJson(Map<String, dynamic> json) =>
-      _$CommentFromJson(json);
+  factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
 }

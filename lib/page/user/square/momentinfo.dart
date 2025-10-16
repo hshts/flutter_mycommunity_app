@@ -23,8 +23,7 @@ class MomentInfo extends StatefulWidget {
   final String momentid;
   final Object? arguments;
 
-  MomentInfo({super.key, this.arguments})
-    : momentid = arguments != null ? (arguments as Map)["momentid"] : "";
+  MomentInfo({super.key, this.arguments}) : momentid = arguments != null ? (arguments as Map)["momentid"] : "";
 
   @override
   _MomentInfoState createState() => _MomentInfoState();
@@ -47,25 +46,19 @@ class _MomentInfoState extends State<MomentInfo> {
   Future<void> getMoment() async {
     _moment = await imService.getMomentInfo(widget.momentid, errorCallBack);
     if (_moment != null) {
-      listComments = await imService.getMomentCommentList(
-        _moment!.momentid,
-        errorCallBack,
-      );
+      listComments = await imService.getMomentCommentList(_moment!.momentid, errorCallBack);
       if (Global.profile.user != null) {
-        await imhelper.selBugAndSuggestState(
-          widget.momentid,
-          Global.profile.user!.uid,
-          2,
-          (List<String> actid) {
-            if (actid.isNotEmpty) _islike = true;
-          },
-        );
+        await imhelper.selBugAndSuggestState(widget.momentid, Global.profile.user!.uid, 2, (List<String> actid) {
+          if (actid.isNotEmpty) _islike = true;
+        });
       }
 
       if (listComments.isNotEmpty) {
         listComments = sortComment(listComments, _ordertype);
       }
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -97,19 +90,13 @@ class _MomentInfoState extends State<MomentInfo> {
               ? Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: ShareView(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.black87,
-                      size: 18,
-                    ),
-                    image: _moment!.images != ""
-                        ? _moment!.images.split(',')[0]
-                        : "",
+                    icon: Icon(Icons.more_vert, color: Colors.black87, size: 18),
+                    image: _moment!.images != "" ? _moment!.images.split(',')[0] : "",
                     contentid: _moment!.momentid,
                     content: _moment!.content,
                     sharedtype: "2",
                     actid: _moment!.momentid,
-                    createuid: _moment!.user!.uid,
+                    createuid: _moment!.user?.uid ?? 0,
                   ),
                 )
               : SizedBox.shrink(),
@@ -130,9 +117,7 @@ class _MomentInfoState extends State<MomentInfo> {
                         buildHeadInfo(),
                         SizedBox(height: 10),
                         buildContent(),
-                        _moment!.voice != ""
-                            ? PlayVoice(_moment!.voice)
-                            : buildContentImg(),
+                        _moment!.voice != "" ? PlayVoice(_moment!.voice) : buildContentImg(),
                         SizedBox(height: 10),
                       ],
                     ),
@@ -154,8 +139,8 @@ class _MomentInfoState extends State<MomentInfo> {
         children: <Widget>[
           NoCacheCircleHeadImage(
             width: 60,
-            uid: _moment!.user!.uid,
-            imageUrl: _moment!.user!.profilepicture!,
+            uid: _moment!.user?.uid ?? 0,
+            imageUrl: _moment!.user?.profilepicture ?? "",
           ),
           Padding(padding: EdgeInsets.only(left: 10)),
           Expanded(
@@ -164,18 +149,12 @@ class _MomentInfoState extends State<MomentInfo> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  _moment!.user!.username,
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  _moment!.user?.username ?? "未知用户",
+                  style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  CommonUtil.datetimeFormat(
-                    DateTime.parse(_moment!.createtime),
-                  ),
+                  CommonUtil.datetimeFormat(DateTime.parse(_moment!.createtime)),
                   style: TextStyle(color: Colors.black45, fontSize: 14),
                 ),
               ],
@@ -194,12 +173,7 @@ class _MomentInfoState extends State<MomentInfo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              _moment!.content,
-              style: TextStyle(color: Colors.black87, fontSize: 14),
-            ),
-          ],
+          children: <Widget>[Text(_moment!.content, style: TextStyle(color: Colors.black87, fontSize: 14))],
         ),
       ),
     );
@@ -212,10 +186,7 @@ class _MomentInfoState extends State<MomentInfo> {
     _listimgs = _moment!.images.split(',');
     if (_listimgs.isNotEmpty) {
       for (int i = 0; i < _listimgs.length; i++) {
-        imglist.add({
-          "tag": UniqueKey().toString(),
-          "img": _listimgs[i].toString(),
-        });
+        imglist.add({"tag": UniqueKey().toString(), "img": _listimgs[i].toString()});
       }
     }
 
@@ -231,8 +202,7 @@ class _MomentInfoState extends State<MomentInfo> {
               },
               child: CachedNetworkImage(
                 placeholder: (context, url) => Container(),
-                imageUrl:
-                    '${_listimgs[i]}?x-oss-process=image/resize,m_fixed,w_1080/sharpen,50/quality,q_80',
+                imageUrl: '${_listimgs[i]}?x-oss-process=image/resize,m_fixed,w_1080/sharpen,50/quality,q_80',
                 fit: BoxFit.cover,
               ),
             ),
@@ -268,20 +238,13 @@ class _MomentInfoState extends State<MomentInfo> {
                 children: <Widget>[
                   Text(
                     '全部留言(${comments.length.toString()})',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.menu, color: Colors.black45, size: 18),
-                        Text(
-                          _sortname,
-                          style: TextStyle(color: Colors.black45, fontSize: 13),
-                        ),
+                        Text(_sortname, style: TextStyle(color: Colors.black45, fontSize: 13)),
                       ],
                     ),
                     onTap: () {
@@ -322,11 +285,7 @@ class _MomentInfoState extends State<MomentInfo> {
                 children: <Widget>[
                   Text(
                     '全部留言',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -335,10 +294,7 @@ class _MomentInfoState extends State<MomentInfo> {
                 height: 50,
                 width: double.infinity,
                 child: Center(
-                  child: Text(
-                    '还没有任何留言',
-                    style: TextStyle(color: Colors.black54, fontSize: 14),
-                  ),
+                  child: Text('还没有任何留言', style: TextStyle(color: Colors.black54, fontSize: 14)),
                 ),
               ),
             ],
@@ -373,49 +329,31 @@ class _MomentInfoState extends State<MomentInfo> {
                           Row(
                             children: <Widget>[
                               NoCacheCircleHeadImage(
-                                imageUrl: v.user!.profilepicture!,
+                                imageUrl: v.user?.profilepicture ?? "",
                                 width: 30,
-                                uid: v.user!.uid,
+                                uid: v.user?.uid ?? 0,
                               ),
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        v.user!.username,
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontSize: 13,
-                                        ),
-                                      ),
+                                      Text(v.user?.username ?? "未知用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
                                       Text(
                                         v.createtime!.substring(5, 10),
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
+                                        style: TextStyle(color: Colors.grey, fontSize: 12),
                                       ),
                                     ],
                                   ),
                                 ),
                                 onTap: () {
-                                  int uid = v.user!.uid;
+                                  int uid = v.user?.uid ?? 0;
                                   if (Global.profile.user == null) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid != Global.profile.user!.uid) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
@@ -428,56 +366,49 @@ class _MomentInfoState extends State<MomentInfo> {
                               IconButton(
                                 padding: EdgeInsets.all(5),
                                 icon: Icon(
-                                  (Global.profile.user == null ||
-                                          v.likeuid != Global.profile.user!.uid)
+                                  (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                       ? IconFont.icon_aixin
                                       : IconFont.icon_zan1,
-                                  color:
-                                      (Global.profile.user == null ||
-                                          v.likeuid != Global.profile.user!.uid)
+                                  color: (Global.profile.user == null || v.likeuid != Global.profile.user!.uid)
                                       ? Colors.black38
                                       : Global.profile.backColor,
                                 ),
                                 onPressed: () async {
                                   if (Global.profile.user == null) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/Login',
-                                    ).then((val) {});
+                                    Navigator.pushNamed(context, '/Login').then((val) {});
                                     return;
                                   }
                                   if (_isCommentLike) {
                                     _isCommentLike = false;
                                     if (v.likeuid == 0) {
-                                      bool ret = await imService
-                                          .updateMomentCommentLike(
-                                            v.commentid!,
-                                            Global.profile.user!.uid,
-                                            Global.profile.user!.token!,
-                                            v.user!.uid,
-                                            widget.momentid,
-                                            errorCallBack,
-                                          );
+                                      bool ret = await imService.updateMomentCommentLike(
+                                        v.commentid!,
+                                        Global.profile.user!.uid,
+                                        Global.profile.user!.token!,
+                                        v.user?.uid ?? 0,
+                                        widget.momentid,
+                                        errorCallBack,
+                                      );
                                       if (ret) {
                                         //List<Comment> listComments = await _activityService.getCommentList(event.actid, event.user.uid, errorCallBack);
                                         for (var e in comments) {
                                           if (e.commentid == v.commentid) {
-                                            e.likeuid =
-                                                Global.profile.user!.uid;
+                                            e.likeuid = Global.profile.user!.uid;
                                             e.likenum = e.likenum! + 1;
                                           }
                                         }
-                                        setState(() {});
+                                        if (mounted) {
+                                          setState(() {});
+                                        }
                                       }
                                     } else {
-                                      bool ret = await imService
-                                          .delMomentCommentLike(
-                                            v.commentid!,
-                                            Global.profile.user!.uid,
-                                            Global.profile.user!.token!,
-                                            v.user!.uid,
-                                            errorCallBack,
-                                          );
+                                      bool ret = await imService.delMomentCommentLike(
+                                        v.commentid!,
+                                        Global.profile.user!.uid,
+                                        Global.profile.user!.token!,
+                                        v.user?.uid ?? 0,
+                                        errorCallBack,
+                                      );
                                       if (ret) {
                                         for (var e in comments) {
                                           if (e.commentid == v.commentid) {
@@ -485,31 +416,25 @@ class _MomentInfoState extends State<MomentInfo> {
                                             e.likenum = e.likenum! - 1;
                                           }
                                         }
-                                        setState(() {});
+                                        if (mounted) {
+                                          setState(() {});
+                                        }
                                       }
                                     }
                                     _isCommentLike = true;
                                   }
                                 },
                               ),
-                              Text(
-                                v.likenum == 0 ? '' : v.likenum.toString(),
-                                style: TextStyle(color: Colors.black38),
-                              ),
+                              Text(v.likenum == 0 ? '' : v.likenum.toString(), style: TextStyle(color: Colors.black38)),
                             ],
                           ),
                         ],
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 40),
-                        child: Text(
-                          v.content!,
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
+                        child: Text(v.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
                       ),
-                      (v.replys != null)
-                          ? buildChildComment(v.replys!)
-                          : SizedBox(height: 0),
+                      (v.replys != null) ? buildChildComment(v.replys!) : SizedBox(height: 0),
                     ],
                   ),
                   onTap: () {
@@ -517,12 +442,11 @@ class _MomentInfoState extends State<MomentInfo> {
                       Navigator.pushNamed(context, '/Login').then((val) {});
                       return;
                     }
-                    _hidemessage = '回复@${v.user!.username}';
-                    sendMessage(v.commentid!, v.user!.uid, touser: v.user!);
+                    _hidemessage = '回复@${v.user?.username ?? "用户"}';
+                    sendMessage(v.commentid!, v.user?.uid ?? 0, touser: v.user);
                   },
                   onLongPressStart: (detail) {
-                    if (Global.profile.user != null &&
-                        v.user!.uid == Global.profile.user!.uid) {
+                    if (Global.profile.user != null && v.user?.uid == Global.profile.user!.uid) {
                       final RelativeRect position = RelativeRect.fromLTRB(
                         detail.globalPosition.dx,
                         detail.globalPosition.dy,
@@ -546,18 +470,13 @@ class _MomentInfoState extends State<MomentInfo> {
                                   errorCallBack,
                                 );
                                 if (ret) {
-                                  listComments = await imService
-                                      .getMomentCommentList(
-                                        widget.momentid,
-                                        errorCallBack,
-                                      );
+                                  listComments = await imService.getMomentCommentList(widget.momentid, errorCallBack);
                                   if (listComments.isNotEmpty) {
-                                    listComments = sortComment(
-                                      listComments,
-                                      _ordertype,
-                                    );
+                                    listComments = sortComment(listComments, _ordertype);
                                   }
-                                  setState(() {});
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
                                 }
                                 Navigator.pop(context);
                               },
@@ -587,10 +506,7 @@ class _MomentInfoState extends State<MomentInfo> {
           height: 50,
           width: double.infinity,
           child: Center(
-            child: Text(
-              '还没有任何留言',
-              style: TextStyle(color: Colors.black54, fontSize: 14),
-            ),
+            child: Text('还没有任何留言', style: TextStyle(color: Colors.black54, fontSize: 14)),
           ),
         ),
       );
@@ -612,9 +528,9 @@ class _MomentInfoState extends State<MomentInfo> {
                   child: Row(
                     children: <Widget>[
                       NoCacheCircleHeadImage(
-                        imageUrl: v.replyuser!.profilepicture!,
+                        imageUrl: v.replyuser?.profilepicture ?? "",
                         width: 30,
-                        uid: v.replyuser!.uid,
+                        uid: v.replyuser?.uid ?? 0,
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 10),
@@ -622,19 +538,10 @@ class _MomentInfoState extends State<MomentInfo> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              v.replyuser!.username,
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 13,
-                              ),
-                            ),
+                            Text(v.replyuser?.username ?? "未知用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
                             Text(
                               v.replycreatetime!.substring(5, 10),
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
+                              style: TextStyle(color: Colors.grey, fontSize: 12),
                             ),
                           ],
                         ),
@@ -644,12 +551,7 @@ class _MomentInfoState extends State<MomentInfo> {
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.only(
-                    top: 5,
-                    bottom: 5,
-                    right: 5,
-                    left: 40,
-                  ),
+                  margin: EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 40),
                   child: RichText(
                     textDirection: TextDirection.ltr,
                     textAlign: TextAlign.left,
@@ -658,24 +560,15 @@ class _MomentInfoState extends State<MomentInfo> {
                             children: <TextSpan>[
                               TextSpan(
                                 text: '回复 ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: Colors.black, fontSize: 14),
                               ),
                               TextSpan(
                                 text: v.touser!.username,
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: Colors.blue, fontSize: 14),
                               ),
                               TextSpan(
                                 text: ':${v.replycontent}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: Colors.black, fontSize: 14),
                               ),
                             ],
                           )
@@ -692,12 +585,12 @@ class _MomentInfoState extends State<MomentInfo> {
               ],
             ),
             onTap: () {
-              _hidemessage = '回复@${v.replyuser!.username}';
-              sendMessage(v.commentid!, v.replyuser!.uid, touser: v.replyuser);
+              _hidemessage = '回复@${v.replyuser?.username ?? "用户"}';
+              sendMessage(v.commentid!, v.replyuser?.uid ?? 0, touser: v.replyuser);
             },
           ),
           onLongPressStart: (detail) {
-            if (v.replyuser!.uid == Global.profile.user!.uid) {
+            if (v.replyuser?.uid == Global.profile.user!.uid) {
               final RelativeRect position = RelativeRect.fromLTRB(
                 detail.globalPosition.dx,
                 detail.globalPosition.dy,
@@ -721,17 +614,13 @@ class _MomentInfoState extends State<MomentInfo> {
                           errorCallBack,
                         );
                         if (ret) {
-                          listComments = await imService.getMomentCommentList(
-                            widget.momentid,
-                            errorCallBack,
-                          );
+                          listComments = await imService.getMomentCommentList(widget.momentid, errorCallBack);
                           if (listComments.isNotEmpty) {
-                            listComments = sortComment(
-                              listComments,
-                              _ordertype,
-                            );
+                            listComments = sortComment(listComments, _ordertype);
                           }
-                          setState(() {});
+                          if (mounted) {
+                            setState(() {});
+                          }
                         }
                         Navigator.pop(context);
                       },
@@ -759,10 +648,7 @@ class _MomentInfoState extends State<MomentInfo> {
         color: Colors.black12.withAlpha(20),
       ),
 
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: tem,
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: tem),
     );
   }
 
@@ -778,9 +664,7 @@ class _MomentInfoState extends State<MomentInfo> {
             color: Colors.white,
             alignment: Alignment.center,
             height: 80,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.top,
-            ), // !important
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.top), // !important
             margin: EdgeInsets.only(right: 10),
             width: double.infinity,
             child: Row(
@@ -818,11 +702,7 @@ class _MomentInfoState extends State<MomentInfo> {
                   ),
                   child: Text(
                     '发送',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   onPressed: () async {
                     if (_message.isNotEmpty) {
@@ -850,23 +730,24 @@ class _MomentInfoState extends State<MomentInfo> {
                               0,
                             ),
                           );
-                          setState(() {});
+                          if (mounted) {
+                            setState(() {});
+                          }
                         } else {
                           errorHandle(commentid ?? 0, touid, touser);
                         }
                       } else {
                         Navigator.pop(context);
-                        int temreplyid = await imService
-                            .updateMomentCommentReply(
-                              commentid,
-                              widget.momentid,
-                              Global.profile.user!.uid,
-                              Global.profile.user!.token!,
-                              touid,
-                              _message,
-                              "",
-                              errorCallBack,
-                            );
+                        int temreplyid = await imService.updateMomentCommentReply(
+                          commentid,
+                          widget.momentid,
+                          Global.profile.user!.uid,
+                          Global.profile.user!.token!,
+                          touid,
+                          _message,
+                          "",
+                          errorCallBack,
+                        );
 
                         if (temreplyid > 0) {
                           for (var e in listComments) {
@@ -891,7 +772,9 @@ class _MomentInfoState extends State<MomentInfo> {
                               );
                             }
                           }
-                          setState(() {});
+                          if (mounted) {
+                            setState(() {});
+                          }
                         } else {
                           errorHandle(commentid ?? 0, touid, touser!);
                         }
@@ -931,12 +814,7 @@ class _MomentInfoState extends State<MomentInfo> {
   void errorHandle(int commentid, int touid, User? touser) {
     if (errorstatusCode != "200") {
       if (errorstatusCode == "-1008") {
-        loadingBlockPuzzle(
-          context,
-          commentid: commentid,
-          touid: touid,
-          touser: touser,
-        );
+        loadingBlockPuzzle(context, commentid: commentid, touid: touid, touser: touser);
       } else {
         ShowMessage.showToast(error);
       }
@@ -975,10 +853,12 @@ class _MomentInfoState extends State<MomentInfo> {
                             Global.profile.user!.token!,
                             errorCallBack,
                           )) {
-                            setState(() {
-                              _moment!.likenum = _moment!.likenum + 1;
-                              _islike = true;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _moment!.likenum = _moment!.likenum + 1;
+                                _islike = true;
+                              });
+                            }
                           }
                         } else {
                           if (await imService.delMomentLike(
@@ -987,10 +867,12 @@ class _MomentInfoState extends State<MomentInfo> {
                             Global.profile.user!.token!,
                             errorCallBack,
                           )) {
-                            setState(() {
-                              _moment!.likenum = _moment!.likenum - 1;
-                              _islike = false;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _moment!.likenum = _moment!.likenum - 1;
+                                _islike = false;
+                              });
+                            }
                           }
                         }
                         _isLikeEnter = true;
@@ -999,11 +881,7 @@ class _MomentInfoState extends State<MomentInfo> {
                   ),
                   Text(
                     _moment == null ? "0" : _moment!.likenum.toString(),
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -1015,7 +893,7 @@ class _MomentInfoState extends State<MomentInfo> {
                     onPressed: () {
                       if (Global.profile.user != null) {
                         _hidemessage = "快给楼主留言吧";
-                        sendMessage(0, _moment!.user!.uid);
+                        sendMessage(0, _moment!.user?.uid ?? 0);
                       } else {
                         Navigator.pushNamed(context, '/Login').then((val) {});
                       }
@@ -1023,11 +901,7 @@ class _MomentInfoState extends State<MomentInfo> {
                   ),
                   Text(
                     "留言",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -1064,17 +938,11 @@ class _MomentInfoState extends State<MomentInfo> {
               );
               listComments.insert(
                 0,
-                Comment(
-                  retcommentid,
-                  _moment!.momentid,
-                  Global.profile.user,
-                  _message,
-                  0,
-                  CommonUtil.getTime(),
-                  0,
-                ),
+                Comment(retcommentid, _moment!.momentid, Global.profile.user, _message, 0, CommonUtil.getTime(), 0),
               );
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             } else {
               int temreplyid = await imService.updateMomentCommentReply(
                 commentid,
@@ -1109,7 +977,9 @@ class _MomentInfoState extends State<MomentInfo> {
                     );
                   }
                 }
-                setState(() {});
+                if (mounted) {
+                  setState(() {});
+                }
               }
             }
           },

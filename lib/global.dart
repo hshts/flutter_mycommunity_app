@@ -11,7 +11,7 @@ const _themes = <MaterialColor>[Colors.purple, Colors.blue, Colors.cyan, Colors.
 class Global {
   // static String serviceurl = "http://localhost/console/api/";
   static String serviceIM = "ws://ws.chulaiwanba.com:8082/ws";
-  static String serviceurl = "http://127.0.0.1:5001/console/api/";
+  static String serviceurl = "http://127.0.0.1:5000";
   // static String serviceIM =  "ws://192.168.10.108:8082/ws";
 
   static String headimg = "images/icon_head_default.png";

@@ -28,7 +28,9 @@ class _MomentWidgetState extends State<MomentWidget> {
   final ImService _imService = ImService();
 
   @override
-  initState() {}
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +39,7 @@ class _MomentWidgetState extends State<MomentWidget> {
     if (widget.moment.images.isNotEmpty) {
       List<String> paths = widget.moment.images.split(',');
       for (int i = 0; i < paths.length; i++) {
-        lists.add({
-          "tag": UniqueKey().toString(),
-          "img": paths[i].toString(),
-          "imgwh": widget.moment.coverimgwh,
-        });
+        lists.add({"tag": UniqueKey().toString(), "img": paths[i].toString(), "imgwh": widget.moment.coverimgwh});
         if (i == maxImgs - 1) {
           break;
         }
@@ -56,9 +54,9 @@ class _MomentWidgetState extends State<MomentWidget> {
           width: 45,
           height: 45,
           child: NoCacheClipRRectHeadImage(
-            imageUrl: widget.moment.user!.profilepicture ?? "",
+            imageUrl: widget.moment.user?.profilepicture ?? "",
             width: 30,
-            uid: widget.moment.user!.uid,
+            uid: widget.moment.user?.uid ?? 0,
             cir: 50,
           ),
         ),
@@ -83,22 +81,16 @@ class _MomentWidgetState extends State<MomentWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  widget.moment.user!.username,
+                                  widget.moment.user?.username ?? "用户",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 14,
-                                  ),
+                                  style: TextStyle(color: Colors.black87, fontSize: 14),
                                 ),
                               ],
                             ),
                             SizedBox(height: 3),
                             Text(
-                              widget.moment.user!.signature,
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
+                              widget.moment.user?.signature ?? "",
+                              style: TextStyle(color: Colors.black54, fontSize: 12),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -108,17 +100,10 @@ class _MomentWidgetState extends State<MomentWidget> {
                     ],
                   ),
                   Padding(padding: EdgeInsets.only(top: 5)),
-                  widget.moment.voice != ""
-                      ? PlayVoice(widget.moment.voice)
-                      : SizedBox(),
-                  lists.isEmpty
-                      ? SizedBox.shrink()
-                      : CityPhotoViewGallery(list: lists),
+                  widget.moment.voice != "" ? PlayVoice(widget.moment.voice) : SizedBox(),
+                  lists.isEmpty ? SizedBox.shrink() : CityPhotoViewGallery(list: lists),
                   Padding(padding: EdgeInsets.only(top: 5)),
-                  Text(
-                    widget.moment.content,
-                    style: TextStyle(color: Colors.black, fontSize: 13),
-                  ),
+                  Text(widget.moment.content, style: TextStyle(color: Colors.black, fontSize: 13)),
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: Row(
@@ -130,27 +115,19 @@ class _MomentWidgetState extends State<MomentWidget> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             IconText(
-                              widget.moment.likenum.toString() == "0"
-                                  ? '点赞'
-                                  : widget.moment.likenum.toString(),
+                              widget.moment.likenum.toString() == "0" ? '点赞' : widget.moment.likenum.toString(),
                               padding: EdgeInsets.only(right: 2),
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
+                              style: TextStyle(color: Colors.black54, fontSize: 12),
                               icon: widget.moment.islike
-                                  ? Icon(
-                                      IconFont.icon_zan1,
-                                      color: Colors.redAccent,
-                                      size: 16,
-                                    )
-                                  : Icon(
-                                      IconFont.icon_aixin,
-                                      color: Colors.black54,
-                                      size: 16,
-                                    ),
+                                  ? Icon(IconFont.icon_zan1, color: Colors.redAccent, size: 16)
+                                  : Icon(IconFont.icon_aixin, color: Colors.black54, size: 16),
                               onTap: () async {
                                 if (Global.profile.user == null) {
+                                  Navigator.pushNamed(context, '/Login');
+                                  return;
+                                }
+                                if (Global.profile.user!.token == null || Global.profile.user!.token!.isEmpty) {
+                                  ShowMessage.showToast("登录已过期，请重新登录");
                                   Navigator.pushNamed(context, '/Login');
                                   return;
                                 }
@@ -164,8 +141,7 @@ class _MomentWidgetState extends State<MomentWidget> {
                                       Global.profile.user!.token!,
                                       errorResponse,
                                     );
-                                    widget.moment.likenum =
-                                        widget.moment.likenum - 1;
+                                    widget.moment.likenum = widget.moment.likenum - 1;
                                     widget.moment.islike = false;
                                   } else {
                                     ret = await _imService.updateMomentLike(
@@ -174,8 +150,7 @@ class _MomentWidgetState extends State<MomentWidget> {
                                       Global.profile.user!.token!,
                                       errorResponse,
                                     );
-                                    widget.moment.likenum =
-                                        widget.moment.likenum + 1;
+                                    widget.moment.likenum = widget.moment.likenum + 1;
                                     widget.moment.islike = true;
                                   }
                                   if (ret) {
@@ -191,22 +166,13 @@ class _MomentWidgetState extends State<MomentWidget> {
                                   ? '评论'
                                   : widget.moment.commentcount.toString(),
                               padding: EdgeInsets.only(right: 2),
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
-                              icon: Icon(
-                                IconFont.icon_liuyan,
-                                color: Colors.black45,
-                                size: 16,
-                              ),
+                              style: TextStyle(color: Colors.black54, fontSize: 12),
+                              icon: Icon(IconFont.icon_liuyan, color: Colors.black45, size: 16),
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
                                   '/MomentInfo',
-                                  arguments: {
-                                    "momentid": widget.moment.momentid,
-                                  },
+                                  arguments: {"momentid": widget.moment.momentid},
                                 ).then((val) {
                                   setState(() {});
                                 });
@@ -220,11 +186,9 @@ class _MomentWidgetState extends State<MomentWidget> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/MomentInfo',
-                  arguments: {"momentid": widget.moment.momentid},
-                ).then((val) {
+                Navigator.pushNamed(context, '/MomentInfo', arguments: {"momentid": widget.moment.momentid}).then((
+                  val,
+                ) {
                   if (val == "refresh") {
                     widget.refresh();
                   }
