@@ -23,8 +23,8 @@ EvaluateActivity _$EvaluateActivityFromJson(Map<String, dynamic> json) =>
         (json['liketype'] as num?)?.toInt(),
         json['actcontent'] as String?,
         json['coverimg'] as String?,
-        json['orderid'] as String,
-        json['goodpriceid'] as String,
+        json['orderid'] as String? ?? '',
+        json['goodpriceid'] as String? ?? '',
       )
       ..replys = (json['replys'] as List<dynamic>?)
           ?.map(

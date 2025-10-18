@@ -15,8 +15,7 @@ class EvaluateInfo extends StatefulWidget {
   final EvaluateActivity evaluateActivity;
 
   EvaluateInfo({super.key, this.arguments})
-    : evaluateActivity =
-          (arguments as Map)["evaluateActivity"] as EvaluateActivity;
+    : evaluateActivity = (arguments as Map)["evaluateActivity"] as EvaluateActivity;
 
   @override
   _EvaluateInfoState createState() => _EvaluateInfoState();
@@ -33,10 +32,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
   int temreplyid = -1;
 
   Future<void> getEvaluateReplys() async {
-    evaluateReplys = await _activityService.getEvaluateReplyList(
-      widget.evaluateActivity.evaluateid!,
-      errorCallBack,
-    );
+    evaluateReplys = await _activityService.getEvaluateReplyList(widget.evaluateActivity.evaluateid!, errorCallBack);
     setState(() {});
   }
 
@@ -63,10 +59,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          '评价详情',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
+        title: Text('评价详情', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: ListView(
@@ -84,10 +77,9 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                       Row(
                         children: [
                           NoCacheCircleHeadImage(
-                            imageUrl:
-                                widget.evaluateActivity.user!.profilepicture!,
+                            imageUrl: widget.evaluateActivity.user?.profilepicture ?? "",
                             width: 45,
-                            uid: widget.evaluateActivity.user!.uid,
+                            uid: widget.evaluateActivity.user?.uid ?? 0,
                           ),
                           GestureDetector(
                             child: Container(
@@ -97,37 +89,22 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    widget.evaluateActivity.user!.username,
-                                    style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 14,
-                                    ),
+                                    widget.evaluateActivity.user?.username ?? "未知用户",
+                                    style: TextStyle(color: Colors.black87, fontSize: 14),
                                   ),
                                   Text(
-                                    widget.evaluateActivity.createtime!
-                                        .substring(0, 10),
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 14,
-                                    ),
+                                    widget.evaluateActivity.createtime!.substring(0, 10),
+                                    style: TextStyle(color: Colors.grey, fontSize: 14),
                                   ),
                                 ],
                               ),
                             ),
                             onTap: () {
-                              int uid = widget.evaluateActivity.user!.uid;
+                              int uid = widget.evaluateActivity.user?.uid ?? 0;
                               if (Global.profile.user == null) {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/OtherProfile',
-                                  arguments: {"uid": uid},
-                                );
+                                Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                               } else if (uid != Global.profile.user!.uid) {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/OtherProfile',
-                                  arguments: {"uid": uid},
-                                );
+                                Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                               } else if (uid == Global.profile.user!.uid)
                                 Navigator.pushNamed(context, '/MyProfile');
                             },
@@ -138,10 +115,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           widget.evaluateActivity.liketype == 1
-                              ? Icon(
-                                  IconFont.icon_haoping1,
-                                  color: Colors.redAccent,
-                                )
+                              ? Icon(IconFont.icon_haoping1, color: Colors.redAccent)
                               : SizedBox.shrink(),
                         ],
                       ),
@@ -152,18 +126,14 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                   alignment: Alignment.centerLeft,
                   margin: EdgeInsets.all(10),
                   child: Text(
-                    widget.evaluateActivity.content!,
+                    widget.evaluateActivity.content ?? "",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
-                widget.evaluateActivity.imagepaths!.isNotEmpty
+                (widget.evaluateActivity.imagepaths ?? "").isNotEmpty
                     ? Container(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Column(
-                          children: getImageList(
-                            widget.evaluateActivity.imagepaths!,
-                          ),
-                        ),
+                        child: Column(children: getImageList(widget.evaluateActivity.imagepaths ?? "")),
                       )
                     : SizedBox.shrink(),
               ],
@@ -186,8 +156,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(0)),
             child: CachedNetworkImage(
-              imageUrl:
-                  '${e.toString()}?x-oss-process=image/resize,m_fixed,w_1080/sharpen,50/quality,q_80',
+              imageUrl: '${e.toString()}?x-oss-process=image/resize,m_fixed,w_1080/sharpen,50/quality,q_80',
               fit: BoxFit.cover,
             ),
           ),
@@ -226,17 +195,15 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                             widget.evaluateActivity.evaluateid!,
                             Global.profile.user!.uid,
                             Global.profile.user!.token!,
-                            widget.evaluateActivity.user!.uid,
+                            widget.evaluateActivity.user?.uid ?? 0,
                             "",
                             errorCallBack,
                           );
                           if (ret) {
                             setState(() {
                               _isLikeEnter = true;
-                              widget.evaluateActivity.likeuid =
-                                  Global.profile.user!.uid;
-                              widget.evaluateActivity.likenum =
-                                  widget.evaluateActivity.likenum! + 1;
+                              widget.evaluateActivity.likeuid = Global.profile.user!.uid;
+                              widget.evaluateActivity.likenum = widget.evaluateActivity.likenum! + 1;
                             });
                           }
                         } else {
@@ -244,14 +211,13 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                             widget.evaluateActivity.evaluateid!,
                             Global.profile.user!.uid,
                             Global.profile.user!.token!,
-                            widget.evaluateActivity.user!.uid,
+                            widget.evaluateActivity.user?.uid ?? 0,
                             errorCallBack,
                           );
                           if (ret) {
                             setState(() {
                               widget.evaluateActivity.likeuid = 0;
-                              widget.evaluateActivity.likenum =
-                                  widget.evaluateActivity.likenum! - 1;
+                              widget.evaluateActivity.likenum = widget.evaluateActivity.likenum! - 1;
                             });
                           }
                         }
@@ -260,11 +226,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                   ),
                   Text(
                     widget.evaluateActivity.likenum.toString(),
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -278,8 +240,8 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                         _hidemessage = "留言问问活动细节吧~";
                         sendMessage(
                           widget.evaluateActivity.evaluateid!,
-                          widget.evaluateActivity.user!.uid,
-                          widget.evaluateActivity.user!,
+                          widget.evaluateActivity.user?.uid ?? 0,
+                          widget.evaluateActivity.user,
                         );
                       } else {
                         Navigator.pushNamed(context, '/Login').then((val) {
@@ -292,11 +254,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                   ),
                   Text(
                     "回复",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -308,15 +266,13 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
   }
 
   //留言输入框
-  void sendMessage(int evaluateid, int touid, User user) {
+  void sendMessage(int evaluateid, int touid, User? user) {
     showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ), // !important
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), // !important
             margin: EdgeInsets.only(right: 10),
             width: double.infinity,
             child: Row(
@@ -383,8 +339,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                               "",
                             ),
                           );
-                          widget.evaluateActivity.replynum =
-                              widget.evaluateActivity.replynum! + 1;
+                          widget.evaluateActivity.replynum = widget.evaluateActivity.replynum! + 1;
                         });
                       }
                       Navigator.pop(context);
@@ -414,10 +369,7 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
-                  ' ${widget.evaluateActivity.replynum} 条回复',
-                  style: TextStyle(color: Colors.black87, fontSize: 14),
-                ),
+                Text(' ${widget.evaluateActivity.replynum} 条回复', style: TextStyle(color: Colors.black87, fontSize: 14)),
               ],
             ),
             SizedBox(height: 10),
@@ -433,8 +385,8 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
     if (listEvaluateReplys.isNotEmpty) {
       listEvaluateReplys.map((v) {
         String toname = "";
-        if (v.touser!.uid != widget.evaluateActivity.user!.uid) {
-          toname = "回复${v.touser!.username} ";
+        if (v.touser?.uid != null && v.touser!.uid != (widget.evaluateActivity.user?.uid ?? 0)) {
+          toname = "回复${v.touser?.username ?? "用户"} ";
         }
         tem.add(
           Container(
@@ -453,49 +405,34 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                           Row(
                             children: <Widget>[
                               NoCacheCircleHeadImage(
-                                imageUrl: v.replyuser!.profilepicture!,
+                                imageUrl: v.replyuser?.profilepicture ?? "",
                                 width: 30,
-                                uid: v.replyuser!.uid,
+                                uid: v.replyuser?.uid ?? 0,
                               ),
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        v.replyuser!.username,
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontSize: 13,
-                                        ),
+                                        v.replyuser?.username ?? "未知用户",
+                                        style: TextStyle(color: Colors.black54, fontSize: 13),
                                       ),
                                       Text(
                                         v.replycreatetime!.substring(5, 10),
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
+                                        style: TextStyle(color: Colors.grey, fontSize: 12),
                                       ),
                                     ],
                                   ),
                                 ),
                                 onTap: () {
-                                  int uid = v.replyuser!.uid;
+                                  int uid = v.replyuser?.uid ?? 0;
                                   if (Global.profile.user == null) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid != Global.profile.user!.uid) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/OtherProfile',
-                                      arguments: {"uid": uid},
-                                    );
+                                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid == Global.profile.user!.uid)
                                     Navigator.pushNamed(context, '/MyProfile');
                                 },
@@ -506,16 +443,13 @@ class _EvaluateInfoState extends State<EvaluateInfo> {
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 30, top: 5),
-                        child: Text(
-                          '$toname${v.replycontent}',
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
+                        child: Text('$toname${v.replycontent}', style: TextStyle(color: Colors.black, fontSize: 14)),
                       ),
                     ],
                   ),
                   onTap: () {
-                    _hidemessage = '回复@${v.replyuser!.username}';
-                    sendMessage(v.evaluateid!, v.replyuser!.uid, v.replyuser!);
+                    _hidemessage = '回复@${v.replyuser?.username ?? "用户"}';
+                    sendMessage(v.evaluateid!, v.replyuser?.uid ?? 0, v.replyuser);
                   },
                 ),
               ],

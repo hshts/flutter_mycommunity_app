@@ -8,6 +8,9 @@ from .group_purchase import (
 from .comment import (
     ActivityComment, ActivityCommentReply, ActivityCommentLike
 )
+from .user import (
+    User, UserVCode, Follow, Blacklist, NotInterested, GoodPriceNotInterested, PushDevice
+)
 
 __all__ = [
     'Activity',
@@ -24,5 +27,12 @@ __all__ = [
     'GoodPriceEvaluateLike',
     'ActivityComment',
     'ActivityCommentReply',
-    'ActivityCommentLike'
+    'ActivityCommentLike',
+    'User',
+    'UserVCode',
+    'Follow',
+    'Blacklist',
+    'NotInterested',
+    'GoodPriceNotInterested',
+    'PushDevice'
 ]

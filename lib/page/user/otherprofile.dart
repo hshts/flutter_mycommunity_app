@@ -25,15 +25,13 @@ class OtherProfile extends StatefulWidget {
   final Object? arguments;
   final int uid;
 
-  OtherProfile({super.key, this.arguments})
-    : uid = arguments != null ? (arguments as Map)["uid"] : 0;
+  OtherProfile({super.key, this.arguments}) : uid = arguments != null ? (arguments as Map)["uid"] : 0;
 
   @override
   _OtherProfileState createState() => _OtherProfileState();
 }
 
-class _OtherProfileState extends State<OtherProfile>
-    with TickerProviderStateMixin {
+class _OtherProfileState extends State<OtherProfile> with TickerProviderStateMixin {
   User? user;
 
   ///当前滑动的位置
@@ -126,9 +124,8 @@ class _OtherProfileState extends State<OtherProfile>
 
   @override
   void initState() {
-    if (Platform.isAndroid) {
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-          false; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
+    if (!kIsWeb && Platform.isAndroid) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
     // TODO: implement initState
     super.initState();
@@ -139,25 +136,17 @@ class _OtherProfileState extends State<OtherProfile>
       setState(() {});
     });
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels <=
-          _scrollController.position.minScrollExtent) {}
+      if (_scrollController.position.pixels <= _scrollController.position.minScrollExtent) {}
       _onDragUpdate(_scrollController.position.pixels);
     });
-    animationColorController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    animationColorControllerIsDown = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+    animationColorController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    animationColorControllerIsDown = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
   }
 
   @override
   void dispose() {
-    if (Platform.isAndroid) {
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-          true; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
+    if (!kIsWeb && Platform.isAndroid) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = true; //去掉会导致底部状态栏重绘变成黑色，系统UI重绘，，页面退出后要改成true
     }
     // TODO: implement dispose
     mController.dispose();
@@ -182,8 +171,13 @@ class _OtherProfileState extends State<OtherProfile>
     }
 
     String sexinfo = user!.sex == '1' ? '男生' : (user!.sex == '0' ? '女生' : '');
-    strpersonalInfo =
-        "${user!.city != null && user!.city!.isNotEmpty ? CommonUtil.getProvinceCityName(user!.province, user!.city) : "太阳系"} · ${CommonUtil.getAgeGroup(user!.birthday!)}$sexinfo · ${CommonUtil.getConstellation(user!.birthday!)}";
+    final String cityName = (user!.city != null && user!.city!.isNotEmpty)
+        ? CommonUtil.getProvinceCityName(user!.province, user!.city)
+        : "太阳系";
+    final String? birthday = user!.birthday;
+    final String ageGroup = (birthday != null && birthday.isNotEmpty) ? CommonUtil.getAgeGroup(birthday) : '';
+    final String constellation = (birthday != null && birthday.isNotEmpty) ? CommonUtil.getConstellation(birthday) : '';
+    strpersonalInfo = "$cityName · ${ageGroup}$sexinfo · ${constellation}";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -210,9 +204,7 @@ class _OtherProfileState extends State<OtherProfile>
                         child: Icon(
                           IconFont.icon_navbar_xiaoxi,
                           size: 19,
-                          color: isBlack
-                              ? textbarbackgroundColor
-                              : Colors.white,
+                          color: isBlack ? textbarbackgroundColor : Colors.white,
                         ),
                       ),
                     ),
@@ -239,9 +231,7 @@ class _OtherProfileState extends State<OtherProfile>
                           child: Icon(
                             Icons.more_vert,
                             size: 19,
-                            color: isBlack
-                                ? textbarbackgroundColor
-                                : Colors.white,
+                            color: isBlack ? textbarbackgroundColor : Colors.white,
                           ),
                         ),
                       ),
@@ -276,10 +266,7 @@ class _OtherProfileState extends State<OtherProfile>
               primary: true,
               pinned: true,
               centerTitle: true,
-              title: Text(
-                user!.username,
-                style: TextStyle(color: textbarbackgroundColor, fontSize: 16),
-              ),
+              title: Text(user?.username ?? '', style: TextStyle(color: textbarbackgroundColor, fontSize: 16)),
               expandedHeight: headContainer + personalInfoHeight + 20,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -289,16 +276,13 @@ class _OtherProfileState extends State<OtherProfile>
                       Container(
                         height: 130,
                         decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(user!.profilepicture!),
-                            fit: BoxFit.cover,
-                          ),
+                          image: (user!.profilepicture != null && user!.profilepicture!.isNotEmpty)
+                              ? DecorationImage(image: NetworkImage(user!.profilepicture!), fit: BoxFit.cover)
+                              : null,
+                          color: Colors.grey.shade200,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 130),
-                        color: Colors.white,
-                      ),
+                      Container(margin: EdgeInsets.only(top: 130), color: Colors.white),
                       buildHeadInfo(),
                       buildFsInfo(),
                       buildPersonalInfo(),
@@ -324,28 +308,11 @@ class _OtherProfileState extends State<OtherProfile>
                             controller: mController,
                             labelColor: Global.profile.backColor,
                             unselectedLabelColor: Colors.black54,
-                            unselectedLabelStyle: TextStyle(
-                              fontWeight: FontWeight.w300,
-                            ),
-                            labelStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
+                            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w300),
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                             tabs: <Widget>[
-                              Text(
-                                'Ta的活动',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Ta的动态',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text('Ta的活动', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                              Text('Ta的动态', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -362,19 +329,11 @@ class _OtherProfileState extends State<OtherProfile>
           controller: mController,
           children: [
             GlowNotificationWidget(
-              MyActivity(
-                user: user!,
-                isScroll: isScroll,
-                srollChange: srollChange,
-              ),
+              MyActivity(user: user!, isScroll: isScroll, srollChange: srollChange),
               showGlowLeading: false,
             ),
             GlowNotificationWidget(
-              MyMoment(
-                user: user!,
-                isScroll: isScroll,
-                srollChange: srollChange,
-              ),
+              MyMoment(user: user!, isScroll: isScroll, srollChange: srollChange),
               showGlowLeading: false,
             ),
           ],
@@ -392,17 +351,11 @@ class _OtherProfileState extends State<OtherProfile>
           child: TextButton(
             style: TextButton.styleFrom(
               backgroundColor: Global.profile.backColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
             ),
             child: Text(
               "+ 关注",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Global.profile.fontColor,
-                fontSize: 14,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w900, color: Global.profile.fontColor, fontSize: 14),
             ),
             onPressed: () {
               if (Global.profile.user != null) {
@@ -422,24 +375,15 @@ class _OtherProfileState extends State<OtherProfile>
           child: OutlinedButton(
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.black45,
-              shape: RoundedRectangleBorder(
-                side: BorderSide.none,
-                borderRadius: BorderRadius.all(Radius.circular(9)),
-              ),
+              shape: RoundedRectangleBorder(side: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(9))),
             ),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return MessageDialog(
-                    title: Text(
-                      "提示",
-                      style: TextStyle(fontSize: 16.0, color: Colors.black87),
-                    ),
-                    message: Text(
-                      "确定要取消关注?",
-                      style: TextStyle(fontSize: 14.0, color: Colors.black54),
-                    ),
+                    title: Text("提示", style: TextStyle(fontSize: 16.0, color: Colors.black87)),
+                    message: Text("确定要取消关注?", style: TextStyle(fontSize: 14.0, color: Colors.black54)),
                     negativeText: "取消",
                     positiveText: "确定",
                     containerHeight: 80,
@@ -454,10 +398,7 @@ class _OtherProfileState extends State<OtherProfile>
                 },
               );
             },
-            child: Text(
-              '已关注',
-              style: TextStyle(fontSize: 14.0, color: Colors.black),
-            ),
+            child: Text('已关注', style: TextStyle(fontSize: 14.0, color: Colors.black)),
           ),
         ),
       ],
@@ -476,10 +417,7 @@ class _OtherProfileState extends State<OtherProfile>
               decoration: BoxDecoration(
                 border: Border.all(color: Global.profile.fontColor!, width: 2),
                 borderRadius: BorderRadius.circular(50),
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(user!.profilepicture!),
-                ),
+                image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(user!.profilepicture!)),
               ),
               child: SizedBox.shrink(),
             ),
@@ -505,11 +443,7 @@ class _OtherProfileState extends State<OtherProfile>
                         onTap: () {
                           if (user!.followers! > 0) {
                             if (Global.profile.user != null) {
-                              Navigator.pushNamed(
-                                context,
-                                '/MyFansUser',
-                                arguments: {"uid": user!.uid},
-                              );
+                              Navigator.pushNamed(context, '/MyFansUser', arguments: {"uid": user!.uid});
                             } else {
                               logIn();
                             }
@@ -519,22 +453,10 @@ class _OtherProfileState extends State<OtherProfile>
                           child: Column(
                             children: <Widget>[
                               Text(
-                                user!.followers == null
-                                    ? '0'
-                                    : CommonUtil.getNum(user!.followers!),
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                user!.followers == null ? '0' : CommonUtil.getNum(user!.followers!),
+                                style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                               ),
-                              Text(
-                                '粉丝',
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text('粉丝', style: TextStyle(color: Colors.black45, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -543,11 +465,7 @@ class _OtherProfileState extends State<OtherProfile>
                         onTap: () {
                           if (user!.following! > 0) {
                             if (Global.profile.user != null) {
-                              Navigator.pushNamed(
-                                context,
-                                '/OtherFollowUser',
-                                arguments: {"uid": user!.uid},
-                              );
+                              Navigator.pushNamed(context, '/OtherFollowUser', arguments: {"uid": user!.uid});
                             } else {
                               logIn();
                             }
@@ -557,22 +475,10 @@ class _OtherProfileState extends State<OtherProfile>
                           child: Column(
                             children: <Widget>[
                               Text(
-                                user!.following == null
-                                    ? '0'
-                                    : CommonUtil.getNum(user!.following!),
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                user!.following == null ? '0' : CommonUtil.getNum(user!.following!),
+                                style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                               ),
-                              Text(
-                                '关注',
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text('关注', style: TextStyle(color: Colors.black45, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -583,29 +489,14 @@ class _OtherProfileState extends State<OtherProfile>
                             context: context,
                             builder: (BuildContext context) {
                               return MessageDialog(
-                                title: Text(
-                                  user!.username,
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                                title: Text(user!.username, style: TextStyle(fontSize: 16.0, color: Colors.black)),
                                 message: Column(
                                   children: [
-                                    Text(
-                                      "活动、留言、评论累计获赞",
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black45,
-                                      ),
-                                    ),
+                                    Text("活动、留言、评论累计获赞", style: TextStyle(fontSize: 14.0, color: Colors.black45)),
                                     SizedBox(height: 20),
                                     Text(
                                       user!.likenum.toString(),
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black87,
-                                      ),
+                                      style: TextStyle(fontSize: 16.0, color: Colors.black87),
                                     ),
                                   ],
                                 ),
@@ -625,22 +516,10 @@ class _OtherProfileState extends State<OtherProfile>
                           child: Column(
                             children: <Widget>[
                               Text(
-                                user!.likenum == null
-                                    ? '0'
-                                    : CommonUtil.getNum(user!.likenum!),
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                user!.likenum == null ? '0' : CommonUtil.getNum(user!.likenum!),
+                                style: TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                               ),
-                              Text(
-                                '点赞',
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text('点赞', style: TextStyle(color: Colors.black45, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -649,12 +528,7 @@ class _OtherProfileState extends State<OtherProfile>
                   ),
                   Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(
-                      right: 10,
-                      left: 10,
-                      bottom: 10,
-                      top: 0,
-                    ),
+                    margin: EdgeInsets.only(right: 10, left: 10, bottom: 10, top: 0),
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 3300),
                       child: user!.isFollow ? cancelfollowandmsg : followandmsg,
@@ -692,10 +566,7 @@ class _OtherProfileState extends State<OtherProfile>
                             child: Text(
                               user!.signature == "" ? 'Ta很神秘' : user!.signature,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black,
-                              ),
+                              style: TextStyle(fontSize: 13, color: Colors.black),
                             ),
                           ),
                         ],
@@ -708,10 +579,7 @@ class _OtherProfileState extends State<OtherProfile>
                           Expanded(
                             child: Text(
                               strpersonalInfo,
-                              style: TextStyle(
-                                fontSize: 13.0,
-                                color: Colors.black,
-                              ),
+                              style: TextStyle(fontSize: 13.0, color: Colors.black),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -727,10 +595,7 @@ class _OtherProfileState extends State<OtherProfile>
                               user!.interest != null && user!.interest != ""
                                   ? "喜欢${CommonUtil.getInterest(user!.interest!)}"
                                   : "喜欢什么就是不告诉你",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 13,
-                              ),
+                              style: TextStyle(color: Colors.black, fontSize: 13),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -765,9 +630,7 @@ class _OtherProfileState extends State<OtherProfile>
           user!.voice != null && user!.voice != ""
               ? Padding(padding: EdgeInsets.only(left: 5, top: 0))
               : SizedBox.shrink(),
-          user!.voice != null && user!.voice != ""
-              ? PlayVoice(user!.voice!)
-              : SizedBox.shrink(),
+          user!.voice != null && user!.voice != "" ? PlayVoice(user!.voice!) : SizedBox.shrink(),
         ],
       ),
     );
@@ -781,31 +644,20 @@ class _OtherProfileState extends State<OtherProfile>
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.redAccent,
-          side: BorderSide(
-            color: Colors.redAccent,
-            width: 1,
-            style: BorderStyle.solid,
-          ),
+          side: BorderSide(color: Colors.redAccent, width: 1, style: BorderStyle.solid),
         ),
         onPressed: () {
           if (Global.profile.user != null) {
             Navigator.pushNamed(
               context,
               '/JoinFriend',
-              arguments: {
-                "uid": Global.profile.user!.uid,
-                "touid": user!.uid,
-                "jointype": 1,
-              },
+              arguments: {"uid": Global.profile.user!.uid, "touid": user!.uid, "jointype": 1},
             );
           } else {
             logIn();
           }
         },
-        child: Text(
-          "加好友",
-          style: TextStyle(color: Colors.redAccent, fontSize: 14),
-        ),
+        child: Text("加好友", style: TextStyle(color: Colors.redAccent, fontSize: 14)),
       ),
     );
     //分享按钮
@@ -814,19 +666,12 @@ class _OtherProfileState extends State<OtherProfile>
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.redAccent,
-          side: BorderSide(
-            color: Colors.redAccent,
-            width: 1,
-            style: BorderStyle.solid,
-          ),
+          side: BorderSide(color: Colors.redAccent, width: 1, style: BorderStyle.solid),
         ),
         onPressed: () {
           //            _otherUserBloc.add(new JoinGroupMessage(Global.profile.user, Global.profile.user.mycommunity.cid));
         },
-        child: Text(
-          "分享",
-          style: TextStyle(color: Colors.redAccent, fontSize: 14),
-        ),
+        child: Text("分享", style: TextStyle(color: Colors.redAccent, fontSize: 14)),
       ),
     );
 
@@ -837,17 +682,9 @@ class _OtherProfileState extends State<OtherProfile>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           isMyFriend
-              ? Text(
-                  ' 你们已经是好友了，快分享活动吧',
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                )
-              : Text(
-                  ' 成为朋友一起约起来吧',
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                ),
-          isMyFriend
-              ? btnMsg
-              : ((Global.profile.user != null) ? btnJoin : SizedBox.shrink()),
+              ? Text(' 你们已经是好友了，快分享活动吧', style: TextStyle(color: Colors.black45, fontSize: 13))
+              : Text(' 成为朋友一起约起来吧', style: TextStyle(color: Colors.black45, fontSize: 13)),
+          isMyFriend ? btnMsg : ((Global.profile.user != null) ? btnJoin : SizedBox.shrink()),
         ],
       ),
     );
@@ -883,9 +720,7 @@ class _OtherProfileState extends State<OtherProfile>
     }
 
     String blackName = "";
-    List<int> blackList = await imHelper.getBlacklistUid(
-      Global.profile.user!.uid,
-    );
+    List<int> blackList = await imHelper.getBlacklistUid(Global.profile.user!.uid);
     if (blackList.contains(user!.uid)) {
       blackName = "解除黑名单"; //下面是用名称做判断，修改的话下面也要改
     } else {
@@ -904,10 +739,7 @@ class _OtherProfileState extends State<OtherProfile>
             ListTile(
               title: Align(
                 alignment: Alignment.center,
-                child: Text(
-                  blackName,
-                  style: TextStyle(color: Colors.black87, fontSize: 15),
-                ),
+                child: Text(blackName, style: TextStyle(color: Colors.black87, fontSize: 15)),
               ),
               onTap: () async {
                 if (blackName == "解除黑名单") {
@@ -920,10 +752,7 @@ class _OtherProfileState extends State<OtherProfile>
                     },
                   );
                   if (ret) {
-                    imHelper.delBlacklistUid(
-                      Global.profile.user!.uid,
-                      user!.uid,
-                    );
+                    imHelper.delBlacklistUid(Global.profile.user!.uid, user!.uid);
                   }
                   Navigator.of(context).pop();
                 } else {
@@ -935,20 +764,13 @@ class _OtherProfileState extends State<OtherProfile>
             ListTile(
               title: Align(
                 alignment: Alignment.center,
-                child: Text(
-                  '举报',
-                  style: TextStyle(color: Colors.black87, fontSize: 15),
-                ),
+                child: Text('举报', style: TextStyle(color: Colors.black87, fontSize: 15)),
               ),
               onTap: () {
                 Navigator.pushNamed(
                   context,
                   '/ReportActivity',
-                  arguments: {
-                    "actid": user!.uid.toString(),
-                    "sourcetype": 2,
-                    "touid": widget.uid,
-                  },
+                  arguments: {"actid": user!.uid.toString(), "sourcetype": 2, "touid": widget.uid},
                 ); //0活动 1商品 2用户
               },
             ),
@@ -971,11 +793,7 @@ class _OtherProfileState extends State<OtherProfile>
             child: TextButton(
               child: Text(
                 '取 消',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -993,10 +811,7 @@ class _OtherProfileState extends State<OtherProfile>
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-            '加入黑名单，他(她)将不能再给你发消息，并且不能参加你组织的活动',
-            style: TextStyle(fontSize: 17.0),
-          ),
+          title: Text('加入黑名单，他(她)将不能再给你发消息，并且不能参加你组织的活动', style: TextStyle(fontSize: 17.0)),
           actions: <Widget>[
             TextButton(
               child: Text('确定'),
@@ -1010,10 +825,7 @@ class _OtherProfileState extends State<OtherProfile>
                   },
                 );
                 if (ret) {
-                  imHelper.saveBlacklistUid(
-                    Global.profile.user!.uid,
-                    user!.uid,
-                  );
+                  imHelper.saveBlacklistUid(Global.profile.user!.uid, user!.uid);
                 }
                 Navigator.of(context).pop();
               },
@@ -1037,10 +849,7 @@ class _OtherProfileState extends State<OtherProfile>
     } else {
       timelineId = Global.profile.user!.uid.toString() + user!.uid.toString();
     }
-    GroupRelation? groupRelation = await imHelper.getGroupRelationByGroupid(
-      Global.profile.user!.uid,
-      timelineId,
-    );
+    GroupRelation? groupRelation = await imHelper.getGroupRelationByGroupid(Global.profile.user!.uid, timelineId);
     groupRelation ??= await _userService.joinSingle(
       timelineId,
       Global.profile.user!.uid,
@@ -1054,11 +863,7 @@ class _OtherProfileState extends State<OtherProfile>
       groupRelations.add(groupRelation);
       int ret = await imHelper.saveGroupRelation(groupRelations);
       if (ret > 0) {
-        Navigator.pushNamed(
-          context,
-          '/MyMessage',
-          arguments: {"GroupRelation": groupRelation},
-        );
+        Navigator.pushNamed(context, '/MyMessage', arguments: {"GroupRelation": groupRelation});
       }
     }
   }

@@ -1,8 +1,17 @@
 """添加商品评价测试数据"""
-from api import create_app, db
-from api.models import GoodPrice, GoodPriceEvaluate, GoodPriceEvaluateReply
+import os
+import sys
 from datetime import datetime, timedelta
 import uuid
+
+# 将项目根目录加入到模块搜索路径，确保可以导入 api 包
+CURRENT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from api import create_app, db
+from api.models import GoodPrice, GoodPriceEvaluate, GoodPriceEvaluateReply
 
 def add_evaluate_test_data():
     """添加评价测试数据"""
@@ -78,18 +87,18 @@ def add_evaluate_test_data():
             for i in range(num_evaluates):
                 eval_data = evaluate_contents[added_evaluates % len(evaluate_contents)]
                 
-                evaluateid = str(uuid.uuid4())
                 evaluate = GoodPriceEvaluate(
-                    evaluateid=evaluateid,
                     goodpriceid=good.goodpriceid,
                     uid=1000 + added_evaluates,  # 不同的用户
                     content=eval_data['content'],
-                    rating=eval_data['rating'],
+                    liketype=eval_data['rating'],  # 模型字段为 liketype(评分)
                     images=eval_data['images'],
                     createtime=datetime.utcnow() - timedelta(days=added_evaluates)
                 )
-                
                 db.session.add(evaluate)
+                # 刷新以获取自增 evaluateid
+                db.session.flush()
+                evaluateid = evaluate.evaluateid
                 added_evaluates += 1
                 
                 print(f"  ✓ 添加评价 (用户{evaluate.uid}): {eval_data['content'][:30]}...")
@@ -128,7 +137,7 @@ def add_evaluate_test_data():
         print(f"\n商品评价统计:")
         for good in goods:
             eval_count = GoodPriceEvaluate.query.filter_by(goodpriceid=good.goodpriceid).count()
-            avg_rating = db.session.query(db.func.avg(GoodPriceEvaluate.rating)).filter_by(
+            avg_rating = db.session.query(db.func.avg(GoodPriceEvaluate.liketype)).filter_by(
                 goodpriceid=good.goodpriceid
             ).scalar()
             

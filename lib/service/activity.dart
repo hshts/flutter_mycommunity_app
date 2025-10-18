@@ -58,7 +58,8 @@ class ActivityService {
 
     Activity? activity;
 
-    FormData formData = FormData.fromMap({
+    // FormData formData = FormData.fromMap({...});
+    Map<String, dynamic> requestData = {
       "token": token,
       "province": province,
       "city": city,
@@ -77,11 +78,17 @@ class ActivityService {
       "paytype": paytype,
       "goodpriceid": goodpriceid,
       "captchaVerification": captchaVerification,
-    });
+    };
 
-    await NetUtil.getInstance().post(formData, "/Activity/createActivity", (Map<String, dynamic> data) {
-      activity = Activity.fromJson(data["data"]);
-    }, errorCallBack);
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/createActivity",
+      (Map<String, dynamic> data) {
+        activity = Activity.fromJson(data["data"]);
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return activity;
   }
 
@@ -108,10 +115,6 @@ class ActivityService {
   //获取活动详情
   Future<Activity?> getActivityMember(String actid, Function errorCallBack) async {
     Activity? activity;
-    int uid = 0;
-    if (Global.profile.user != null) {
-      uid = Global.profile.user!.uid;
-    }
     await NetUtil.getInstance().get(
       "/Activity/getActivityMember",
       (Map<String, dynamic> data) {
@@ -128,10 +131,7 @@ class ActivityService {
   //获取活动详情
   Future<Activity?> getActivityAndPendingOrder(String actid, int uid, String token, Function errorCallBack) async {
     Activity? activity;
-    int uid = 0;
-    if (Global.profile.user != null) {
-      uid = Global.profile.user!.uid;
-    }
+    final int queryUid = uid != 0 ? uid : (Global.profile.user?.uid ?? 0);
     await NetUtil.getInstance().get(
       "/Activity/getActivityAndPendingOrder",
       (Map<String, dynamic> data) {
@@ -139,7 +139,7 @@ class ActivityService {
           activity = Activity.fromJson(data["data"]);
         }
       },
-      params: {"actid": actid, "uid": uid.toString(), "token": token},
+      params: {"actid": actid, "uid": queryUid.toString(), "token": token},
       errorCallBack: errorCallBack,
     );
     return activity;
@@ -371,15 +371,22 @@ class ActivityService {
       ids += "${users[i].uid},";
     }
     ids = ids.substring(0, ids.length - 1);
-    FormData formData = FormData.fromMap({"currentIndex": currentIndex, "ids": ids});
+    // FormData formData = FormData.fromMap({"currentIndex": currentIndex, "ids": ids});
+    Map<String, dynamic> requestData = {"currentIndex": currentIndex, "ids": ids};
 
-    await NetUtil.getInstance().post(formData, "/Activity/getActivityFollowList", (Map<String, dynamic> data) async {
-      if (data["data"] != null) {
-        for (int i = 0; i < data["data"].length; i++) {
-          activityList.add(Activity.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/getActivityFollowList",
+      (Map<String, dynamic> data) async {
+        if (data["data"] != null) {
+          for (int i = 0; i < data["data"].length; i++) {
+            activityList.add(Activity.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, () {});
+      },
+      () {},
+      asJson: true,
+    );
 
     return activityList;
   }
@@ -434,80 +441,115 @@ class ActivityService {
   Future<void> getUserLike(int uid, String token) async {
     int count = await imhelper.selActivityStateCount(uid);
     if (count <= 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserLike", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delActivityState(actid, uid);
-            await imhelper.saveActivityState(actid, uid);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delActivityState(actid, uid);
+              await imhelper.saveActivityState(actid, uid);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
   Future<void> getUserLikeBug(int uid, String token) async {
     int count = await imhelper.selBugSuggestStateCount(uid, 0);
     if (count <= 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserLikeBug", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delBugSuggestState(actid, uid, 0);
-            await imhelper.saveBugSuggestState(actid, uid, 0);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserLikeBug",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delBugSuggestState(actid, uid, 0);
+              await imhelper.saveBugSuggestState(actid, uid, 0);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
   Future<void> getUserLikeSuggest(int uid, String token) async {
     int count = await imhelper.selBugSuggestStateCount(uid, 1);
     if (count <= 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserLikeSuggest", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delBugSuggestState(actid, uid, 1);
-            await imhelper.saveBugSuggestState(actid, uid, 1);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserLikeSuggest",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delBugSuggestState(actid, uid, 1);
+              await imhelper.saveBugSuggestState(actid, uid, 1);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
   Future<void> getUserLikeMoment(int uid, String token) async {
     int count = await imhelper.selBugSuggestStateCount(uid, 2); //评价
     if (count <= 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserLikeMoment", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delBugSuggestState(actid, uid, 2);
-            await imhelper.saveBugSuggestState(actid, uid, 2);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserLikeMoment",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delBugSuggestState(actid, uid, 2);
+              await imhelper.saveBugSuggestState(actid, uid, 2);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
   Future<void> getUserCollection(int uid, String token) async {
     int count = await imhelper.selActivityCollectionCount(uid);
     if (count <= 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserCollection", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            Activity activity = (Activity.fromMapCollection(data["data"][i]));
-            await imhelper.delActivityCollectionState(activity.actid, uid);
-            await imhelper.saveActivityCollectionState(activity, uid);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserCollection",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              Activity activity = (Activity.fromMapCollection(data["data"][i]));
+              await imhelper.delActivityCollectionState(activity.actid, uid);
+              await imhelper.saveActivityCollectionState(activity, uid);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
@@ -516,29 +558,43 @@ class ActivityService {
     int evaluatecount = await imhelper.selActivityEvaluateCountState(uid);
 
     if (commentcount <= 0 && likecomment > 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserComnnentLike", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delActivityCommentState(actid, uid);
-            await imhelper.saveActivityCommentState(actid, uid);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserComnnentLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delActivityCommentState(actid, uid);
+              await imhelper.saveActivityCommentState(actid, uid);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
 
     if (evaluatecount <= 0 && likeevaluate > 0) {
-      FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData1, "/Activity/getUserEvaluateLike", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String evaluateid = (data["data"][i]);
-            await imhelper.delActivityEvaluateState(evaluateid, uid);
-            await imhelper.saveActivityEvaluateState(evaluateid, uid);
+      // FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData1 = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData1,
+        "/Activity/getUserEvaluateLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String evaluateid = (data["data"][i]);
+              await imhelper.delActivityEvaluateState(evaluateid, uid);
+              await imhelper.saveActivityEvaluateState(evaluateid, uid);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
@@ -546,18 +602,23 @@ class ActivityService {
     int commentcount = await imhelper.selGoodPriceCommentCountState(uid);
 
     if (commentcount <= 0 && likecomment > 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/grouppurchase/getUserGoodPriceComnnentLike", (
-        Map<String, dynamic> data,
-      ) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String commentid = (data["data"][i]);
-            await imhelper.delGoodPriceCommentState(commentid, uid);
-            await imhelper.saveGoodPriceCommentState(commentid, uid);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/grouppurchase/getUserGoodPriceComnnentLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String commentid = (data["data"][i]);
+              await imhelper.delGoodPriceCommentState(commentid, uid);
+              await imhelper.saveGoodPriceCommentState(commentid, uid);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
@@ -573,56 +634,80 @@ class ActivityService {
     int momentcommentcount = await imhelper.selBugAndSuggestCommentCountState(uid, 2);
 
     if (bugcommentcount <= 0 && bugcommentlike > 0) {
-      FormData formData = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData, "/Activity/getUserBugComnnentLike", (Map<String, dynamic> data) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String actid = (data["data"][i]);
-            await imhelper.delBugAndSuggestCommentState(actid, uid, 0);
-            await imhelper.saveBugAndSuggestCommentState(actid, uid, 0);
+      // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUserBugComnnentLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String actid = (data["data"][i]);
+              await imhelper.delBugAndSuggestCommentState(actid, uid, 0);
+              await imhelper.saveBugAndSuggestCommentState(actid, uid, 0);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
 
     if (suggestcommentcount <= 0 && suggestcommentlike > 0) {
-      FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData1, "/Activity/getUserSuggestComnnentLike", (
-        Map<String, dynamic> data,
-      ) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String evaluateid = (data["data"][i]);
-            await imhelper.delBugAndSuggestCommentState(evaluateid, uid, 1);
-            await imhelper.saveBugAndSuggestCommentState(evaluateid, uid, 1);
+      // FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData1 = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData1,
+        "/Activity/getUserSuggestComnnentLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String evaluateid = (data["data"][i]);
+              await imhelper.delBugAndSuggestCommentState(evaluateid, uid, 1);
+              await imhelper.saveBugAndSuggestCommentState(evaluateid, uid, 1);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
 
     if (momentcommentcount <= 0 && momentcommentlike > 0) {
-      FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
-      await NetUtil.getInstance().post(formData1, "/Activity/getUserMomentCommentLike", (
-        Map<String, dynamic> data,
-      ) async {
-        if (data["data"] != null) {
-          for (int i = 0; i < data["data"].length; i++) {
-            String evaluateid = (data["data"][i]);
-            await imhelper.delBugAndSuggestCommentState(evaluateid, uid, 2);
-            await imhelper.saveBugAndSuggestCommentState(evaluateid, uid, 2);
+      // FormData formData1 = FormData.fromMap({"token": token, "uid": uid});
+      Map<String, dynamic> requestData2 = {"token": token, "uid": uid};
+      await NetUtil.getInstance().post(
+        requestData2,
+        "/Activity/getUserMomentCommentLike",
+        (Map<String, dynamic> data) async {
+          if (data["data"] != null) {
+            for (int i = 0; i < data["data"].length; i++) {
+              String evaluateid = (data["data"][i]);
+              await imhelper.delBugAndSuggestCommentState(evaluateid, uid, 2);
+              await imhelper.saveBugAndSuggestCommentState(evaluateid, uid, 2);
+            }
           }
-        }
-      }, () {});
+        },
+        () {},
+        asJson: true,
+      );
     }
   }
 
   //点赞
   Future<bool> updateLike(String actid, int uid, String token, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
-    await NetUtil.getInstance().post(formData, "/Activity/updateLike", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
+    Map<String, dynamic> requestData = {"token": token, "actid": actid, "uid": uid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/updateLike",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
     if (isUpdate) {
       await imhelper.saveActivityState(actid, uid);
     }
@@ -633,10 +718,17 @@ class ActivityService {
   //取消点赞
   Future<bool> delLike(String actid, int uid, String token, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
-    await NetUtil.getInstance().post(formData, "/Activity/delLike", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
+    Map<String, dynamic> requestData = {"token": token, "actid": actid, "uid": uid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/delLike",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
     if (isUpdate) {
       await imhelper.delActivityState(actid, uid);
     }
@@ -646,10 +738,17 @@ class ActivityService {
   //收藏
   Future<bool> updateCollection(Activity activity, int uid, String token, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "actid": activity.actid, "uid": uid});
-    await NetUtil.getInstance().post(formData, "/Activity/updateCollection", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "actid": activity.actid, "uid": uid});
+    Map<String, dynamic> requestData = {"token": token, "actid": activity.actid, "uid": uid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/updateCollection",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
 
     await imhelper.saveActivityCollectionState(activity, uid);
     return isUpdate;
@@ -658,10 +757,17 @@ class ActivityService {
   //取消收藏
   Future<bool> delCollection(String actid, int uid, String token, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
-    await NetUtil.getInstance().post(formData, "/Activity/delCollection", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "actid": actid, "uid": uid});
+    Map<String, dynamic> requestData = {"token": token, "actid": actid, "uid": uid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/delCollection",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
     await imhelper.delActivityCollectionState(actid, uid);
     return isUpdate;
   }
@@ -678,7 +784,8 @@ class ActivityService {
   ) async {
     int commentid = 0;
 
-    FormData formData = FormData.fromMap({
+    // FormData formData = FormData.fromMap({...});
+    Map<String, dynamic> requestData = {
       "commentid": commentid,
       "token": token,
       "actid": actid,
@@ -686,10 +793,16 @@ class ActivityService {
       "touid": touid,
       "content": content,
       "captchaVerification": captchaVerification,
-    });
-    await NetUtil.getInstance().post(formData, "/Activity/updatecomment", (Map<String, dynamic> data) {
-      commentid = int.parse(data["data"].toString());
-    }, errorCallBack);
+    };
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/updatecomment",
+      (Map<String, dynamic> data) {
+        commentid = int.parse(data["data"].toString());
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return commentid;
   }
 
@@ -706,7 +819,8 @@ class ActivityService {
   ) async {
     int isret = 0;
 
-    FormData formData = FormData.fromMap({
+    // FormData formData = FormData.fromMap({...});
+    Map<String, dynamic> requestData = {
       "commentid": commentid,
       "token": token,
       "actid": actid,
@@ -714,42 +828,56 @@ class ActivityService {
       "touid": touid,
       "content": content,
       "captchaVerification": captchaVerification,
-    });
-    await NetUtil.getInstance().post(formData, "/Activity/updatecomment", (Map<String, dynamic> data) {
-      isret = int.parse(data["data"].toString());
-    }, errorCallBack);
+    };
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/updatecomment",
+      (Map<String, dynamic> data) {
+        isret = int.parse(data["data"].toString());
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return isret;
   }
 
   //取消留言
   Future<bool> delMessage(String token, int uid, int commentid, String actid, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
+    // FormData formData = FormData.fromMap({...});
+    Map<String, dynamic> requestData = {
       "token": token,
       "commentid": commentid,
       "uid": uid,
       "replyid": 0,
       "actid": actid,
-    });
-    await NetUtil.getInstance().post(formData, "/Activity/delcomment", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    };
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/delcomment",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return isUpdate;
   }
 
   //取消留言里的回复
   Future<bool> delMessageReply(String token, int uid, int replyid, String actid, Function errorCallBack) async {
     bool isUpdate = false;
-    FormData formData = FormData.fromMap({
-      "token": token,
-      "commentid": 0,
-      "uid": uid,
-      "replyid": replyid,
-      "actid": actid,
-    });
-    await NetUtil.getInstance().post(formData, "/Activity/delcomment", (Map<String, dynamic> data) {
-      isUpdate = true;
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({...});
+    Map<String, dynamic> requestData = {"token": token, "commentid": 0, "uid": uid, "replyid": replyid, "actid": actid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/delcomment",
+      (Map<String, dynamic> data) {
+        isUpdate = true;
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return isUpdate;
   }
 
@@ -970,16 +1098,22 @@ class ActivityService {
 
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     int replyid = await imhelper.getMaxReplyid(ReplyMsgType.replymsg);
-    replyid ??= -1;
-    FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "replyid": replyid});
+    // FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "replyid": replyid});
+    Map<String, dynamic> requestData = {"uid": Global.profile.user!.uid, "replyid": replyid};
 
-    await NetUtil.getInstance().post(formData, "/Activity/getCommentReplyList", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        for (int i = 0; i < data["data"].length; i++) {
-          commentReplys.add(CommentReply.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/getCommentReplyList",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          for (int i = 0; i < data["data"].length; i++) {
+            commentReplys.add(CommentReply.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, errorCallBack);
+      },
+      errorCallBack,
+      asJson: true,
+    );
 
     return commentReplys;
   }
@@ -990,16 +1124,22 @@ class ActivityService {
 
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     int commentid = await imhelper.getMaxReplyid(ReplyMsgType.commentmsg);
-    commentid ??= -1;
-    FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "commentid": commentid});
+    // FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "commentid": commentid});
+    Map<String, dynamic> requestData = {"uid": Global.profile.user!.uid, "commentid": commentid};
 
-    await NetUtil.getInstance().post(formData, "/Activity/getNewCommentList", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        for (int i = 0; i < data["data"].length; i++) {
-          commentReplys.add(CommentReply.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/getNewCommentList",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          for (int i = 0; i < data["data"].length; i++) {
+            commentReplys.add(CommentReply.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, errorCallBack);
+      },
+      errorCallBack,
+      asJson: true,
+    );
 
     return commentReplys;
   }
@@ -1009,16 +1149,22 @@ class ActivityService {
 
     ///服务器获取的已读数据和本地缓存的对比，使用最新的
     int replyid = await imhelper.getMaxReplyid(ReplyMsgType.sysnotice);
-    replyid ??= -1;
-    FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "replyid": replyid});
+    // FormData formData = FormData.fromMap({"uid": Global.profile.user!.uid, "replyid": replyid});
+    Map<String, dynamic> requestData = {"uid": Global.profile.user!.uid, "replyid": replyid};
 
-    await NetUtil.getInstance().post(formData, "/Activity/getSysNotice", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        for (int i = 0; i < data["data"].length; i++) {
-          commentReplys.add(CommentReply.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/getSysNotice",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          for (int i = 0; i < data["data"].length; i++) {
+            commentReplys.add(CommentReply.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, errorCallBack);
+      },
+      errorCallBack,
+      asJson: true,
+    );
 
     return commentReplys;
   }
@@ -1027,12 +1173,19 @@ class ActivityService {
   Future<UserNotice?> syncUserNotice(int uid, String token, Function errorCallBack) async {
     UserNotice? userNotice;
 
-    FormData formData = FormData.fromMap({"token": token, "uid": uid});
-    await NetUtil.getInstance().post(formData, "/Activity/syncUserNotice", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        userNotice = UserNotice.fromJson(data["data"]);
-      }
-    }, errorCallBack);
+    // FormData formData = FormData.fromMap({"token": token, "uid": uid});
+    Map<String, dynamic> requestData = {"token": token, "uid": uid};
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/syncUserNotice",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          userNotice = UserNotice.fromJson(data["data"]);
+        }
+      },
+      errorCallBack,
+      asJson: true,
+    );
     return userNotice;
   }
 
@@ -1388,7 +1541,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (likes.isNotEmpty) {
-      int count = await imhelper.saveActivityLike(likes);
+      await imhelper.saveActivityLike(likes);
     }
     if (issuccess) {
       await postReadLike(0, uid, token, errorCallBack);
@@ -1426,7 +1579,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (likes.isNotEmpty) {
-      int count = await imhelper.saveActivityLike(likes);
+      await imhelper.saveActivityLike(likes);
     }
     if (issuccess) {
       await postReadLike(3, uid, token, errorCallBack);
@@ -1464,7 +1617,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (likes.isNotEmpty) {
-      int count = await imhelper.saveActivityLike(likes);
+      await imhelper.saveActivityLike(likes);
     }
     if (issuccess) {
       await postReadLike(4, uid, token, errorCallBack);
@@ -1806,7 +1959,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.replymsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.replymsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.replymsg, uid, token, errorCallBack);
@@ -1844,7 +1997,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.goodpricereplymsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.goodpricereplymsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.goodpricereplymsg, uid, token, errorCallBack);
@@ -1882,7 +2035,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.bugreplymsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.bugreplymsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.bugreplymsg, uid, token, errorCallBack);
@@ -1920,7 +2073,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.suggestreplymsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.suggestreplymsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.suggestreplymsg, uid, token, errorCallBack);
@@ -1996,7 +2149,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.sysnotice);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.sysnotice);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.sysnotice, uid, token, errorCallBack);
@@ -2044,24 +2197,31 @@ class ActivityService {
   //获取未评价的订单
   Future<List<Order>> getUnEvaluateOrderList(int uid, String token, Function errorCallBack) async {
     List<Order> unevaluateorderlist = [];
-    FormData formData = FormData.fromMap({"uid": uid, "token": token});
+    // FormData formData = FormData.fromMap({"uid": uid, "token": token});
+    Map<String, dynamic> requestData = {"uid": uid, "token": token};
 
     ///获取未评论活动
-    await NetUtil.getInstance().post(formData, "/Activity/getUnEvaluateOrderList", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        for (int i = 0; i < data["data"].length; i++) {
-          unevaluateorderlist.add(Order.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData,
+      "/Activity/getUnEvaluateOrderList",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          for (int i = 0; i < data["data"].length; i++) {
+            unevaluateorderlist.add(Order.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, errorCallBack);
+      },
+      errorCallBack,
+      asJson: true,
+    );
 
     return unevaluateorderlist;
   }
 
   Future<void> syncUnActivityEvaluateFun(UserNotice userNotice, uid, token, Function errorCallBack) async {
-    List<EvaluateActivityReply> evaluateActivityReplys = [];
+    // List<EvaluateActivityReply> evaluateActivityReplys = [];
     bool issuccess = false; //正常从服务器返回就标记为已读,避免数据删除后一直从服务器拉取数据
-    int unnum = userNotice.unevaluate_activity;
+    // int unnum = userNotice.unevaluate_activity;
 
     ///判断服务器未评论活动是否大于本地
     List<ActivityEvaluate>? activitys = await imhelper.getUnEvaluateActivity(0, 10000, 0);
@@ -2074,19 +2234,26 @@ class ActivityService {
         print("load activityEvaluates....");
       }
       List<ActivityEvaluate> activityEvaluates = [];
-      FormData formData = FormData.fromMap({"uid": uid, "token": token, "readindex": 0});
+      // FormData formData = FormData.fromMap({"uid": uid, "token": token, "readindex": 0});
+      Map<String, dynamic> requestData = {"uid": uid, "token": token, "readindex": 0};
 
       ///获取未评论活动
-      await NetUtil.getInstance().post(formData, "/Activity/getUnActvityEvaluateList", (Map<String, dynamic> data) {
-        if (data["data"] != null) {
-          issuccess = true;
-          for (int i = 0; i < data["data"].length; i++) {
-            activityEvaluates.add(ActivityEvaluate.fromJson(data["data"][i]));
+      await NetUtil.getInstance().post(
+        requestData,
+        "/Activity/getUnActvityEvaluateList",
+        (Map<String, dynamic> data) {
+          if (data["data"] != null) {
+            issuccess = true;
+            for (int i = 0; i < data["data"].length; i++) {
+              activityEvaluates.add(ActivityEvaluate.fromJson(data["data"][i]));
+            }
           }
-        }
-      }, errorCallBack);
+        },
+        errorCallBack,
+        asJson: true,
+      );
       if (activityEvaluates.isNotEmpty) {
-        int count = await imhelper.saveUnEvaluateActivity(activityEvaluates, Global.profile.user!.uid);
+        await imhelper.saveUnEvaluateActivity(activityEvaluates, Global.profile.user!.uid);
       }
       if (issuccess) {
         await postReadMessage(ReplyMsgType.evaluateactivity, uid, token, errorCallBack);
@@ -2095,7 +2262,7 @@ class ActivityService {
   }
 
   Future<void> syncUnActivityEvaluateFunReadIndex(UserNotice userNotice, uid, token, Function errorCallBack) async {
-    List<EvaluateActivityReply> evaluateActivityReplys = [];
+    // List<EvaluateActivityReply> evaluateActivityReplys = [];
     int sequenceId = userNotice.evaluate_activity;
     bool issuccess = false; //正常从服务器返回就标记为已读,避免数据删除后一直从服务器拉取数据
     if (Global.isInDebugMode) {
@@ -2109,26 +2276,33 @@ class ActivityService {
     if (id > userNotice.evaluate_activity) {
       sequenceId = id;
     }
-    FormData formData = FormData.fromMap({
-      "uid": uid,
-      "token": token,
-      "readindex": sequenceId, //服务器已读的
-    });
+    // FormData formData = FormData.fromMap({
+    //   "uid": uid,
+    //   "token": token,
+    //   "readindex": sequenceId, //服务器已读的
+    // });
+    Map<String, dynamic> requestData2 = {"uid": uid, "token": token, "readindex": sequenceId};
 
     ///判断服务器未评论活动是否大于本地
     List<ActivityEvaluate> activityEvaluates = [];
 
     ///获取为评论活动
-    await NetUtil.getInstance().post(formData, "/Activity/getUnActvityEvaluateList", (Map<String, dynamic> data) {
-      if (data["data"] != null) {
-        issuccess = true;
-        for (int i = 0; i < data["data"].length; i++) {
-          activityEvaluates.add(ActivityEvaluate.fromJson(data["data"][i]));
+    await NetUtil.getInstance().post(
+      requestData2,
+      "/Activity/getUnActvityEvaluateList",
+      (Map<String, dynamic> data) {
+        if (data["data"] != null) {
+          issuccess = true;
+          for (int i = 0; i < data["data"].length; i++) {
+            activityEvaluates.add(ActivityEvaluate.fromJson(data["data"][i]));
+          }
         }
-      }
-    }, errorCallBack);
+      },
+      errorCallBack,
+      asJson: true,
+    );
     if (activityEvaluates.isNotEmpty) {
-      int count = await imhelper.saveUnEvaluateActivity(activityEvaluates, Global.profile.user!.uid);
+      await imhelper.saveUnEvaluateActivity(activityEvaluates, Global.profile.user!.uid);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.evaluateactivity, uid, token, errorCallBack);
@@ -2166,7 +2340,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.evaluatemsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.evaluatemsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.evaluatemsg, uid, token, errorCallBack);
@@ -2204,7 +2378,7 @@ class ActivityService {
       }
     }, errorCallBack);
     if (commentReplys.isNotEmpty) {
-      int count = await imhelper.saveReplys(commentReplys, ReplyMsgType.evaluatereplymsg);
+      await imhelper.saveReplys(commentReplys, ReplyMsgType.evaluatereplymsg);
     }
     if (issuccess) {
       await postReadMessage(ReplyMsgType.evaluatereplymsg, uid, token, errorCallBack);
@@ -2390,8 +2564,17 @@ class ActivityService {
     Function errorCallBack,
   ) async {
     List<Activity> activitys = [];
-    FormData formData = FormData.fromMap({"content": content, "citycode": citycode, "currentIndex": currentIndex});
-    await NetUtil.getInstance().post(formData, "/Activity/searchMoreLikeActivity", (Map<String, dynamic> data) {
+    // FormData formData = FormData.fromMap({"content": content, "citycode": citycode, "currentIndex": currentIndex});
+    Map<String, dynamic> requestData = {
+      "actid": actid,
+      "content": content,
+      "citycode": citycode,
+      "currentIndex": currentIndex,
+    };
+
+    await NetUtil.getInstance().post(requestData, "/Activity/searchMoreLikeActivity", asJson: true, (
+      Map<String, dynamic> data,
+    ) {
       if (data["data"] != null) {
         for (int i = 0; i < data["data"].length; i++) {
           Activity searchResult = Activity.fromJson(data["data"][i]);

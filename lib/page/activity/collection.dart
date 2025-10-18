@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../model/activity.dart';
-import '../../model/user.dart';
 import '../../util/imhelper_util.dart';
-import '../../util//common_util.dart';
+import '../../util/common_util.dart';
 import '../../global.dart';
 
 class MyCollectionActivity extends StatefulWidget {
@@ -16,7 +15,6 @@ class MyCollectionActivity extends StatefulWidget {
 }
 
 class _MyCollectionActivityState extends State<MyCollectionActivity> {
-  late User user;
   List<Activity> _activitys = [];
   final ImHelper _imHelper = ImHelper();
   bool _isPageLoad = false;
@@ -27,18 +25,23 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
   final double _contentText = 83; //图片下面的文字描述与间距
 
   Future<void> getMyCollection() async {
-    _activitys = await _imHelper.selActivityCollectionByUid(
-      Global.profile.user!.uid,
-    );
+    final uid = Global.profile.user?.uid;
+    if (uid == null) {
+      // 未登录，显示空态或引导登录
+      _activitys = [];
+      _isPageLoad = true;
+      if (mounted) setState(() {});
+      return;
+    }
+    _activitys = await _imHelper.selActivityCollectionByUid(uid);
     _isPageLoad = true;
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    user = Global.profile.user!;
     getMyCollection();
   }
 
@@ -71,17 +74,10 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
       body: _isPageLoad
           ? ((_activitys.isEmpty)
                 ? Center(
-                    child: Text(
-                      '还没有收藏的活动',
-                      style: TextStyle(color: Colors.black54, fontSize: 14),
-                    ),
+                    child: Text('还没有收藏的活动', style: TextStyle(color: Colors.black54, fontSize: 14)),
                   )
                 : ListView(children: buildContent(_activitys)))
-          : Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-              ),
-            ),
+          : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor))),
     );
   }
 
@@ -97,10 +93,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
 
   Widget indexPageView(List<Activity> acivitys) {
     _getContentHeight(acivitys);
-    return SizedBox(
-      height: _activityContentHeight,
-      child: activityContent(acivitys),
-    );
+    return SizedBox(height: _activityContentHeight, child: activityContent(acivitys));
   }
 
   //瀑布流内容高度
@@ -116,18 +109,14 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
       }
     }
     _activityContentHeight =
-        (_leftHeight >= _rigthHeight ? _leftHeight : _rigthHeight) +
-        0; //最后取左右两边的最大值作为瀑布组件的高,再加上分类的高
+        (_leftHeight >= _rigthHeight ? _leftHeight : _rigthHeight) + 0; //最后取左右两边的最大值作为瀑布组件的高,再加上分类的高
   }
 
   Widget activityContent(List<Activity> activitys) {
     if (activitys.isEmpty) {
       //return Center(child: Image.asset('images/26074001_bzCh.gif'),);
       return Center(
-        child: Text(
-          '还没有活动',
-          style: TextStyle(color: Colors.black54, fontSize: 15),
-        ),
+        child: Text('还没有活动', style: TextStyle(color: Colors.black54, fontSize: 15)),
       );
     }
     return StaggeredGridView.countBuilder(
@@ -156,11 +145,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
           Text("￥", style: TextStyle(color: Colors.red, fontSize: 10)),
           Text(
             activity.mincost.toString(),
-            style: TextStyle(
-              color: Colors.red,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ],
       );
@@ -172,11 +157,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/ActivityInfo',
-          arguments: {"actid": activity.actid},
-        ).then((val) {});
+        Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": activity.actid}).then((val) {});
       },
       child: Card(
         child: Column(
@@ -189,16 +170,10 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
                     height: temheight,
                     decoration: BoxDecoration(
                       color: Colors.grey,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        topRight: Radius.circular(5),
-                      ),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        topRight: Radius.circular(5),
-                      ),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                       child: CachedNetworkImage(
                         imageUrl:
                             '${activity.coverimg}?x-oss-process=image/resize,m_fixed,w_600/sharpen,50/quality,q_80', //缩放压缩
@@ -212,11 +187,7 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
               padding: EdgeInsets.only(top: 5, left: 10),
               child: Text(
                 activity.content,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -262,18 +233,12 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      activity.user!.profilepicture!,
-                    ),
-                    radius: 9,
-                    // maxRadius: 40.0,
-                  ),
+                  _buildAvatar(activity),
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.only(left: 5),
                       child: Text(
-                        activity.user!.username,
+                        activity.user?.username ?? "匿名",
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -286,6 +251,14 @@ class _MyCollectionActivityState extends State<MyCollectionActivity> {
         ),
       ),
     );
+  }
+
+  Widget _buildAvatar(Activity activity) {
+    final avatarUrl = activity.user?.profilepicture;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      return CircleAvatar(backgroundImage: NetworkImage(avatarUrl), radius: 9);
+    }
+    return const CircleAvatar(radius: 9, child: Icon(Icons.person, size: 12));
   }
 
   //计算图片高度和宽度

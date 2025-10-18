@@ -4,8 +4,16 @@
 添加测试数据脚本
 
 使用方法：
-    python add_test_data.py
+    python scripts/add_activity_test_data.py
 """
+
+# 确保可以从脚本直接运行时导入 api 包
+import os
+import sys
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from api import create_app, db
 from api.models.activity import Activity

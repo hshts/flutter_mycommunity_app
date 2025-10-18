@@ -13,8 +13,7 @@ class CommentService:
     @staticmethod
     def add_comment(data):
         """
-        添加活动评论
-        
+        添加活动评论   
         Args:
             data: 评论数据
                 - actid: 活动ID

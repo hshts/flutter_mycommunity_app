@@ -1,4 +1,13 @@
 """生成动态(Moment)测试数据"""
+import os
+import sys
+
+# 将项目根目录加入到模块搜索路径，确保可以导入 api 包
+CURRENT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from api import create_app, db
 from api.models.moment import Moment, MomentComment, MomentCommentReply, MomentLike, MomentCommentLike
 from api.services.moment_service import MomentService

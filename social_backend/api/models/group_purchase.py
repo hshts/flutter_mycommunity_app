@@ -140,7 +140,7 @@ class GoodPriceComment(db.Model):
     """商品评论模型"""
     __tablename__ = 'good_price_comments'
     
-    commentid = db.Column(db.String(50), primary_key=True)
+    commentid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID
     uid = db.Column(db.Integer, nullable=False)  # 评论者用户ID
     touid = db.Column(db.Integer)  # 目标用户ID（回复时使用）
@@ -165,7 +165,7 @@ class GoodPriceCommentReply(db.Model):
     __tablename__ = 'good_price_comment_replies'
     
     replyid = db.Column(db.String(50), primary_key=True)
-    commentid = db.Column(db.String(50), nullable=False)  # 评论ID
+    commentid = db.Column(db.Integer, nullable=False)  # 评论ID
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID
     uid = db.Column(db.Integer, nullable=False)  # 回复者用户ID
     touid = db.Column(db.Integer)  # 目标用户ID
@@ -189,7 +189,7 @@ class GoodPriceCommentLike(db.Model):
     __tablename__ = 'good_price_comment_likes'
     
     id = db.Column(db.Integer, primary_key=True)
-    commentid = db.Column(db.String(50), nullable=False)  # 评论ID
+    commentid = db.Column(db.Integer, nullable=False)  # 评论ID
     uid = db.Column(db.Integer, nullable=False)  # 点赞者用户ID
     likeuid = db.Column(db.Integer, nullable=False)  # 被点赞用户ID
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID
@@ -264,13 +264,13 @@ class GoodPriceEvaluate(db.Model):
     """商品评价模型"""
     __tablename__ = 'good_price_evaluates'
     
-    evaluateid = db.Column(db.String(50), primary_key=True)
+    evaluateid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID
     uid = db.Column(db.Integer, nullable=False)  # 评价者用户ID
     orderid = db.Column(db.String(50))  # 关联订单ID
     content = db.Column(db.Text, nullable=False)  # 评价内容
     images = db.Column(db.Text)  # 评价图片列表
-    rating = db.Column(db.Integer, default=5)  # 评分 1-5星
+    liketype = db.Column(db.Integer, default=5)  # 评分 1-5星
     likenum = db.Column(db.Integer, default=0)  # 点赞数
     replynum = db.Column(db.Integer, default=0)  # 回复数
     createtime = db.Column(db.DateTime, default=datetime.utcnow)
@@ -283,7 +283,7 @@ class GoodPriceEvaluate(db.Model):
             'orderid': self.orderid,
             'content': self.content,
             'images': self.images,
-            'rating': self.rating,
+            'liketype': self.liketype,
             'likenum': self.likenum,
             'replynum': self.replynum,
             'createtime': self.createtime.isoformat() if self.createtime else None
@@ -295,7 +295,7 @@ class GoodPriceEvaluateReply(db.Model):
     __tablename__ = 'good_price_evaluate_replies'
     
     replyid = db.Column(db.String(50), primary_key=True)
-    evaluateid = db.Column(db.String(50), nullable=False)  # 评价ID
+    evaluateid = db.Column(db.Integer, nullable=False)  # 评价ID
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID
     uid = db.Column(db.Integer, nullable=False)  # 回复者用户ID
     touid = db.Column(db.Integer)  # 目标用户ID
@@ -319,7 +319,7 @@ class GoodPriceEvaluateLike(db.Model):
     __tablename__ = 'good_price_evaluate_likes'
     
     id = db.Column(db.Integer, primary_key=True)
-    evaluateid = db.Column(db.String(50), nullable=False)  # 评价ID
+    evaluateid = db.Column(db.Integer, nullable=False)  # 评价ID
     uid = db.Column(db.Integer, nullable=False)  # 点赞者用户ID
     likeuid = db.Column(db.Integer, nullable=False)  # 被点赞用户ID
     goodpriceid = db.Column(db.String(50), nullable=False)  # 商品ID

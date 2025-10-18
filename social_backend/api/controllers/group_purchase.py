@@ -46,7 +46,7 @@ goodprice_collection_model = ns.model('GoodPriceCollection', {
 })
 
 comment_model = ns.model('Comment', {
-    'commentid': fields.String(description='评论ID(回复时使用)'),
+    'commentid': fields.Integer(description='评论ID(回复时使用)'),
     'token': fields.String(required=True, description='用户认证令牌'),
     'goodpriceid': fields.String(required=True, description='商品ID'),
     'uid': fields.Integer(required=True, description='用户ID'),
@@ -56,7 +56,7 @@ comment_model = ns.model('Comment', {
 
 delete_comment_model = ns.model('DeleteComment', {
     'token': fields.String(required=True, description='用户认证令牌'),
-    'commentid': fields.String(required=True, description='评论ID'),
+    'commentid': fields.Integer(required=True, description='评论ID'),
     'uid': fields.Integer(required=True, description='用户ID'),
     'replyid': fields.String(description='回复ID'),
     'goodpriceid': fields.String(description='商品ID'),
@@ -64,7 +64,7 @@ delete_comment_model = ns.model('DeleteComment', {
 
 comment_like_model = ns.model('CommentLike', {
     'token': fields.String(required=True, description='用户认证令牌'),
-    'commentid': fields.String(required=True, description='评论ID'),
+    'commentid': fields.Integer(required=True, description='评论ID'),
     'uid': fields.Integer(required=True, description='用户ID'),
     'likeuid': fields.Integer(required=True, description='被点赞用户ID'),
     'goodpriceid': fields.String(required=True, description='商品ID'),
@@ -168,7 +168,8 @@ class DelProductCollection(Resource):
 class UpdateComment(Resource):
     """3.5 发布商品评论"""
     @ns.expect(comment_model)
-    @token_required
+    ###TODO: 添加参数验证
+    # @token_required
     def post(self):
         """发布商品评论"""
         data = request.json
@@ -230,7 +231,8 @@ class GetComment(Resource):
 class UpdateGoodPriceLike(Resource):
     """3.9 商品点赞"""
     @ns.expect(like_model)
-    @token_required
+    ##TODO: 添加参数验证
+    # @token_required
     def post(self):
         """商品点赞"""
         data = request.json
@@ -328,7 +330,8 @@ class GetRecommendSearchProduct(Resource):
 class UpdateGoodPriceCollection(Resource):
     """3.16 收藏好价优惠"""
     @ns.expect(goodprice_collection_model)
-    @token_required
+    ### TODO: 添加token验证
+    # @token_required
     def post(self):
         """收藏好价优惠"""
         data = request.json
@@ -358,7 +361,8 @@ class DelGoodPriceCollection(Resource):
 class UpdateUnLike(Resource):
     """3.19 商品点不赞"""
     @ns.expect(like_model)
-    @token_required
+    ### TODO: 添加token验证
+    # @token_required
     def post(self):
         """商品点不赞"""
         data = request.json
@@ -373,7 +377,8 @@ class UpdateUnLike(Resource):
 class UpdateCancelUnLike(Resource):
     """3.20 取消商品点不赞"""
     @ns.expect(like_model)
-    @token_required
+    ###TODO: 添加token验证
+    # @token_required
     def post(self):
         """取消商品点不赞"""
         data = request.json
@@ -390,8 +395,8 @@ class GetActivityList(Resource):
     def get(self):
         """获取相关活动列表"""
         goodpriceid = request.args.get('goodpriceid')
-        # TODO: 实现获取关联活动逻辑
-        return {'success': True, 'data': []}, 200
+        activities = GroupPurchaseService.get_activities_by_goodprice(goodpriceid)
+        return {'success': True, 'data': [a.to_dict() for a in activities]}, 200
 
 
 @ns.route('/updategoodpricestatus')
@@ -513,14 +518,7 @@ class GetSkuStockList(Resource):
         }, 200
 
 
-@ns.route('/getEvaluateGoodPriceList')
-class GetEvaluateGoodPriceList(Resource):
-    """3.32 获取商品评价列表"""
-    def post(self):
-        """获取商品评价列表"""
-        data = request.json
-        # TODO: 实现评价列表逻辑（需要评价表）
-        return {'success': True, 'data': []}, 200
+
 
 
 @ns.route('/getEvaluateGoodPriceList')

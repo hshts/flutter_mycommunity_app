@@ -146,8 +146,8 @@ class GroupPurchaseService:
     def get_recommend_good_price_list(type_filter=None, citycode=None, current_index=0, page_size=20):
         """获取推荐商品列表"""
         query = GoodPrice.query.filter_by(status=1)  # 只显示已审核通过的
-        
-        if citycode:
+
+        if citycode and citycode != 'allCode':
             query = query.filter_by(citycode=citycode)
         
         # 按更新时间倒序
@@ -175,7 +175,7 @@ class GroupPurchaseService:
             )
         
         # 城市筛选
-        if not is_all_city and citycode:
+        if not is_all_city and citycode and citycode != 'allCode':
             query = query.filter_by(citycode=citycode)
         
         # 排序
@@ -377,16 +377,15 @@ class GroupPurchaseService:
             result_id = replyid
         else:
             # 这是评论
-            new_commentid = str(uuid.uuid4())
             comment = GoodPriceComment(
-                commentid=new_commentid,
                 goodpriceid=data['goodpriceid'],
                 uid=data['uid'],
                 touid=data.get('touid'),
                 content=data['content']
             )
             db.session.add(comment)
-            result_id = new_commentid
+            db.session.flush()  # 获取自动生成的 commentid
+            result_id = comment.commentid
             
             # 更新商品评论数
             good_price = GoodPrice.query.get(data['goodpriceid'])
@@ -505,19 +504,18 @@ class GroupPurchaseService:
     @staticmethod
     def add_evaluate(data):
         """添加商品评价"""
-        evaluateid = str(uuid.uuid4())
-        
         evaluate = GoodPriceEvaluate(
-            evaluateid=evaluateid,
             goodpriceid=data['goodpriceid'],
             uid=data['uid'],
             orderid=data.get('orderid'),
             content=data['content'],
             images=data.get('images'),
-            rating=data.get('rating', 5)
+            liketype=data.get('liketype', 5)
         )
         
         db.session.add(evaluate)
+        db.session.flush()  # 获取自动生成的 evaluateid
+        evaluateid = evaluate.evaluateid
         db.session.commit()
         
         return evaluateid
@@ -612,3 +610,12 @@ class GroupPurchaseService:
         
         db.session.commit()
         return True
+    
+    @staticmethod
+    def get_activities_by_goodprice(goodpriceid):
+        """获取商品关联的活动列表"""
+        from api.models.activity import Activity
+        if not goodpriceid:
+            return []
+        activities = Activity.query.filter_by(goodpriceid=goodpriceid).all()
+        return activities

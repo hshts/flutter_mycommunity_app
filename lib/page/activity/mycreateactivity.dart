@@ -13,13 +13,10 @@ class MyCreateActivity extends StatefulWidget {
   _MyCreateActivityState createState() => _MyCreateActivityState();
 }
 
-class _MyCreateActivityState extends State<MyCreateActivity>
-    with AutomaticKeepAliveClientMixin {
+class _MyCreateActivityState extends State<MyCreateActivity> with AutomaticKeepAliveClientMixin {
   final ActivityService _activityService = ActivityService();
   List<Activity> _activityMyList = [];
-  final RefreshController _refreshController = RefreshController(
-    initialRefresh: true,
-  );
+  final RefreshController _refreshController = RefreshController(initialRefresh: true);
   bool _ismore = true;
 
   @override
@@ -84,10 +81,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          '我发布的活动',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
+        title: Text('我发布的活动', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: Padding(
@@ -101,48 +95,26 @@ class _MyCreateActivityState extends State<MyCreateActivity>
             builder: (BuildContext context, LoadStatus? mode) {
               Widget body;
               if (mode == LoadStatus.idle) {
-                body = Text(
-                  "加载更多",
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                );
+                body = Text("加载更多", style: TextStyle(color: Colors.black45, fontSize: 13));
               } else if (mode == LoadStatus.loading) {
                 body = Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(
-                      Global.profile.backColor,
-                    ),
-                  ),
+                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
                 );
               } else if (mode == LoadStatus.failed) {
-                body = Text(
-                  "加载失败!点击重试!",
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                );
+                body = Text("加载失败!点击重试!", style: TextStyle(color: Colors.black45, fontSize: 13));
               } else if (mode == LoadStatus.canLoading) {
-                body = Text(
-                  "放开我,加载更多!",
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                );
+                body = Text("放开我,加载更多!", style: TextStyle(color: Colors.black45, fontSize: 13));
               } else {
-                body = Text(
-                  "—————— 我也是有底线的 ——————",
-                  style: TextStyle(color: Colors.black45, fontSize: 13),
-                );
+                body = Text("—————— 我也是有底线的 ——————", style: TextStyle(color: Colors.black45, fontSize: 13));
               }
               return SizedBox(height: 55.0, child: Center(child: body));
             },
           ),
           controller: _refreshController,
           onLoading: _onLoading,
-          child:
-              _refreshController.headerStatus == RefreshStatus.completed &&
-                  _activityMyList.isEmpty
+          child: _refreshController.headerStatus == RefreshStatus.completed && _activityMyList.isEmpty
               ? Center(
-                  child: Text(
-                    '你还没发布过活动',
-                    style: TextStyle(color: Colors.black54, fontSize: 14),
-                    maxLines: 2,
-                  ),
+                  child: Text('你还没发布过活动', style: TextStyle(color: Colors.black54, fontSize: 14), maxLines: 2),
                 )
               : buildActivityList(),
         ),
@@ -186,40 +158,25 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                                       cir: 9,
                                     )
                                   : SizedBox.shrink(),
-                              e.coverimg != null && e.coverimg != ""
-                                  ? SizedBox(width: 10)
-                                  : SizedBox.shrink(),
+                              e.coverimg != null && e.coverimg != "" ? SizedBox(width: 10) : SizedBox.shrink(),
                               Expanded(
                                 child: SizedBox(
-                                  height: e.coverimg != null && e.coverimg != ""
-                                      ? 119
-                                      : 80,
+                                  height: e.coverimg != null && e.coverimg != "" ? 119 : 80,
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Expanded(
                                               child: Text(
                                                 e.content,
                                                 overflow: TextOverflow.ellipsis,
-                                                maxLines:
-                                                    e.coverimg != null &&
-                                                        e.coverimg != ""
-                                                    ? 3
-                                                    : 2,
-                                                style: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: 14,
-                                                ),
+                                                maxLines: e.coverimg != null && e.coverimg != "" ? 3 : 2,
+                                                style: TextStyle(color: Colors.black87, fontSize: 14),
                                               ),
                                             ),
                                           ],
@@ -228,27 +185,19 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                                       Padding(
                                         padding: EdgeInsets.only(bottom: 10),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text(
-                                                      "￥",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.red,
-                                                      ),
-                                                    ),
+                                                    Text("￥", style: TextStyle(fontSize: 12, color: Colors.red)),
                                                     Text(
                                                       e.mincost.toString(),
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
                                                     // e.maxcost > 0 ? Text('-', style: TextStyle(fontSize: 14, color: Colors.red, fontWeight: FontWeight.bold),):SizedBox.shrink(),
@@ -258,8 +207,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -280,11 +228,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/ActivityInfo',
-                      arguments: {"actid": e.actid},
-                    );
+                    Navigator.pushNamed(context, '/ActivityInfo', arguments: {"actid": e.actid});
                   },
                 ),
               ],
@@ -297,10 +241,7 @@ class _MyCreateActivityState extends State<MyCreateActivity>
       ret = ListView(children: lists);
     } else {
       ret = Center(
-        child: Text(
-          '还没有创建过活动',
-          style: TextStyle(color: Colors.black54, fontSize: 14),
-        ),
+        child: Text('还没有创建过活动', style: TextStyle(color: Colors.black54, fontSize: 14)),
       );
     }
 

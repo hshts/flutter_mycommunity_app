@@ -60,7 +60,7 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
                 //           },);
                 //       }
                 //   );
-                //
+
                 //   Global.profile.isLogGuided = false;
                 // }
               });
@@ -68,26 +68,25 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
               widget.parentJumpMyProfile!(4);
             }
           },
-          child:
-              Global.profile.user != null &&
-                  Global.profile.defProfilePicture != null
+          child: Global.profile.user != null && Global.profile.profilePicture != null
               ? Container(
                   child: Container(
-                    height: 45,
-                    width: 45,
+                    height: 40,
+                    width: 40,
                     decoration: BoxDecoration(
                       //          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
-                      borderRadius: BorderRadius.circular(50.0),
+                      borderRadius: BorderRadius.circular(40.0),
+                      // image: DecorationImage(image: Global.profile.defProfilePicture!,
                       image: DecorationImage(
-                        image: Global.profile.defProfilePicture!,
+                        image: NetworkImage(Global.profile.profilePicture ?? ""),
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 )
               : Container(
-                  height: 45,
-                  width: 45,
+                  height: 40,
+                  width: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     //          border: new Border.all(color: Global.profile.fontColor, width: 1.5), // 边色与边宽度
@@ -96,11 +95,7 @@ class _ProfilePictureShowState extends State<ProfilePictureShow> {
                   ),
                   child: Text(
                     '登录',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Global.defredcolor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Global.defredcolor, fontWeight: FontWeight.bold),
                   ),
                 ),
         );

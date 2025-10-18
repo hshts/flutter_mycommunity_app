@@ -239,7 +239,8 @@ class GetMomentListByUser(Resource):
             return {
                 'code': 200,
                 'msg': '获取成功',
-                'data': {'list': moments, 'total': len(moments)}
+                'data': moments,
+                'total': len(moments),
             }
         except Exception as e:
             return {

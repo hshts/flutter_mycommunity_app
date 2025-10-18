@@ -1,5 +1,6 @@
 from api import db
 from api.models.activity import Activity
+from api.models import Follow
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 import uuid
@@ -66,7 +67,7 @@ class ActivityService:
         query = Activity.query
         
         # 根据城市筛选
-        if citycode:
+        if citycode and citycode != 'allCode':
             query = query.filter_by(actcity=citycode)
             
         # 分页查询
@@ -120,7 +121,7 @@ class ActivityService:
             活动列表
         """
         query = Activity.query.filter_by(status=1)  # 只获取状态为1的活动
-        if citycode:
+        if citycode and citycode != 'allCode':
             query = query.filter_by(actcity=citycode)
         
 
@@ -368,3 +369,136 @@ class ActivityService:
         }
         
         return group_relation
+    
+    @staticmethod
+    def search_more_like_activity(actid=None, content=None, citycode=None, curr_index=0, page_size=20):
+        """
+        搜索更多类似活动
+        
+        Args:
+            actid: 当前活动ID（可选）
+            curr_index: 分页起始索引
+            page_size: 每页数量
+        
+        Returns:
+            类似活动列表
+        """
+        query = Activity.query.filter_by(status=1)  # 只获取进行中的活动
+        
+        # 如果提供了 actid，则查找相似的活动
+        if actid:
+            current_activity = Activity.query.get(actid)
+            if current_activity:
+                # 排除当前活动
+                query = query.filter(Activity.actid != actid)
+                
+                # 优先匹配相同城市的活动
+                if current_activity.actcity:
+                    query = query.filter_by(actcity=current_activity.actcity)
+                
+                # 可以根据其他相似度条件继续筛选（如费用范围、活动类型等）
+                # 如果有费用信息，可以按照费用范围筛选
+                if current_activity.mincost is not None and current_activity.maxcost is not None:
+                    # 找费用相近的活动（允许 ±50% 的范围）
+                    min_range = max(0, current_activity.mincost * 0.5)
+                    max_range = current_activity.maxcost * 1.5
+                    query = query.filter(
+                        db.or_(
+                            db.and_(
+                                Activity.mincost >= min_range,
+                                Activity.maxcost <= max_range
+                            ),
+                            db.and_(
+                                Activity.mincost == 0,
+                                Activity.maxcost == 0
+                            )
+                        )
+                    )
+        
+        # 按照热度排序（点赞数 + 浏览数 + 参与数）
+        query = query.order_by(
+            (Activity.likenum + Activity.viewnum + Activity.joinnum).desc(),
+            Activity.updatetime.desc()
+        )
+        
+        # 分页查询
+        activities = query.offset(curr_index).limit(page_size).all()
+        
+        # 为每个活动添加用户信息
+        result = []
+        for activity in activities:
+            activity_dict = activity.to_dict()
+            # 添加用户信息（默认值）
+            activity_dict['user'] = {
+                'uid': activity.uid,
+                'username': f'用户{activity.uid}',
+                'profilepicture': 'https://tse2.mm.bing.net/th/id/OIP.8E05GBXPjRW5vMtj-jO8ogHaE_?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3',
+                'usertype': 1
+            }
+            result.append(activity_dict)
+        
+        return result
+
+    @staticmethod
+    def get_all_activity_list_by_user_count5(current_index=0):
+        """
+        获取所有用户前5个活动列表（按更新时间全局排序，分页固定每页5条）
+
+        Args:
+            current_index: 起始索引，用于简单分页
+
+        Returns:
+            活动字典列表，包含 user 信息
+        """
+        page_size = 5
+        query = Activity.query.filter_by(status=1)
+        query = query.order_by(Activity.updatetime.desc())
+
+        activities = query.offset(current_index).limit(page_size).all()
+
+        result = []
+        for activity in activities:
+            item = activity.to_dict()
+            item['user'] = {
+                'uid': activity.uid,
+                'username': f'用户{activity.uid}',
+                'profilepicture': 'https://tse2.mm.bing.net/th/id/OIP.8E05GBXPjRW5vMtj-jO8ogHaE_?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3',
+                'usertype': 1
+            }
+            result.append(item)
+
+        return result
+
+    @staticmethod
+    def get_activity_follow_list(uid_list: list, current_index: int = 0, page_size: int = 20):
+        """
+        根据关注用户获取活动列表。
+
+        Args:
+            uid_list: 当前用户ID列表，用于查询其关注的用户
+            current_index: 分页偏移
+            page_size: 每页数量（默认20）
+
+        Returns:
+            活动字典列表，包含 user 信息
+        """
+        if not uid_list:
+            return []
+
+        query = Activity.query.filter(Activity.status == 1, Activity.uid.in_(uid_list))
+        query = query.order_by(Activity.updatetime.desc())
+
+        activities = query.offset(current_index).limit(page_size).all()
+
+        result = []
+        for activity in activities:
+            item = activity.to_dict()
+            item['user'] = {
+                'uid': activity.uid,
+                'username': f'用户{activity.uid}',
+                'profilepicture': 'https://tse2.mm.bing.net/th/id/OIP.8E05GBXPjRW5vMtj-jO8ogHaE_?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3',
+                'usertype': 1
+            }
+            result.append(item)
+
+        return result

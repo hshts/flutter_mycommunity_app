@@ -335,11 +335,11 @@ class _MyProfileState extends State<MyProfile> with TickerProviderStateMixin {
         children: <Widget>[
           GestureDetector(
             child: Container(
-              height: 96,
-              width: 96,
+              height: 90,
+              width: 90,
               decoration: BoxDecoration(
                 border: Border.all(color: Global.profile.fontColor ?? Colors.black, width: 2),
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(45),
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: NetworkImage(user.profilepicture ?? ""),

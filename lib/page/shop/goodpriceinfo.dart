@@ -677,7 +677,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             padding: EdgeInsets.all(10),
             child: Row(
               children: [
-                NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 50, uid: v.user!.uid),
+                NoCacheCircleHeadImage(imageUrl: v.user?.profilepicture ?? "", width: 50, uid: v.user?.uid ?? 0),
                 SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -874,7 +874,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 30, uid: v.user!.uid),
+                              NoCacheCircleHeadImage(
+                                imageUrl: v.user?.profilepicture ?? "",
+                                width: 30,
+                                uid: v.user?.uid ?? 0,
+                              ),
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
@@ -882,7 +886,10 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(v.user!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
+                                      Text(
+                                        v.user?.username ?? "未知用户",
+                                        style: TextStyle(color: Colors.black54, fontSize: 13),
+                                      ),
                                       Text(
                                         v.createtime!.substring(5, 10),
                                         style: TextStyle(color: Colors.grey, fontSize: 12),
@@ -891,7 +898,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                   ),
                                 ),
                                 onTap: () {
-                                  int uid = v.user!.uid;
+                                  int uid = v.user?.uid ?? 0;
                                   if (Global.profile.user == null) {
                                     Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                   } else if (uid != Global.profile.user!.uid) {
@@ -925,7 +932,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                         v.commentid!,
                                         Global.profile.user!.uid,
                                         Global.profile.user!.token!,
-                                        v.user!.uid,
+                                        v.user?.uid ?? 0,
                                         widget.goodPiceModel.goodpriceid,
                                       );
                                     } else {
@@ -933,7 +940,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                                         v.commentid!,
                                         Global.profile.user!.uid,
                                         Global.profile.user!.token!,
-                                        v.user!.uid,
+                                        v.user?.uid ?? 0,
                                       );
                                     }
                                   }
@@ -952,14 +959,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     ],
                   ),
                   onTap: () {
-                    _hidemessage = '回复@${v.user!.username}';
-                    sendMessage(v.commentid!, v.user!.uid, touser: v.user!);
+                    _hidemessage = '回复@${v.user?.username ?? "用户"}';
+                    sendMessage(v.commentid!, v.user?.uid ?? 0, touser: v.user);
                   },
                   onLongPress: () {
-                    if (Global.profile.user != null && v.user!.uid == Global.profile.user!.uid) {
+                    if (Global.profile.user != null && v.user?.uid == Global.profile.user!.uid) {
                       showDel(v.commentid!);
                     } else {
-                      showCommentReport(v.commentid!, v.user!.uid, v.content!);
+                      showCommentReport(v.commentid!, v.user?.uid ?? 0, v.content!);
                     }
                   },
                 ),
@@ -995,14 +1002,18 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 margin: EdgeInsets.all(5),
                 child: Row(
                   children: <Widget>[
-                    NoCacheCircleHeadImage(imageUrl: v.replyuser!.profilepicture!, width: 30, uid: v.replyuser!.uid),
+                    NoCacheCircleHeadImage(
+                      imageUrl: v.replyuser?.profilepicture ?? "",
+                      width: 30,
+                      uid: v.replyuser?.uid ?? 0,
+                    ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(v.replyuser!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
+                          Text(v.replyuser?.username ?? "未知用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
                           Text(v.replycreatetime!.substring(5, 10), style: TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
@@ -1046,14 +1057,14 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
             ],
           ),
           onTap: () {
-            _hidemessage = '回复@${v.replyuser!.username}';
-            sendMessage(v.commentid!, v.replyuser!.uid, touser: v.replyuser!);
+            _hidemessage = '回复@${v.replyuser?.username ?? "用户"}';
+            sendMessage(v.commentid!, v.replyuser?.uid ?? 0, touser: v.replyuser);
           },
           onLongPress: () {
-            if (v.replyuser!.uid == Global.profile.user!.uid) {
+            if (v.replyuser?.uid == Global.profile.user!.uid) {
               showReplyDel(v.replyid!);
             } else {
-              showReplyReport(v.replyid!, v.replyuser!.uid, v.replycontent!);
+              showReplyReport(v.replyid!, v.replyuser?.uid ?? 0, v.replycontent!);
             }
           },
         ),
@@ -1085,7 +1096,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                 children: [
                   Row(
                     children: [
-                      NoCacheCircleHeadImage(imageUrl: e.user!.profilepicture!, width: 39, uid: e.user!.uid),
+                      NoCacheCircleHeadImage(imageUrl: e.user?.profilepicture ?? "", width: 39, uid: e.user?.uid ?? 0),
                       GestureDetector(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
@@ -1093,11 +1104,11 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Text(e.user!.username, style: TextStyle(color: Colors.black87, fontSize: 12)),
+                              Text(e.user?.username ?? "未知用户", style: TextStyle(color: Colors.black87, fontSize: 12)),
                               SizedBox(height: 3),
                               RatingStars(
                                 editable: true,
-                                rating: double.parse(e.liketype!.toString()),
+                                rating: double.parse((e.liketype ?? 0).toString()),
                                 color: Colors.redAccent,
                                 iconSize: 19,
                               ),
@@ -1105,7 +1116,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                           ),
                         ),
                         onTap: () {
-                          int uid = e.user!.uid;
+                          int uid = e.user?.uid ?? 0;
                           if (Global.profile.user == null) {
                             Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                           } else if (uid != Global.profile.user!.uid) {
@@ -1125,9 +1136,9 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                     Container(
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
-                      child: Text(e.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
+                      child: Text(e.content ?? "", style: TextStyle(color: Colors.black, fontSize: 14)),
                     ),
-                    e.imagepaths != null && e.imagepaths! != ""
+                    (e.imagepaths ?? "") != ""
                         ? Container(
                             padding: EdgeInsets.only(bottom: 5),
                             height: 120,
@@ -1138,7 +1149,7 @@ class GoodPriceInfoState extends State<GoodPriceInfo> {
                               padding: EdgeInsets.all(10.0),
                               crossAxisCount: 3,
                               childAspectRatio: 1.0,
-                              children: getImageList(e.imagepaths!),
+                              children: getImageList(e.imagepaths ?? ""),
                             ),
                           )
                         : SizedBox.shrink(),

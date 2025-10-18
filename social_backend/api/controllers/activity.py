@@ -8,41 +8,41 @@ from api.utils.auth import token_required
 # 创建命名空间
 ns = Namespace('Activity', description='Activity operations')
 
-# 获取所有模型
+# 获取所有字段
 models = get_activity_models(ns)
-activity_fields = models['activity_fields']
-create_activity_fields = models['create_activity_fields']
-user_activity_fields = models['user_activity_fields']
-activity_time_fields = models['activity_time_fields']
-activity_status_fields = models['activity_status_fields']
-activity_comment_fields = models['activity_comment_fields']
-delete_comment_fields = models['delete_comment_fields']
-group_conversation_fields = models['group_conversation_fields']
-response_fields = models['response_fields']
+activity_model = models['activity_model']
+create_activity_model = models['create_activity_model']
+user_activity_model = models['user_activity_model']
+activity_time_model  = models['activity_time_model']
+activity_status_model  = models['activity_status_model']
+activity_comment_model = models['activity_comment_model']
+delete_comment_model  = models['delete_comment_model']
+group_conversation_model  = models['group_conversation_model']
+response_model  = models['response_model']
 
 
 @ns.route('/createActivity')
 class CreateActivity(Resource):
     @ns.doc('create_activity')
-    @ns.expect(create_activity_fields)
-    @ns.response(201, 'Activity created', activity_fields)
-    @ns.response(400, 'Validation error', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(create_activity_model)
+    @ns.response(201, 'Activity created', activity_model)
+    @ns.response(400, 'Validation error', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     # @token_required
     def post(self):
         """创建活动"""
         try:
             data = request.json
             activity = ActivityService.create_activity(data)
-            return activity.to_dict(), 201
+            return {"data": activity.to_dict()}, 201
         except Exception as e:
             return {'error': str(e)}, 500
         
 @ns.route('/getActivityTypeList')
 class GetActivityTypeList(Resource):
     @ns.doc('get_activity_type_list')
-    @ns.response(200, 'Activity type list', [activity_fields])
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activity type list', [activity_model])
+    @ns.response(500, 'Internal server error', response_model)
     def get(self):
         """获取活动类型列表"""
         try:
@@ -57,10 +57,10 @@ class GetActivityTypeList(Resource):
 class GetActivity(Resource):
     @ns.doc('get_activity')
     @ns.param('actid', 'Activity ID')
-    @ns.response(200, 'Activity found', activity_fields)
-    @ns.response(400, 'Missing actid parameter', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activity found', activity_model)
+    @ns.response(400, 'Missing actid parameter', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     def get(self):
         """获取活动详情"""
         try:
@@ -82,8 +82,8 @@ class GetActivitiesByUpdateTime(Resource):
     @ns.doc('get_activities_by_update_time')
     @ns.param('currentIndex', 'Current index for pagination')
     @ns.param('citycode', 'City code for filtering')
-    @ns.response(200, 'Activities list', [activity_fields])
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(500, 'Internal server error', response_model)
     def get(self):
         """根据更新时间获取活动列表"""
         try:
@@ -111,9 +111,9 @@ class GetActivitiesByCity(Resource):
     @ns.param('currentIndex', 'Current index for pagination', default=0)
     @ns.param('pageSize', 'Page size', default=20)
     @ns.param('orderBy', 'Order by field: updatetime, createtime, likenum, viewnum', default='updatetime')
-    @ns.response(200, 'Activities list', [activity_fields])
-    @ns.response(400, 'Missing citycode parameter', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(400, 'Missing citycode parameter', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     def get(self):
         """根据城市获取活动列表"""
         try:
@@ -155,9 +155,9 @@ class GetActivitiesByUser(Resource):
     @ns.doc('get_activities_by_user')
     @ns.param('currentIndex', 'Current index for pagination')
     @ns.param('uid', 'User ID')
-    @ns.response(200, 'Activities list', [activity_fields])
-    @ns.response(400, 'Missing uid parameter', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(400, 'Missing uid parameter', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     def get(self):
         """根据用户获取活动列表"""
         try:
@@ -171,7 +171,8 @@ class GetActivitiesByUser(Resource):
                 current_index=current_index,
                 uid=uid
             )
-            return [activity.to_dict() for activity in activities], 200
+            activities = [activity.to_dict() for activity in activities]
+            return {'data': activities}, 200
         except Exception as e:
             return {'error': str(e)}, 500
 
@@ -181,9 +182,9 @@ class GetJoinActivitiesByUser(Resource):
     @ns.doc('get_join_activities_by_user')
     @ns.param('currentIndex', 'Current index for pagination')
     @ns.param('uid', 'User ID')
-    @ns.response(200, 'Activities list', [activity_fields])
-    @ns.response(400, 'Missing uid parameter', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(400, 'Missing uid parameter', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def get(self):
         """获取用户参与的活动列表"""
@@ -206,11 +207,11 @@ class GetJoinActivitiesByUser(Resource):
 @ns.route('/updateLike')
 class UpdateLike(Resource):
     @ns.doc('update_like')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Like updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Like updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """活动点赞"""
@@ -228,11 +229,11 @@ class UpdateLike(Resource):
 @ns.route('/delLike')
 class DelLike(Resource):
     @ns.doc('delete_like')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Like deleted', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Like deleted', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """活动取消点赞"""
@@ -250,12 +251,12 @@ class DelLike(Resource):
 @ns.route('/updateCollection')
 class UpdateCollection(Resource):
     @ns.doc('update_collection')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Collection updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
-    @token_required
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Collection updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
+    # @token_required
     def post(self):
         """活动收藏"""
         try:
@@ -272,11 +273,11 @@ class UpdateCollection(Resource):
 @ns.route('/delCollection')
 class DelCollection(Resource):
     @ns.doc('delete_collection')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Collection deleted', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Collection deleted', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """活动取消收藏"""
@@ -294,12 +295,12 @@ class DelCollection(Resource):
 @ns.route('/updatecomment')
 class UpdateComment(Resource):
     @ns.doc('update_comment')
-    @ns.expect(activity_comment_fields)
-    @ns.response(200, 'Comment updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
-    @token_required
+    @ns.expect(activity_comment_model)
+    @ns.response(200, 'Comment updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
+    # @token_required
     def post(self):
         """发布活动评论"""
         try:
@@ -321,11 +322,11 @@ class UpdateComment(Resource):
 @ns.route('/delcomment')
 class DelComment(Resource):
     @ns.doc('delete_comment')
-    @ns.expect(delete_comment_fields)
-    @ns.response(200, 'Comment deleted', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(delete_comment_model)
+    @ns.response(200, 'Comment deleted', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """删除活动评论"""
@@ -347,11 +348,11 @@ class DelComment(Resource):
 @ns.route('/joinActivity')
 class JoinActivity(Resource):
     @ns.doc('join_activity')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Joined activity', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Joined activity', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """参加活动"""
@@ -373,11 +374,11 @@ class JoinActivity(Resource):
 @ns.route('/delActivity')
 class DelActivity(Resource):
     @ns.doc('delete_activity')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Activity deleted', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Activity deleted', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """删除活动"""
@@ -395,11 +396,11 @@ class DelActivity(Resource):
 @ns.route('/updateActivityTime')
 class UpdateActivityTime(Resource):
     @ns.doc('update_activity_time')
-    @ns.expect(activity_time_fields)
-    @ns.response(200, 'Activity time updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(activity_time_model)
+    @ns.response(200, 'Activity time updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """更新活动时间"""
@@ -422,11 +423,11 @@ class UpdateActivityTime(Resource):
 @ns.route('/updateActivity')
 class UpdateActivity(Resource):
     @ns.doc('update_activity')
-    @ns.expect(activity_fields)
-    @ns.response(200, 'Activity updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(activity_model)
+    @ns.response(200, 'Activity updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """更新活动信息"""
@@ -455,11 +456,11 @@ class UpdateActivity(Resource):
 @ns.route('/updateActivityStatus')
 class UpdateActivityStatus(Resource):
     @ns.doc('update_activity_status')
-    @ns.expect(activity_status_fields)
-    @ns.response(200, 'Activity status updated', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(activity_status_model)
+    @ns.response(200, 'Activity status updated', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """更新活动状态"""
@@ -481,11 +482,11 @@ class UpdateActivityStatus(Resource):
 @ns.route('/exitActivity')
 class ExitActivity(Resource):
     @ns.doc('exit_activity')
-    @ns.expect(user_activity_fields)
-    @ns.response(200, 'Exited activity', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(user_activity_model)
+    @ns.response(200, 'Exited activity', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """退出活动"""
@@ -503,11 +504,11 @@ class ExitActivity(Resource):
 @ns.route('/getGroupConversation')
 class GetGroupConversation(Resource):
     @ns.doc('get_group_conversation')
-    @ns.expect(group_conversation_fields)
-    @ns.response(200, 'Group conversation info', response_fields)
-    @ns.response(400, 'Missing required fields', response_fields)
-    @ns.response(404, 'Activity not found', response_fields)
-    @ns.response(500, 'Internal server error', response_fields)
+    @ns.expect(group_conversation_model)
+    @ns.response(200, 'Group conversation info', response_model)
+    @ns.response(400, 'Missing required fields', response_model)
+    @ns.response(404, 'Activity not found', response_model)
+    @ns.response(500, 'Internal server error', response_model)
     @token_required
     def post(self):
         """获取群聊信息"""
@@ -644,7 +645,7 @@ class UpdateCommentLike(Resource):
     @ns.response(200, 'Comment liked successfully')
     @ns.response(400, 'Missing required parameters')
     @ns.response(500, 'Internal server error')
-    @token_required
+    # @token_required
     def post(self):
         """评论点赞"""
         try:
@@ -682,5 +683,130 @@ class DelCommentLike(Resource):
             
             success = CommentService.remove_comment_like(commentid, uid)
             return {'data': success}, 200
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+
+@ns.route('/searchMoreLikeActivity')
+class SearchMoreLikeActivity(Resource):
+    @ns.doc('search_more_like_activity')
+    @ns.param('actid', 'Activity ID (optional) - 用于查找类似的活动')
+    @ns.param('currIndex', 'Current index for pagination (default: 0)')
+    @ns.param('pageSize', 'Page size (default: 20)')
+    @ns.response(200, 'Similar activities list', [activity_model])
+    @ns.response(500, 'Internal server error', response_model)
+    def post(self):
+        """搜索更多类似活动"""
+        try:
+            data = request.json or {}
+            actid = data.get('actid') or request.args.get('actid')
+            content = data.get('content') or request.args.get('content')
+            citycode = data.get('citycode') or request.args.get('citycode')
+            curr_index = int(data.get('currIndex', request.args.get('currIndex', 0)))
+            page_size = int(data.get('pageSize', request.args.get('pageSize', 20)))
+            
+            activities = ActivityService.search_more_like_activity(
+                actid=actid,
+                content=content,
+                citycode=citycode,
+                curr_index=curr_index,
+                page_size=page_size
+            )
+            
+            return {
+                'data': activities,
+                'currIndex': curr_index,
+                'pageSize': page_size,
+                'count': len(activities)
+            }, 200
+        except ValueError as e:
+            return {'error': 'Invalid parameter format'}, 400
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+
+@ns.route('/getAllActivityListByUserCount5')
+class GetAllActivityListByUserCount5(Resource):
+    @ns.doc('get_all_activity_list_by_user_count5')
+    @ns.param('uid', 'User ID (optional)')
+    @ns.param('currentIndex', 'Current index for pagination (default: 0)')
+    @ns.param('token', 'Auth token (optional)')
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(500, 'Internal server error', response_model)
+    def get(self):
+        """获取所有用户前5个活动列表"""
+        try:
+            # uid/token 按协议接受但目前不做鉴权与过滤
+            _uid = request.args.get('uid')
+            _ = request.args.get('token')
+            current_index = int(request.args.get('currentIndex', 0))
+
+            activities = ActivityService.get_all_activity_list_by_user_count5(
+                current_index=current_index
+            )
+
+            return {
+                'data': activities,
+                'currentIndex': current_index,
+                'count': len(activities)
+            }, 200
+        except ValueError:
+            return {'error': 'Invalid parameter format'}, 400
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+
+@ns.route('/getActivityFollowList')
+class GetActivityFollowList(Resource):
+    @ns.doc('get_activity_follow_list')
+    @ns.param('currentIndex', 'Current index for pagination', default=0)
+    @ns.param('ids', 'User IDs (comma-separated)', required=True)
+    @ns.response(200, 'Activities list', [activity_model])
+    @ns.response(400, 'Missing ids parameter', response_model)
+    @ns.response(500, 'Internal server error', response_model)
+    def post(self):
+        """根据关注用户获取活动列表"""
+        try:
+            current_index = int(request.json.get('currentIndex', 0))
+            ids = request.json.get('ids')
+            if not ids:
+                return {'error': 'Missing ids parameter'}, 400
+
+            id_list = [int(id) for id in ids.split(',') if id.isdigit()]
+            if not id_list:
+                return {'error': 'Invalid ids format'}, 400
+
+            activities = ActivityService.get_activity_follow_list(
+                uid_list=id_list,
+                current_index=current_index,
+                page_size=20
+            )
+
+            return {
+                'data': activities,
+                'currentIndex': current_index,
+                'count': len(activities)
+            }, 200
+        except ValueError:
+            return {'error': 'Invalid parameter format'}, 400
+        except Exception as e:
+            return {'error': str(e)}, 500
+            uid = request.args.get('uid')
+            if not uid:
+                return {'error': 'Missing uid parameter'}, 400
+
+            activities = ActivityService.get_activity_follow_list(
+                uid=int(uid),
+                current_index=current_index,
+                page_size=20
+            )
+
+            return {
+                'data': activities,
+                'currentIndex': current_index,
+                'count': len(activities)
+            }, 200
+        except ValueError:
+            return {'error': 'Invalid parameter format'}, 400
         except Exception as e:
             return {'error': str(e)}, 500

@@ -13,7 +13,9 @@ Moment _$MomentFromJson(Map<String, dynamic> json) => Moment(
   json['createtime'] as String? ?? '',
   (json['commentcount'] as num?)?.toInt() ?? 0,
   (json['likenum'] as num?)?.toInt() ?? 0,
-  json['user'] == null ? null : User.fromJson(json['user'] as Map<String, dynamic>),
+  json['user'] == null
+      ? null
+      : User.fromJson(json['user'] as Map<String, dynamic>),
   json['voice'] as String? ?? '',
   json['coverimgwh'] as String? ?? '',
   json['category'] as String? ?? '',

@@ -14,23 +14,16 @@ import '../../../global.dart';
 
 class MyMoment extends StatefulWidget {
   final User user;
-  bool isScroll;
-  bool isAppbar; //是否有appbar的页面，默认是在个人主页中使用的无appbar
-  Function? srollChange;
-  MyMoment({
-    super.key,
-    required this.user,
-    this.isScroll = false,
-    this.srollChange,
-    this.isAppbar = false,
-  });
+  final bool isScroll;
+  final bool isAppbar; //是否有appbar的页面，默认是在个人主页中使用的无appbar
+  final Function? srollChange;
+  MyMoment({super.key, required this.user, this.isScroll = false, this.srollChange, this.isAppbar = false});
 
   @override
   _MyMomentState createState() => _MyMomentState();
 }
 
-class _MyMomentState extends State<MyMoment>
-    with AutomaticKeepAliveClientMixin {
+class _MyMomentState extends State<MyMoment> with AutomaticKeepAliveClientMixin {
   List<Moment> moments = [];
   final ImService _imService = ImService();
 
@@ -51,10 +44,7 @@ class _MyMomentState extends State<MyMoment>
   bool get wantKeepAlive => true;
 
   void _getMomentList() async {
-    moments = await _imService.getMomentListByUser(
-      widget.user.uid,
-      errorCallBack,
-    );
+    moments = await _imService.getMomentListByUser(widget.user.uid, errorCallBack);
 
     if (mounted) {
       setState(() {});
@@ -63,10 +53,9 @@ class _MyMomentState extends State<MyMoment>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      body: buildContent(),
-    );
+    // Required when using AutomaticKeepAliveClientMixin
+    super.build(context);
+    return Scaffold(backgroundColor: Colors.grey.shade100, body: buildContent());
   }
 
   Widget buildContent() {
@@ -74,10 +63,7 @@ class _MyMomentState extends State<MyMoment>
       padding: EdgeInsets.only(top: 3),
       child: moments.isEmpty
           ? Center(
-              child: Text(
-                '这里什么也没有',
-                style: TextStyle(color: Colors.black54, fontSize: 14),
-              ),
+              child: Text('这里什么也没有', style: TextStyle(color: Colors.black54, fontSize: 14)),
             )
           : Container(
               color: Colors.white,
@@ -87,6 +73,12 @@ class _MyMomentState extends State<MyMoment>
                 child: Container(
                   child: ListView.builder(
                     addAutomaticKeepAlives: true,
+                    // Avoid sharing the primary ScrollController with parent NestedScrollViews
+                    primary: false,
+                    shrinkWrap: true,
+                    physics: widget.isScroll
+                        ? const AlwaysScrollableScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       return MomentWidget(moment: moments[index]);
                     },
@@ -123,10 +115,9 @@ class _MomentWidgetState extends State<MomentWidget> {
 
   @override
   initState() {
+    super.initState();
     if (Global.profile.user != null) {
-      _imHelper.selActivityState(moment.momentid, Global.profile.user!.uid, (
-        List<String> actid,
-      ) {
+      _imHelper.selActivityState(moment.momentid, Global.profile.user!.uid, (List<String> actid) {
         if (actid.isNotEmpty) {
           setState(() {
             retLike = true;
@@ -145,11 +136,7 @@ class _MomentWidgetState extends State<MomentWidget> {
     if (moment.images.isNotEmpty) {
       List<String> paths = moment.images.split(',');
       for (int i = 0; i < paths.length; i++) {
-        lists.add({
-          "tag": UniqueKey().toString(),
-          "img": paths[i].toString(),
-          "imgwh": widget.moment.coverimgwh,
-        });
+        lists.add({"tag": UniqueKey().toString(), "img": paths[i].toString(), "imgwh": widget.moment.coverimgwh});
       }
     }
     return Container(
@@ -161,34 +148,20 @@ class _MomentWidgetState extends State<MomentWidget> {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                moment.createtime,
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              ),
-            ],
+            children: [Text(moment.createtime, style: TextStyle(color: Colors.black45, fontSize: 13))],
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           GestureDetector(
             child: SizedBox(
               width: double.infinity,
-              child: Text(
-                moment.content,
-                style: TextStyle(color: Colors.black87, fontSize: 13),
-              ),
+              child: Text(moment.content, style: TextStyle(color: Colors.black87, fontSize: 13)),
             ),
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/MomentInfo',
-                arguments: {"momentid": moment.momentid},
-              );
+              Navigator.pushNamed(context, '/MomentInfo', arguments: {"momentid": moment.momentid});
             },
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
-          widget.moment.voice != ""
-              ? PlayVoice(widget.moment.voice)
-              : SizedBox(),
+          widget.moment.voice != "" ? PlayVoice(widget.moment.voice) : SizedBox(),
           lists.isEmpty ? SizedBox.shrink() : CityPhotoViewGallery(list: lists),
           Padding(padding: EdgeInsets.only(top: 10)),
           Row(
@@ -199,22 +172,12 @@ class _MomentWidgetState extends State<MomentWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconText(
-                    moment.likenum.toString() == "0"
-                        ? '点赞'
-                        : moment.likenum.toString(),
+                    moment.likenum.toString() == "0" ? '点赞' : moment.likenum.toString(),
                     padding: EdgeInsets.only(right: 2),
                     style: TextStyle(color: Colors.black45, fontSize: 13),
                     icon: retLike
-                        ? Icon(
-                            IconFont.icon_zan1,
-                            color: Global.profile.backColor,
-                            size: 16,
-                          )
-                        : Icon(
-                            IconFont.icon_aixin,
-                            color: Colors.black45,
-                            size: 16,
-                          ),
+                        ? Icon(IconFont.icon_zan1, color: Global.profile.backColor, size: 16)
+                        : Icon(IconFont.icon_aixin, color: Colors.black45, size: 16),
                     onTap: () async {
                       if (isEnter) {
                         isEnter = false;
@@ -247,22 +210,12 @@ class _MomentWidgetState extends State<MomentWidget> {
                   ),
                   SizedBox(width: 20),
                   IconText(
-                    moment.commentcount.toString() == "0"
-                        ? '评论'
-                        : moment.commentcount.toString(),
+                    moment.commentcount.toString() == "0" ? '评论' : moment.commentcount.toString(),
                     padding: EdgeInsets.only(right: 2),
                     style: TextStyle(color: Colors.black45, fontSize: 13),
-                    icon: Icon(
-                      IconFont.icon_navbar_xiaoxi,
-                      color: Colors.black45,
-                      size: 16,
-                    ),
+                    icon: Icon(IconFont.icon_navbar_xiaoxi, color: Colors.black45, size: 16),
                     onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/MomentInfo',
-                        arguments: {"momentid": moment.momentid},
-                      );
+                      Navigator.pushNamed(context, '/MomentInfo', arguments: {"momentid": moment.momentid});
                     },
                   ),
                 ],

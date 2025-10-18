@@ -17,9 +17,7 @@ class MyFollowUser extends StatefulWidget {
 }
 
 class _MyFollowUserState extends State<MyFollowUser> {
-  final RefreshController _refreshController = RefreshController(
-    initialRefresh: true,
-  );
+  final RefreshController _refreshController = RefreshController(initialRefresh: true);
   final UserService _userService = UserService();
   List<User> users = [];
   ImHelper imHelper = ImHelper();
@@ -49,10 +47,7 @@ class _MyFollowUserState extends State<MyFollowUser> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          '关注的人',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
+        title: Text('关注的人', style: TextStyle(color: Colors.black, fontSize: 16)),
         centerTitle: true,
       ),
       body: SmartRefresher(
@@ -64,31 +59,17 @@ class _MyFollowUserState extends State<MyFollowUser> {
           builder: (BuildContext context, LoadStatus? mode) {
             Widget body;
             if (mode == LoadStatus.idle) {
-              body = Text(
-                "加载更多",
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              );
+              body = Text("加载更多", style: TextStyle(color: Colors.black45, fontSize: 13));
             } else if (mode == LoadStatus.loading) {
               body = Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Global.profile.backColor),
-                ),
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Global.profile.backColor)),
               );
             } else if (mode == LoadStatus.failed) {
-              body = Text(
-                "加载失败!点击重试!",
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              );
+              body = Text("加载失败!点击重试!", style: TextStyle(color: Colors.black45, fontSize: 13));
             } else if (mode == LoadStatus.canLoading) {
-              body = Text(
-                "放开我,加载更多!",
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              );
+              body = Text("放开我,加载更多!", style: TextStyle(color: Colors.black45, fontSize: 13));
             } else {
-              body = Text(
-                "—————— 我也是有底线的 ——————",
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              );
+              body = Text("—————— 我也是有底线的 ——————", style: TextStyle(color: Colors.black45, fontSize: 13));
             }
             print(mode);
             return SizedBox(height: 55.0, child: Center(child: body));
@@ -96,39 +77,36 @@ class _MyFollowUserState extends State<MyFollowUser> {
         ),
         controller: _refreshController,
         onLoading: _onLoading,
-        child:
-            _refreshController.headerStatus == RefreshStatus.completed &&
-                users.isEmpty
+        child: _refreshController.headerStatus == RefreshStatus.completed && users.isEmpty
             ? Center(
-                child: Text(
-                  '还没有关注其他人',
-                  style: TextStyle(color: Colors.black54, fontSize: 14),
-                  maxLines: 2,
-                ),
+                child: Text('还没有关注其他人', style: TextStyle(color: Colors.black54, fontSize: 14), maxLines: 2),
               )
-            : ListView(
-                addAutomaticKeepAlives: true,
-                children: buildMemberList(),
-              ),
+            : ListView(addAutomaticKeepAlives: true, children: buildMemberList()),
       ),
     );
   }
 
   void _getFollowList() async {
-    users = await _userService.getFollowUsersCommunity(
-      Global.profile.user!.uid,
-      0,
-    );
+    final int? uid = Global.profile.user?.uid;
+    if (uid == null) {
+      users = [];
+      _refreshController.refreshCompleted();
+      if (mounted) setState(() {});
+      return;
+    }
+    users = await _userService.getFollowUsersCommunity(uid, 0);
     _refreshController.refreshCompleted();
     if (mounted) setState(() {});
   }
 
   void _onLoading() async {
     if (!_ismore) return;
-    final moredata = await _userService.getFollowUsersCommunity(
-      Global.profile.user!.uid,
-      users.length,
-    );
+    final int? uid = Global.profile.user?.uid;
+    if (uid == null) {
+      _refreshController.loadNoData();
+      return;
+    }
+    final moredata = await _userService.getFollowUsersCommunity(uid, users.length);
 
     if (moredata.isNotEmpty) users = users + moredata;
 
@@ -146,7 +124,8 @@ class _MyFollowUserState extends State<MyFollowUser> {
     List<Widget> widgets = [];
     widgets.add(SizedBox(height: 10));
     for (var element in users) {
-      if (element.uid == Global.profile.user!.uid) {
+      final int? currentUid = Global.profile.user?.uid;
+      if (currentUid != null && element.uid == currentUid) {
         widgets.add(SizedBox.shrink());
       } else {
         String tem = element.isFollow ? "已关注" : " ＋ 关注";
@@ -154,24 +133,14 @@ class _MyFollowUserState extends State<MyFollowUser> {
           Padding(
             padding: EdgeInsets.only(left: 5, right: 5, top: 0),
             child: Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(14.0)),
-              ), //设置圆角
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))), //设置圆角
               elevation: 0,
               child: ListTile(
                 onTap: () {
                   if (Global.profile.user == null) {
-                    Navigator.pushNamed(
-                      context,
-                      '/OtherProfile',
-                      arguments: {"uid": element.uid},
-                    );
+                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": element.uid});
                   } else if (element.uid != Global.profile.user!.uid) {
-                    Navigator.pushNamed(
-                      context,
-                      '/OtherProfile',
-                      arguments: {"uid": element.uid},
-                    );
+                    Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": element.uid});
                   } else {
                     Navigator.pushNamed(context, '/MyProfile');
                   }
@@ -180,11 +149,7 @@ class _MyFollowUserState extends State<MyFollowUser> {
                   padding: EdgeInsets.only(top: 5, bottom: 3),
                   child: Text(
                     element.username,
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 subtitle: Column(
@@ -198,15 +163,14 @@ class _MyFollowUserState extends State<MyFollowUser> {
                     ),
                     SizedBox(height: 3),
                     Text(
-                      '有${CommonUtil.getNum(element.likenum!)}个赞',
+                      '有${CommonUtil.getNum(element.likenum ?? 0)}个赞',
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     SizedBox(height: 5),
                   ],
                 ),
                 leading: NoCacheCircleHeadImage(
-                  imageUrl:
-                      element.profilepicture ?? Global.profile.profilePicture!,
+                  imageUrl: element.profilepicture ?? Global.profile.profilePicture ?? '',
                   width: 50,
                   uid: element.uid,
                 ),
@@ -214,64 +178,41 @@ class _MyFollowUserState extends State<MyFollowUser> {
                   height: 36,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: element.isFollow
-                          ? Colors.grey.shade200
-                          : Colors.redAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      side: BorderSide(
-                        color: element.isFollow
-                            ? Colors.grey.shade200
-                            : Colors.redAccent,
-                      ),
+                      backgroundColor: element.isFollow ? Colors.grey.shade200 : Colors.redAccent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                      side: BorderSide(color: element.isFollow ? Colors.grey.shade200 : Colors.redAccent),
                     ),
                     child: Text(
                       tem,
-                      style: TextStyle(
-                        color: element.isFollow
-                            ? Colors.black54
-                            : Colors.redAccent,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: element.isFollow ? Colors.black54 : Colors.redAccent, fontSize: 14),
                     ),
                     onPressed: () async {
+                      final user = Global.profile.user;
+                      if (user == null) {
+                        Navigator.pushNamed(context, '/Login');
+                        return;
+                      }
+                      final token = user.token;
+                      final uid = user.uid;
+                      if (token == null) {
+                        Navigator.pushNamed(context, '/Login');
+                        return;
+                      }
                       if (element.isFollow) {
-                        bool ret = await _userService.cancelFollow(
-                          Global.profile.user!.token!,
-                          Global.profile.user!.uid,
-                          element.uid,
-                          errorCallBack,
-                        );
+                        bool ret = await _userService.cancelFollow(token, uid, element.uid, errorCallBack);
                         if (ret) {
-                          await imHelper.delFollowState(
-                            element.uid,
-                            Global.profile.user!.uid,
-                          );
-                          Global.profile.user!.following =
-                              Global.profile.user!.following! - 1;
+                          await imHelper.delFollowState(element.uid, uid);
+                          user.following = (user.following ?? 1) - 1;
                           Global.saveProfile();
                           element.isFollow = false;
                           setState(() {});
                         }
                       } else {
-                        bool ret = await _userService.Follow(
-                          Global.profile.user!.token!,
-                          Global.profile.user!.uid,
-                          element.uid,
-                          errorCallBack,
-                        );
+                        bool ret = await _userService.Follow(token, uid, element.uid, errorCallBack);
                         if (ret) {
-                          await imHelper.delFollowState(
-                            element.uid,
-                            Global.profile.user!.uid,
-                          );
-                          await imHelper.saveFollowState(
-                            element.uid,
-                            Global.profile.user!.uid,
-                          );
-                          Global.profile.user!.following =
-                              Global.profile.user!.following! + 1;
+                          await imHelper.delFollowState(element.uid, uid);
+                          await imHelper.saveFollowState(element.uid, uid);
+                          user.following = (user.following ?? 0) + 1;
                           Global.saveProfile();
                           element.isFollow = true;
 

@@ -134,7 +134,7 @@ class _ActivityState extends State<ActivityInfo> {
                 padding: EdgeInsets.only(top: 10),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  '${_activity!.joinnum! + 1}人想参加 · 浏览${_activity!.viewnum}',
+                  '${((_activity!.joinnum ?? 0) + 1)}人想参加 · 浏览${_activity?.viewnum ?? 0}',
                   style: TextStyle(fontSize: 12, color: Colors.black45),
                 ),
               ),
@@ -310,7 +310,7 @@ class _ActivityState extends State<ActivityInfo> {
         _activity!.coverimg ?? "",
         _activity!.coverimgwh,
         _activity?.user?.profilepicture ?? "",
-        _activity?.user?.username ?? "用户",
+        _activity?.user?.username ?? "游客**",
         _activity!.peoplenum ?? 0,
         _activity?.goodPiceModel?.mincost ?? 0,
         _activity?.goodPiceModel?.maxcost ?? 0,
@@ -336,7 +336,7 @@ class _ActivityState extends State<ActivityInfo> {
       return;
     }
 
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _onLoading() async {
@@ -387,9 +387,9 @@ class _ActivityState extends State<ActivityInfo> {
 
   void sortComment() {
     if (_ordertype == "0") {
-      _listComments.sort((a, b) => (b.createtime!).compareTo(a.createtime!));
+      _listComments.sort((a, b) => (b.createtime ?? '').compareTo(a.createtime ?? ''));
     } else {
-      _listComments.sort((a, b) => (b.likenum!).compareTo(a.likenum!));
+      _listComments.sort((a, b) => ((b.likenum ?? 0)).compareTo(a.likenum ?? 0));
     }
     setState(() {});
   }
@@ -602,7 +602,7 @@ class _ActivityState extends State<ActivityInfo> {
 
   //获取活动图片
   Column buildActivityImg() {
-    _listimgs = _activity!.actimagespath!.split(',');
+    _listimgs = (_activity!.actimagespath ?? '').isNotEmpty ? _activity!.actimagespath!.split(',') : [];
     if (_listimgs.isNotEmpty) {
       for (int i = 0; i < _listimgs.length; i++) {
         imglist.add({"tag": UniqueKey().toString(), "img": _listimgs[i].toString()});
@@ -610,9 +610,13 @@ class _ActivityState extends State<ActivityInfo> {
     }
     double initheigth = 0;
 
-    List<String> wh = _activity!.coverimgwh.split(',');
-    if (wh.isNotEmpty) {
-      initheigth = getImageWH(_activity!);
+    List<String> wh = (_activity?.coverimgwh ?? '').split(',');
+    if (wh.length >= 2 && wh[0].isNotEmpty && wh[1].isNotEmpty) {
+      try {
+        initheigth = getImageWH(_activity!);
+      } catch (e) {
+        initheigth = 0;
+      }
     }
 
     return Column(
@@ -652,7 +656,7 @@ class _ActivityState extends State<ActivityInfo> {
     bool isjoin = false; //是否已经参加
 
     if (Global.profile.user != null) {
-      for (var element in _activity!.members!) {
+      for (var element in (_activity?.members ?? const <User>[])) {
         if (Global.isInDebugMode) {
           print("activity member${element.uid}");
         }
@@ -712,7 +716,7 @@ class _ActivityState extends State<ActivityInfo> {
                     },
                   ),
                   Text(
-                    _activity == null ? "0" : _activity!.likenum.toString(),
+                    _activity!.likenum.toString(),
                     style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -759,7 +763,7 @@ class _ActivityState extends State<ActivityInfo> {
                     },
                   ),
                   Text(
-                    _activity == null ? "0" : _activity!.collectionnum.toString(),
+                    _activity!.collectionnum.toString(),
                     style: TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -1257,7 +1261,11 @@ class _ActivityState extends State<ActivityInfo> {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            NoCacheCircleHeadImage(imageUrl: v.user!.profilepicture!, width: 30, uid: v.user!.uid),
+                            NoCacheCircleHeadImage(
+                              imageUrl: v.user?.profilepicture ?? "",
+                              width: 30,
+                              uid: v.user?.uid ?? 0,
+                            ),
                             GestureDetector(
                               child: Container(
                                 margin: EdgeInsets.only(left: 10),
@@ -1265,16 +1273,19 @@ class _ActivityState extends State<ActivityInfo> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(v.user!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
                                     Text(
-                                      v.createtime!.substring(5, 10),
+                                      v.user?.username ?? "用户",
+                                      style: TextStyle(color: Colors.black54, fontSize: 13),
+                                    ),
+                                    Text(
+                                      _safeDateMMDD(v.createtime),
                                       style: TextStyle(color: Colors.grey, fontSize: 12),
                                     ),
                                   ],
                                 ),
                               ),
                               onTap: () {
-                                int uid = v.user!.uid;
+                                int uid = v.user?.uid ?? 0;
                                 if (Global.profile.user == null) {
                                   Navigator.pushNamed(context, '/OtherProfile', arguments: {"uid": uid});
                                 } else if (uid != Global.profile.user!.uid) {
@@ -1306,34 +1317,37 @@ class _ActivityState extends State<ActivityInfo> {
                                 if (_isCommentLike) {
                                   _isCommentLike = false;
                                   if (v.likeuid == 0) {
-                                    updateCommentLike(v.commentid, v.user!.uid);
+                                    updateCommentLike(v.commentid ?? 0, v.user?.uid ?? 0);
                                   } else {
-                                    updateDelCommentLike(v.commentid, v.user!.uid);
+                                    updateDelCommentLike(v.commentid ?? 0, v.user?.uid ?? 0);
                                   }
                                 }
                               },
                             ),
-                            Text(v.likenum == 0 ? '' : v.likenum.toString(), style: TextStyle(color: Colors.black38)),
+                            Text(
+                              ((v.likenum ?? 0) == 0) ? '' : (v.likenum ?? 0).toString(),
+                              style: TextStyle(color: Colors.black38),
+                            ),
                           ],
                         ),
                       ],
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 40),
-                      child: Text(v.content!, style: TextStyle(color: Colors.black, fontSize: 14)),
+                      child: Text(v.content ?? "", style: TextStyle(color: Colors.black, fontSize: 14)),
                     ),
                     (v.replys != null && v.replys!.isNotEmpty) ? buildChildComment(v.replys!) : SizedBox(height: 0),
                   ],
                 ),
                 onTap: () {
-                  _hidemessage = '回复@${v.user!.username}';
-                  messageWidget(v.commentid!, v.user!.uid, touser: v.user);
+                  _hidemessage = '回复@${v.user?.username ?? "用户"}';
+                  messageWidget(v.commentid ?? 0, v.user?.uid ?? 0, touser: v.user);
                 },
                 onLongPress: () {
-                  if (Global.profile.user != null && v.user!.uid == Global.profile.user!.uid) {
-                    showDel(v.commentid!);
+                  if (Global.profile.user != null && (v.user?.uid ?? -1) == Global.profile.user!.uid) {
+                    showDel(v.commentid ?? 0);
                   } else {
-                    showCommentReport(v.commentid!, v.user!.uid, v.content!);
+                    showCommentReport(v.commentid ?? 0, v.user?.uid ?? 0, v.content ?? "");
                   }
                 },
               ),
@@ -1347,7 +1361,7 @@ class _ActivityState extends State<ActivityInfo> {
 
   //获取子评论
   Widget buildChildComment(List<CommentReply> replys) {
-    replys.sort((a, b) => (a.replycreatetime!).compareTo(b.replycreatetime!));
+    replys.sort((a, b) => (a.replycreatetime ?? '').compareTo(b.replycreatetime ?? ''));
     List<Widget> tem = [];
     replys.map((v) {
       tem.add(
@@ -1359,9 +1373,9 @@ class _ActivityState extends State<ActivityInfo> {
                 child: Row(
                   children: <Widget>[
                     NoCacheCircleHeadImage(
-                      imageUrl: v.replyuser!.profilepicture ?? "",
+                      imageUrl: v.replyuser?.profilepicture ?? "",
                       width: 30,
-                      uid: v.replyuser!.uid,
+                      uid: v.replyuser?.uid ?? 0,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
@@ -1369,8 +1383,8 @@ class _ActivityState extends State<ActivityInfo> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(v.replyuser!.username, style: TextStyle(color: Colors.black54, fontSize: 13)),
-                          Text(v.replycreatetime!.substring(5, 10), style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          Text(v.replyuser?.username ?? "用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
+                          Text(_safeDateMMDD(v.replycreatetime), style: TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
                     ),
@@ -1391,17 +1405,17 @@ class _ActivityState extends State<ActivityInfo> {
                               style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             TextSpan(
-                              text: v.touser!.username,
+                              text: v.touser?.username ?? "用户",
                               style: TextStyle(color: Colors.blue, fontSize: 14),
                             ),
                             TextSpan(
-                              text: ':${v.replycontent}',
+                              text: ':${v.replycontent ?? ""}',
                               style: TextStyle(color: Colors.black, fontSize: 14),
                             ),
                           ],
                         )
                       : TextSpan(
-                          text: '${v.replycontent}',
+                          text: '${v.replycontent ?? ""}',
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                 ),
@@ -1413,15 +1427,17 @@ class _ActivityState extends State<ActivityInfo> {
             ],
           ),
           onLongPress: () {
-            if (Global.profile.user != null && v.replyuser!.uid == Global.profile.user!.uid) {
-              showReplyDel(v.replyid!);
+            if (Global.profile.user != null && (v.replyuser?.uid ?? -1) == Global.profile.user!.uid) {
+              showReplyDel(v.replyid ?? 0);
             } else {
-              showReplyReport(v.replyid!, v.replyuser!.uid, v.replycontent!);
+              showReplyReport(v.replyid ?? 0, v.replyuser?.uid ?? 0, v.replycontent ?? "");
             }
           },
           onTap: () {
-            _hidemessage = '回复@${v.replyuser!.username}';
-            messageWidget(v.commentid!, v.replyuser!.uid, touser: v.replyuser!);
+            if (v.replyuser != null) {
+              _hidemessage = '回复@${v.replyuser!.username}';
+              messageWidget(v.commentid ?? 0, v.replyuser!.uid, touser: v.replyuser!);
+            }
           },
         ),
       );
@@ -1541,15 +1557,15 @@ class _ActivityState extends State<ActivityInfo> {
                   NoCacheClipRRectOhterHeadImage(
                     width: 17,
                     cir: 50,
-                    imageUrl: activity.user!.profilepicture ?? "",
-                    uid: activity.user!.uid,
+                    imageUrl: activity.user?.profilepicture ?? "",
+                    uid: activity.user?.uid ?? 0,
                     // maxRadius: 40.0,
                   ),
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.only(left: 5),
                       child: Text(
-                        activity.user!.username,
+                        activity.user?.username ?? "用户",
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1827,12 +1843,29 @@ class _ActivityState extends State<ActivityInfo> {
 
   //计算高度
   double getImageWH(Activity activity) {
-    double width = double.parse(activity.coverimgwh.split(',')[0]);
-    double height = double.parse(activity.coverimgwh.split(',')[1]);
-    double ratio = width / height; //宽高比
-    double retheight = (_pageWidth.floor().toDouble()) / ratio;
+    try {
+      final parts = (activity.coverimgwh).split(',');
+      if (parts.length >= 2) {
+        double width = double.parse(parts[0]);
+        double height = double.parse(parts[1]);
+        if (width > 0 && height > 0) {
+          double ratio = width / height; //宽高比
+          double retheight = (_pageWidth.floor().toDouble()) / ratio;
+          return retheight; //图片缩放高度
+        }
+      }
+    } catch (_) {}
+    return 0; // 无法解析时返回 0，高度由子组件自适应
+  }
 
-    return retheight; //图片缩放高度
+  // 安全获取日期的 MM-DD 文本，输入如 '2025-10-18 12:00:00'
+  String _safeDateMMDD(String? s) {
+    if (s == null || s.length < 10) return '';
+    try {
+      return s.substring(5, 10);
+    } catch (_) {
+      return '';
+    }
   }
 
   //滑动拼图

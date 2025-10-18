@@ -3,7 +3,7 @@ from flask_restx import fields
 def get_activity_models(ns):
     """注册并返回所有活动相关的模型到命名空间"""
     
-    activity_fields = ns.model('Activity', {
+    activity_model = ns.model('Activity', {
         'actid': fields.String(required=False, description='活动ID'),
         'content': fields.String(required=True, description='活动内容'),
         'createtime': fields.DateTime(required=False, description='创建时间'),
@@ -35,7 +35,7 @@ def get_activity_models(ns):
         'locked': fields.Integer(required=False, description='是否锁定(活动开始)')
     })
 
-    create_activity_fields = ns.model('CreateActivity', {
+    create_activity_model = ns.model('CreateActivity', {
         'content': fields.String(required=True, description='活动内容'),
         'uid': fields.Integer(required=True, description='发起人用户ID'),
         'province': fields.String(required=False, description='活动省份'),
@@ -52,54 +52,54 @@ def get_activity_models(ns):
         'goodpriceid': fields.String(required=False, description='关联商品ID')
     })
 
-    user_activity_fields = ns.model('UserActivity', {
+    user_activity_model = ns.model('UserActivity', {
         'actid': fields.String(required=True, description='活动ID'),
         'uid': fields.Integer(required=True, description='用户ID')
     })
 
-    activity_time_fields = ns.model('ActivityTime', {
+    activity_time_model = ns.model('ActivityTime', {
         'actid': fields.String(required=True, description='活动ID'),
         'uid': fields.Integer(required=True, description='用户ID'),
         'startyear': fields.Integer(required=True, description='开始时间戳'),
         'endyear': fields.Integer(required=True, description='结束时间戳')
     })
 
-    activity_status_fields = ns.model('ActivityStatus', {
+    activity_status_model = ns.model('ActivityStatus', {
         'actid': fields.String(required=True, description='活动ID'),
         'uid': fields.Integer(required=True, description='用户ID'),
         'status': fields.Integer(required=True, description='活动状态')
     })
 
-    activity_comment_fields = ns.model('ActivityComment', {
+    activity_comment_model = ns.model('ActivityComment', {
         'actid': fields.String(required=True, description='活动ID'),
         'uid': fields.Integer(required=True, description='用户ID'),
         'content': fields.String(required=True, description='评论内容')
     })
 
-    delete_comment_fields = ns.model('DeleteComment', {
+    delete_comment_model = ns.model('DeleteComment', {
         'actid': fields.String(required=True, description='活动ID'),
         'uid': fields.Integer(required=True, description='用户ID'),
         'commentid': fields.Integer(required=True, description='评论ID')
     })
 
-    group_conversation_fields = ns.model('GroupConversation', {
+    group_conversation_model = ns.model('GroupConversation', {
         'timeline_id': fields.String(required=True, description='时间线ID'),
         'uid': fields.Integer(required=True, description='用户ID')
     })
 
-    response_fields = ns.model('Response', {
+    response_model = ns.model('Response', {
         'data': fields.Raw(description='响应数据'),
         'error': fields.String(description='错误信息')
     })
 
     return {
-        'activity_fields': activity_fields,
-        'create_activity_fields': create_activity_fields,
-        'user_activity_fields': user_activity_fields,
-        'activity_time_fields': activity_time_fields,
-        'activity_status_fields': activity_status_fields,
-        'activity_comment_fields': activity_comment_fields,
-        'delete_comment_fields': delete_comment_fields,
-        'group_conversation_fields': group_conversation_fields,
-        'response_fields': response_fields
+        'activity_model': activity_model,
+        'create_activity_model': create_activity_model,
+        'user_activity_model': user_activity_model,
+        'activity_time_model': activity_time_model,
+        'activity_status_model': activity_status_model,
+        'activity_comment_model': activity_comment_model,
+        'delete_comment_model': delete_comment_model,
+        'group_conversation_model': group_conversation_model,
+        'response_model': response_model
     }

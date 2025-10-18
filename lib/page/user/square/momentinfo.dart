@@ -340,7 +340,10 @@ class _MomentInfoState extends State<MomentInfo> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(v.user?.username ?? "未知用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
+                                      Text(
+                                        v.user?.username ?? "未知用户",
+                                        style: TextStyle(color: Colors.black54, fontSize: 13),
+                                      ),
                                       Text(
                                         v.createtime!.substring(5, 10),
                                         style: TextStyle(color: Colors.grey, fontSize: 12),
@@ -538,7 +541,10 @@ class _MomentInfoState extends State<MomentInfo> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Text(v.replyuser?.username ?? "未知用户", style: TextStyle(color: Colors.black54, fontSize: 13)),
+                            Text(
+                              v.replyuser?.username ?? "未知用户",
+                              style: TextStyle(color: Colors.black54, fontSize: 13),
+                            ),
                             Text(
                               v.replycreatetime!.substring(5, 10),
                               style: TextStyle(color: Colors.grey, fontSize: 12),
